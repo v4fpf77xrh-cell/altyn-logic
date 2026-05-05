@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Altyn Logic | Личный кабинет и Регистрация</title>
+    <title>Altyn Logic | Твой путь к Гранту</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
@@ -16,7 +16,7 @@
         .btn-action { border-radius: 20px; font-weight: 800; transition: all 0.3s; text-transform: uppercase; letter-spacing: 0.05em; cursor: pointer; }
         .btn-action:hover { transform: scale(1.03); box-shadow: 0 10px 20px -5px rgba(37, 99, 235, 0.4); }
         .gradient-blue { background: linear-gradient(135deg, #2563eb 0%, #7c3aed 100%); }
-        input::placeholder { font-weight: 700; opacity: 0.4; }
+        input::placeholder { font-weight: 700; opacity: 0.3; }
     </style>
 </head>
 <body class="antialiased" onload="initApp()">
@@ -39,7 +39,7 @@
                 <div id="streak-box" class="hidden flex items-center space-x-1 text-orange-500 font-bold text-sm bg-orange-50 px-3 py-1.5 rounded-full">
                     <i class="fas fa-fire"></i> <span id="streak-val">0</span>
                 </div>
-                <button onclick="handleAuthClick()" class="group flex items-center space-x-3 bg-slate-900 text-white p-1.5 pr-5 rounded-full transition hover:bg-blue-600">
+                <button onclick="handleAuthClick()" class="group flex items-center space-x-3 bg-slate-900 text-white p-1.5 pr-5 rounded-full transition hover:bg-blue-600 shadow-lg">
                     <div class="w-8 h-8 bg-white/20 rounded-full flex items-center justify-center font-bold" id="nav-avatar">?</div>
                     <span class="text-xs font-bold uppercase tracking-tight" id="nav-name">Войти</span>
                 </button>
@@ -53,9 +53,9 @@
         <div id="main-hero" class="section-content space-y-20">
             <div class="text-center space-y-8 py-10">
                 <h1 class="text-6xl md:text-8xl font-extrabold tracking-tighter leading-[0.9] text-slate-900 italic uppercase">Твой путь к <span class="text-blue-600">Гранту.</span></h1>
-                <p class="text-slate-400 text-xl max-w-2xl mx-auto font-medium italic">ELO рейтинг: <span id="hero-elo" class="text-blue-600 font-black">1200</span>. Анализ вероятности поступления в реальном времени.</p>
+                <p class="text-slate-400 text-xl max-w-2xl mx-auto font-medium italic">Подготовка к ЕНТ через логику. Твой текущий ELO: <span id="hero-elo" class="text-blue-600 font-black">1200</span></p>
                 <div class="flex flex-col sm:flex-row justify-center gap-4 pt-6">
-                    <button onclick="openModal('blitz-modal')" class="btn-action gradient-blue text-white px-10 py-5 text-sm shadow-2xl">Выбрать Предмет</button>
+                    <button onclick="handleQuizStartClick()" class="btn-action gradient-blue text-white px-10 py-5 text-sm shadow-2xl shadow-blue-200">Начать тренировку</button>
                     <button onclick="openModal('payment-modal')" class="btn-action bg-white text-slate-900 border-2 border-slate-100 px-10 py-5 text-sm">PRO Аналитика</button>
                 </div>
             </div>
@@ -64,24 +64,24 @@
                 <div onclick="openModal('academy-modal')" class="neo-card p-8">
                     <div class="w-12 h-12 bg-purple-50 text-purple-600 rounded-2xl flex items-center justify-center text-xl mb-6"><i class="fas fa-lightbulb"></i></div>
                     <h3 class="text-xl font-bold mb-2 uppercase italic">Академия</h3>
-                    <p class="text-slate-400 text-sm font-medium italic">Микро-обучение и разбор ловушек ЕНТ.</p>
+                    <p class="text-slate-400 text-sm font-medium italic">Лайфхаки, которые экономят 20 минут на тесте.</p>
                 </div>
                 <div class="neo-card p-8 bg-blue-50/50 border-blue-100">
                     <div class="w-12 h-12 bg-blue-600 text-white rounded-2xl flex items-center justify-center text-xl mb-6"><i class="fas fa-university"></i></div>
                     <h3 class="text-xl font-bold mb-2 uppercase italic text-blue-900">Прогноз Гранта</h3>
-                    <p class="text-blue-600/60 text-sm font-medium italic" id="grant-prediction">Начни тренировку для анализа.</p>
+                    <p class="text-blue-600/60 text-sm font-medium italic" id="grant-prediction">Пройди тест для расчета шансов.</p>
                 </div>
                 <div onclick="openModal('battle-modal')" class="neo-card p-8 group">
                     <div class="w-12 h-12 bg-orange-100 text-orange-600 rounded-2xl flex items-center justify-center text-xl mb-6"><i class="fas fa-fire"></i></div>
                     <h3 class="text-xl font-bold mb-2 uppercase italic">Баттл</h3>
-                    <p class="text-slate-400 text-sm font-medium italic">Соревнуйся с абитуриентами всей страны.</p>
+                    <p class="text-slate-400 text-sm font-medium italic">Сразись за рейтинг в реальном времени.</p>
                 </div>
             </div>
 
             <!-- ЛИДЕРБОРД -->
             <div class="space-y-8">
                 <h3 class="text-[11px] font-black text-slate-400 uppercase tracking-[0.4em] italic flex items-center">
-                    <i class="fas fa-trophy text-yellow-500 mr-3"></i> Топ рейтинга ELO
+                    <i class="fas fa-crown text-yellow-500 mr-3"></i> Топ рейтинга ELO
                 </h3>
                 <div class="neo-card overflow-hidden" id="leaderboard-container"></div>
             </div>
@@ -101,13 +101,12 @@
                             <div class="bg-slate-50 p-4 rounded-3xl"><p class="text-[9px] font-black text-slate-400 uppercase italic">ELO</p><p class="text-2xl font-black text-blue-600" id="profile-elo">1200</p></div>
                             <div class="bg-slate-50 p-4 rounded-3xl"><p class="text-[9px] font-black text-slate-400 uppercase italic">Стрик</p><p class="text-2xl font-black text-orange-500" id="profile-streak">0</p></div>
                         </div>
-                        <button onclick="logout()" class="w-full btn-action bg-slate-100 text-slate-500 py-4 text-[10px]">Выйти из системы</button>
-                        <button onclick="resetData()" class="w-full text-slate-300 font-bold text-[8px] uppercase tracking-widest">Удалить аккаунт</button>
+                        <button onclick="logout()" class="w-full btn-action bg-slate-100 text-slate-500 py-4 text-[10px]">Выйти</button>
                     </div>
                 </div>
                 <div class="lg:col-span-8 space-y-6">
                     <div class="neo-card p-10">
-                        <h3 class="text-xs font-black text-slate-400 uppercase tracking-[0.3em] italic mb-8">График твоей силы</h3>
+                        <h3 class="text-xs font-black text-slate-400 uppercase tracking-[0.3em] italic mb-8">Аналитика прогресса</h3>
                         <div class="h-80"><canvas id="progressChart"></canvas></div>
                     </div>
                 </div>
@@ -134,7 +133,7 @@
         <div id="result-screen" class="section-content hidden text-center space-y-16 py-10">
             <h2 id="score-display" class="text-[10rem] font-black italic text-slate-900 leading-none tracking-tighter">0/10</h2>
             <p id="result-elo" class="text-2xl font-black text-blue-600 italic uppercase"></p>
-            <button onclick="location.reload()" class="btn-action bg-slate-900 text-white px-16 py-6 text-sm italic shadow-2xl">Вернуться в меню</button>
+            <button onclick="location.reload()" class="btn-action bg-slate-900 text-white px-16 py-6 text-sm italic shadow-2xl">В Меню</button>
             <div id="review-container" class="max-w-3xl mx-auto space-y-6 pt-20 text-left"></div>
         </div>
     </main>
@@ -142,23 +141,21 @@
     <!-- МОДАЛЬНЫЕ ОКНА -->
     <div id="modal-bg" class="fixed inset-0 bg-slate-900/80 backdrop-blur-xl z-[200] hidden flex items-center justify-center p-4">
         
-        <!-- НОВАЯ МОДАЛКА: РЕГИСТРАЦИЯ / ВХОД -->
+        <!-- МОДАЛКА: РЕГИСТРАЦИЯ / ВХОД -->
         <div id="auth-modal" class="modal-content hidden bg-white w-full max-w-md rounded-[56px] p-12 space-y-8">
             <div class="flex justify-center space-x-6 border-b border-slate-100 pb-4">
                 <button onclick="toggleAuthMode('login')" id="btn-tab-login" class="text-blue-600 font-black text-sm uppercase italic">Вход</button>
                 <button onclick="toggleAuthMode('register')" id="btn-tab-reg" class="text-slate-300 font-black text-sm uppercase italic">Регистрация</button>
             </div>
-            
-            <div id="auth-form" class="space-y-4">
+            <div class="space-y-4">
                 <input type="text" id="auth-name" placeholder="ТВОЕ ИМЯ" class="id-reg-only w-full p-6 bg-slate-50 rounded-[24px] border-none font-black italic text-xs uppercase tracking-widest outline-none focus:ring-4 focus:ring-blue-100 transition">
                 <input type="email" id="auth-email" placeholder="E-MAIL ИЛИ ТЕЛЕФОН" class="w-full p-6 bg-slate-50 rounded-[24px] border-none font-black italic text-xs uppercase tracking-widest outline-none focus:ring-4 focus:ring-blue-100 transition">
                 <input type="password" id="auth-pass" placeholder="ПАРОЛЬ" class="w-full p-6 bg-slate-50 rounded-[24px] border-none font-black italic text-xs uppercase tracking-widest outline-none focus:ring-4 focus:ring-blue-100 transition">
-                
                 <button onclick="processAuth()" class="w-full btn-action gradient-blue text-white py-6 text-xs italic tracking-widest shadow-xl mt-4">
                     <span id="auth-submit-text">Войти в кабинет</span>
                 </button>
             </div>
-            <p class="text-center text-[9px] font-black text-slate-400 uppercase italic tracking-widest">Безопасное соединение Altyn Logic OS</p>
+            <p class="text-center text-[9px] font-black text-slate-400 uppercase italic tracking-widest">Altyn Logic Security v3</p>
         </div>
 
         <!-- ВЫБОР БЛИЦА -->
@@ -175,49 +172,40 @@
                 </button>
                 <button onclick="startQuiz('reading')" class="flex items-center space-x-6 p-8 bg-slate-50 rounded-[32px] hover:bg-green-50 transition border-2 border-transparent hover:border-green-100 text-left">
                     <div class="w-16 h-16 bg-green-100 text-green-600 rounded-2xl flex items-center justify-center text-2xl shadow-inner"><i class="fas fa-book-open"></i></div>
-                    <div><p class="font-black italic text-slate-800 text-xl uppercase leading-none mb-1">Грамотность чтения</p><p class="text-[10px] font-bold text-slate-400 uppercase italic">10 вопросов • Текст</p></div>
+                    <div><p class="font-black italic text-slate-800 text-xl uppercase leading-none mb-1">Грамотность чтения</p><p class="text-[10px] font-bold text-slate-400 uppercase italic">10 вопросов • Анализ</p></div>
                 </button>
             </div>
         </div>
 
         <!-- АКАДЕМИЯ -->
         <div id="academy-modal" class="modal-content hidden bg-white w-full max-w-2xl rounded-[56px] p-12 space-y-10">
-            <div class="flex justify-between items-center"><h2 class="text-3xl font-black italic uppercase italic">Академия Лайфхаков</h2><button onclick="closeAllModals()" class="text-slate-300"><i class="fas fa-times text-2xl"></i></button></div>
-            <div class="space-y-6">
-                <div class="p-8 bg-purple-50 rounded-[32px] space-y-4">
-                    <h4 class="font-black italic text-purple-700 uppercase tracking-widest text-xs">МатГрамотность: Метод кроликов</h4>
-                    <p class="text-slate-600 italic font-medium">Если в задаче 10 голов и 28 ног. Умножь головы на 2 (ноги курицы). 28 - 20 = 8 лишних ног. Дели 8 на 2 (разница ног) = 4 кролика. Готово!</p>
-                </div>
+            <div class="flex justify-between items-center"><h2 class="text-3xl font-black italic uppercase italic">Академия</h2><button onclick="closeAllModals()" class="text-slate-300"><i class="fas fa-times text-2xl"></i></button></div>
+            <div class="p-8 bg-purple-50 rounded-[32px] space-y-4">
+                <h4 class="font-black italic text-purple-700 uppercase tracking-widest text-xs">Лайфхак: "Метод кроликов"</h4>
+                <p class="text-slate-600 italic font-medium leading-relaxed">Если в задаче 10 голов и 28 ног. Умножь головы на 2 (ноги курицы). 28 - 20 = 8 лишних ног. Дели 8 на 2 (разница ног) = 4 кролика. Решается в уме!</p>
             </div>
+            <button onclick="closeAllModals()" class="btn-action bg-slate-900 text-white w-full py-5 text-xs italic tracking-widest">Закрыть</button>
         </div>
 
-        <!-- БАТТЛ -->
+        <!-- ОСТАЛЬНЫЕ МОДАЛКИ (Баттл, Предметы, Оплата) -->
         <div id="battle-modal" class="modal-content hidden bg-white w-full max-w-md rounded-[56px] p-12 text-center space-y-8">
-            <div class="w-24 h-24 bg-orange-100 text-orange-500 rounded-[32px] flex items-center justify-center text-4xl mx-auto animate-bounce shadow-xl"><i class="fas fa-fire"></i></div>
-            <h2 class="text-3xl font-black italic uppercase tracking-tighter">BATTLE ARENA</h2>
-            <p class="text-slate-500 italic leading-relaxed italic underline decoration-orange-100 underline-offset-8">Сразись с другом за 50 ELO. Функция станет доступна после регистрации 1000 участников.</p>
-            <button onclick="closeAllModals()" class="btn-action bg-slate-900 text-white w-full py-5 text-xs italic tracking-widest">Жду релиза</button>
+            <div class="w-24 h-24 bg-orange-100 text-orange-500 rounded-[32px] flex items-center justify-center text-4xl mx-auto animate-bounce"><i class="fas fa-fire"></i></div>
+            <h2 class="text-3xl font-black italic uppercase tracking-tighter italic">BATTLE MODE</h2>
+            <p class="text-slate-500 italic">Сразись с другом за рейтинг. Скоро!</p>
+            <button onclick="closeAllModals()" class="btn-action bg-slate-900 text-white w-full py-5 text-xs italic tracking-widest">Жду</button>
         </div>
-
-        <!-- ОПЛАТА -->
+        <div id="subjects-modal" class="modal-content hidden bg-white w-full max-w-lg rounded-[40px] p-12 space-y-6 font-bold italic">
+            <h2 class="text-2xl font-black uppercase italic underline decoration-blue-500">Структура 2026</h2>
+            <ul class="space-y-4 text-slate-600"><li>- Обязательные (3): 50 вопр.</li><li>- Профильные (2): 70 вопр.</li><li>- Грант: 110+</li></ul>
+            <button onclick="closeAllModals()" class="btn-action bg-slate-900 text-white w-full py-4 text-xs italic">Понятно</button>
+        </div>
         <div id="payment-modal" class="modal-content hidden bg-white w-full max-w-md rounded-[56px] p-12 space-y-10 text-center">
             <h2 class="text-4xl font-black uppercase italic tracking-tighter italic">Pro Версия</h2>
-            <div class="p-10 gradient-blue text-white rounded-[40px] shadow-2xl shadow-blue-200">
+            <div class="p-10 gradient-blue text-white rounded-[40px] shadow-2xl">
                 <p class="text-7xl font-black italic tracking-tighter leading-none mb-4">2 490 ₸</p>
                 <p class="text-xs font-black uppercase opacity-70 italic tracking-widest">Разовый платеж • ИП Khamidullin</p>
             </div>
-            <button onclick="window.open('https://kaspi.kz', '_blank')" class="w-full btn-action bg-slate-900 text-white py-6 text-sm italic shadow-2xl uppercase">Оплатить через Kaspi</button>
-        </div>
-        
-        <!-- ПРЕДМЕТЫ -->
-        <div id="subjects-modal" class="modal-content hidden bg-white w-full max-w-lg rounded-[40px] p-12 space-y-6 font-bold italic">
-            <h2 class="text-2xl font-black uppercase italic underline decoration-blue-500">Структура ЕНТ 2026</h2>
-            <ul class="space-y-4 text-slate-600">
-                <li class="flex items-center"><i class="fas fa-check-circle text-blue-500 mr-2"></i> Обязательные (3): 50 вопр.</li>
-                <li class="flex items-center"><i class="fas fa-check-circle text-blue-500 mr-2"></i> Профильные (2): 70 вопр.</li>
-                <li class="flex items-center"><i class="fas fa-check-circle text-blue-500 mr-2"></i> Порог на грант: 115+</li>
-            </ul>
-            <button onclick="closeAllModals()" class="btn-action bg-slate-900 text-white w-full py-4 text-xs italic">Понятно</button>
+            <button onclick="window.open('https://kaspi.kz', '_blank')" class="w-full btn-action bg-slate-900 text-white py-6 text-sm italic shadow-2xl uppercase tracking-widest">Оплатить через Kaspi</button>
         </div>
     </div>
 
@@ -236,31 +224,28 @@
             ]
         };
 
-        const DB_KEY = 'altyn_logic_core_v2';
+        const STORAGE_KEY = 'altyn_logic_final_v3';
         let state = { name: "", email: "", elo: 1200, streak: 0, lastActive: null, isLoggedIn: false };
         let authMode = 'login';
         let currentQ = 0, score = 0, startTime, activeSubject = [], userAnswers = [];
 
         function initApp() {
-            const saved = localStorage.getItem(DB_KEY);
+            const saved = localStorage.getItem(STORAGE_KEY);
             if (saved) {
                 state = JSON.parse(saved);
                 if(state.isLoggedIn) {
                     updateUI();
                     checkStreak();
-                } else {
-                    openModal('auth-modal');
                 }
-            } else {
-                openModal('auth-modal');
             }
             renderLeaderboard();
+            toggleAuthMode('login'); // По умолчанию режим входа
         }
 
         function toggleAuthMode(mode) {
             authMode = mode;
-            document.getElementById('btn-tab-login').className = (mode === 'login') ? 'text-blue-600 font-black text-sm uppercase italic' : 'text-slate-300 font-black text-sm uppercase italic';
-            document.getElementById('btn-tab-reg').className = (mode === 'register') ? 'text-blue-600 font-black text-sm uppercase italic' : 'text-slate-300 font-black text-sm uppercase italic';
+            document.getElementById('btn-tab-login').className = (mode === 'login') ? 'text-blue-600 font-black text-sm uppercase italic border-b-2 border-blue-600' : 'text-slate-300 font-black text-sm uppercase italic';
+            document.getElementById('btn-tab-reg').className = (mode === 'register') ? 'text-blue-600 font-black text-sm uppercase italic border-b-2 border-blue-600' : 'text-slate-300 font-black text-sm uppercase italic';
             document.querySelectorAll('.id-reg-only').forEach(e => e.style.display = (mode === 'register') ? 'block' : 'none');
             document.getElementById('auth-submit-text').innerText = (mode === 'login') ? 'Войти в кабинет' : 'Создать аккаунт';
         }
@@ -270,8 +255,8 @@
             const email = document.getElementById('auth-email').value.trim();
             if(!email) return alert("Введите E-mail");
             
-            state.email = email;
             if(authMode === 'register') state.name = name || "Аноним";
+            state.email = email;
             state.isLoggedIn = true;
             state.lastActive = new Date().toDateString();
             state.streak = 1;
@@ -279,6 +264,7 @@
             saveState();
             updateUI();
             closeAllModals();
+            alert("Успешно! Добро пожаловать.");
         }
 
         function handleAuthClick() {
@@ -286,10 +272,35 @@
             else openModal('auth-modal');
         }
 
-        function logout() {
-            state.isLoggedIn = false;
-            saveState();
-            location.reload();
+        function handleQuizStartClick() {
+            if(!state.isLoggedIn) {
+                alert("Пожалуйста, войди или зарегистрируйся, чтобы начать тренировку и сохранять свой рейтинг!");
+                openModal('auth-modal');
+            } else {
+                openModal('blitz-modal');
+            }
+        }
+
+        function saveState() { localStorage.setItem(STORAGE_KEY, JSON.stringify(state)); }
+
+        function updateUI() {
+            document.getElementById('nav-name').innerText = state.name || "Войти";
+            document.getElementById('nav-avatar').innerText = state.name ? state.name[0].toUpperCase() : "?";
+            document.getElementById('welcome-name').innerText = state.name || "Абитуриент";
+            document.getElementById('hero-elo').innerText = state.elo;
+            document.getElementById('streak-box').classList.remove('hidden');
+            document.getElementById('streak-val').innerText = state.streak;
+            
+            // Кабинет
+            document.getElementById('profile-name-display').innerText = state.name;
+            document.getElementById('profile-email-display').innerText = state.email;
+            document.getElementById('profile-avatar').innerText = state.name ? state.name[0].toUpperCase() : "?";
+            document.getElementById('profile-elo').innerText = state.elo;
+            document.getElementById('profile-streak').innerText = state.streak;
+            
+            const predicted = Math.floor((state.elo - 500) / 10);
+            const scoreEnt = predicted > 140 ? 140 : (predicted < 0 ? 0 : predicted);
+            document.getElementById('grant-prediction').innerHTML = `Прогноз ЕНТ: <span class="text-blue-600 font-black">${scoreEnt} / 140</span>`;
         }
 
         function checkStreak() {
@@ -302,29 +313,13 @@
             }
         }
 
-        function saveState() { localStorage.setItem(DB_KEY, JSON.stringify(state)); }
-
-        function updateUI() {
-            document.getElementById('nav-name').innerText = state.name || "Войти";
-            document.getElementById('nav-avatar').innerText = state.name ? state.name[0] : "?";
-            document.getElementById('welcome-name').innerText = state.name || "Абитуриент";
-            document.getElementById('hero-elo').innerText = state.elo;
-            document.getElementById('streak-box').classList.remove('hidden');
-            document.getElementById('streak-val').innerText = state.streak;
-            document.getElementById('profile-name-display').innerText = state.name;
-            document.getElementById('profile-email-display').innerText = state.email;
-            document.getElementById('profile-avatar').innerText = state.name ? state.name[0] : "?";
-            document.getElementById('profile-elo').innerText = state.elo;
-            document.getElementById('profile-streak').innerText = state.streak;
-            
-            const predicted = Math.floor((state.elo - 500) / 10);
-            const score = predicted > 140 ? 140 : (predicted < 0 ? 0 : predicted);
-            document.getElementById('grant-prediction').innerHTML = `Твой прогноз ЕНТ: <span class="font-black text-blue-600">${score} / 140</span>`;
-        }
-
         function renderLeaderboard() {
             const container = document.getElementById('leaderboard-container');
-            const data = [{n: "Данияр Б.", e: 1450, s: 15}, {n: state.name || "Ты", e: state.elo, s: state.streak, me: true}, {n: "Айгерим К.", e: 1320, s: 8}].sort((a,b) => b.e - a.e);
+            const data = [
+                {n: "Данияр Б.", e: 1450, s: 15},
+                {n: state.isLoggedIn ? state.name : "Ты (гость)", e: state.elo, s: state.streak, me: state.isLoggedIn},
+                {n: "Айгерим К.", e: 1320, s: 8}
+            ].sort((a,b) => b.e - a.e);
             container.innerHTML = data.map((p, i) => `
                 <div class="p-6 flex items-center justify-between ${p.me ? 'bg-blue-50/50' : ''}">
                     <div class="flex items-center space-x-6">
@@ -381,7 +376,7 @@
         function openModal(id) { document.getElementById('modal-bg').classList.remove('hidden'); document.querySelectorAll('.modal-content').forEach(m => m.classList.add('hidden')); document.getElementById(id).classList.remove('hidden'); }
         function closeAllModals() { document.getElementById('modal-bg').classList.add('hidden'); }
         function startTimer() { const el = document.getElementById('timer'); setInterval(() => { if(!document.getElementById('quiz-container').classList.contains('hidden')){ const s = Math.floor((Date.now() - startTime) / 1000); el.innerText = `${Math.floor(s/60).toString().padStart(2,'0')}:${(s%60).toString().padStart(2,'0')}` } }, 1000); }
-        function resetData() { localStorage.removeItem(DB_KEY); location.reload(); }
+        function logout() { state.isLoggedIn = false; saveState(); location.reload(); }
         function initChart() { const ctx = document.getElementById('progressChart').getContext('2d'); if (window.myChart) window.myChart.destroy(); window.myChart = new Chart(ctx, { type: 'radar', data: { labels: ['Мат.Грам', 'История', 'Грам.Чтения', 'Проф.Мат', 'Проф.Физ'], datasets: [{ data: [85, 45, 65, 90, 75], backgroundColor: 'rgba(37, 99, 235, 0.15)', borderColor: '#2563eb', borderWidth: 4 }] }, options: { scales: { r: { beginAtZero: true, max: 100, ticks: { display: false } } }, plugins: { legend: { display: false } } } }); }
     </script>
 </body>
