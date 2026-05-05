@@ -8,9 +8,9 @@
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&display=swap');
-        body { font-family: 'Inter', sans-serif; background-color: #f8fafc; color: #1e293b; }
-        .card { background: white; border-radius: 24px; border: 1px solid #e2e8f0; transition: all 0.3s ease; }
-        .card:hover { border-color: #3b82f6; transform: translateY(-2px); box-shadow: 0 10px 30px -10px rgba(59, 130, 246, 0.2); }
+        body { font-family: 'Inter', sans-serif; background-color: #f8fafc; color: #1e293b; overflow-x: hidden; }
+        .card { background: white; border-radius: 24px; border: 1px solid #e2e8f0; transition: all 0.3s ease; cursor: pointer; }
+        .card:hover { border-color: #3b82f6; transform: translateY(-3px); box-shadow: 0 20px 40px -15px rgba(59, 130, 246, 0.15); }
         .btn-primary { background: #1e293b; color: white; border-radius: 16px; font-weight: 700; transition: all 0.2s; }
         .btn-primary:hover { background: #3b82f6; transform: scale(1.02); }
     </style>
@@ -22,158 +22,165 @@
         <div class="max-w-5xl mx-auto px-4 h-16 flex items-center justify-between">
             <div class="flex items-center space-x-2 cursor-pointer" onclick="location.reload()">
                 <div class="w-8 h-8 bg-blue-600 rounded-lg flex items-center justify-center text-white font-bold shadow-lg">A</div>
-                <span class="text-xl font-extrabold tracking-tight italic text-slate-800">Altyn Logic</span>
+                <span class="text-xl font-extrabold tracking-tight italic text-slate-800 underline decoration-blue-500/30">Altyn Logic</span>
             </div>
             <div class="hidden md:flex space-x-8 text-[11px] font-bold text-slate-500 uppercase tracking-widest">
                 <button onclick="openModal('subjects-modal')" class="hover:text-blue-600">Предметы</button>
-                <button onclick="openModal('battle-modal')" class="hover:text-blue-600 text-orange-500"><i class="fas fa-fire mr-1"></i>Баттл</button>
+                <button onclick="openModal('battle-modal')" class="hover:text-blue-600 text-orange-500 font-black"><i class="fas fa-fire mr-1"></i>Баттл</button>
                 <button onclick="openModal('about-modal')" class="hover:text-blue-600">О проекте</button>
             </div>
-            <button class="bg-slate-100 text-slate-800 px-5 py-2 rounded-full text-[11px] font-black uppercase tracking-tighter hover:bg-slate-200">Войти</button>
+            <button class="bg-slate-100 text-slate-800 px-5 py-2 rounded-full text-[11px] font-black uppercase tracking-tighter">Войти</button>
         </div>
     </nav>
 
-    <main class="max-w-4xl mx-auto px-4 py-10">
+    <main class="max-w-4xl mx-auto px-4 py-12">
         
-        <!-- ХУК (Аккуратный) -->
-        <div class="text-center space-y-4 mb-12">
-            <h1 class="text-4xl font-extrabold italic tracking-tight text-slate-900">Твой грант — это <span class="text-blue-600">логика</span>, а не удача.</h1>
-            <p class="text-slate-500 text-lg max-w-xl mx-auto italic font-medium">Умные тесты с разбором ошибок и системой рейтинга ELO.</p>
-        </div>
+        <!-- ГЛАВНЫЙ БЛОК -->
+        <div id="start-screen" class="space-y-16">
+            <div class="text-center space-y-4">
+                <h1 class="text-4xl md:text-5xl font-black italic tracking-tighter text-slate-900">ТВОЙ ГРАНТ — ЭТО <span class="text-blue-600">ЛОГИКА.</span></h1>
+                <p class="text-slate-400 text-lg max-w-lg mx-auto italic font-medium">Умные тесты с аналитикой ошибок и ELO-рейтингом.</p>
+            </div>
 
-        <!-- КНОПКИ ДЕЙСТВИЯ -->
-        <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-16">
-            <button onclick="showSubjectSelection()" class="card p-8 text-left group">
-                <div class="flex justify-between items-center mb-4">
-                    <div class="w-12 h-12 bg-blue-50 rounded-xl flex items-center justify-center text-blue-600 text-xl"><i class="fas fa-bolt"></i></div>
-                    <span class="text-[10px] font-black text-blue-600 uppercase tracking-widest bg-blue-50 px-3 py-1 rounded-full">Доступно</span>
-                </div>
-                <h3 class="text-xl font-bold italic mb-2 text-slate-800 uppercase">Блиц-тест</h3>
-                <p class="text-slate-400 text-sm italic">10 быстрых вопросов для прокачки твоего рейтинга.</p>
-            </button>
-
-            <button onclick="openModal('payment-modal')" class="card p-8 text-left bg-slate-900 border-none group">
-                <div class="flex justify-between items-center mb-4">
-                    <div class="w-12 h-12 bg-white/10 rounded-xl flex items-center justify-center text-yellow-400 text-xl"><i class="fas fa-star"></i></div>
-                    <span class="text-[10px] font-black text-yellow-400 uppercase tracking-widest bg-white/10 px-3 py-1 rounded-full">PRO</span>
-                </div>
-                <h3 class="text-xl font-bold italic mb-2 text-white uppercase">Полный симулятор</h3>
-                <p class="text-slate-400 text-sm italic">120 вопросов ЕНТ 2026. Анализ шансов на грант.</p>
-            </button>
-        </div>
-
-        <!-- ТАБЛИЦА ELO (ВЕРНУЛИ) -->
-        <div class="space-y-6 mb-16">
-            <h3 class="text-sm font-black text-slate-400 uppercase tracking-[0.2em] italic flex items-center">
-                <i class="fas fa-trophy text-yellow-500 mr-2"></i> Топ рейтинга ELO
-            </h3>
-            <div class="bg-white rounded-[32px] border border-slate-100 shadow-sm overflow-hidden">
-                <div class="divide-y divide-slate-50">
-                    <div class="p-5 flex items-center justify-between">
-                        <div class="flex items-center space-x-4">
-                            <span class="w-6 font-black text-slate-300 italic">01</span>
-                            <div class="w-10 h-10 bg-blue-600 text-white rounded-full flex items-center justify-center font-bold">ДБ</div>
-                            <div><p class="font-bold text-slate-800">Данияр Б.</p><p class="text-[10px] font-bold text-blue-500 uppercase">Мастер</p></div>
-                        </div>
-                        <p class="font-black text-slate-800 italic text-lg">1450 <span class="text-[10px] text-slate-400">ELO</span></p>
+            <!-- КНОПКИ ДЕЙСТВИЯ -->
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div onclick="openModal('blitz-modal')" class="card p-8 group relative overflow-hidden">
+                    <div class="flex justify-between items-center mb-6">
+                        <div class="w-12 h-12 bg-blue-50 rounded-xl flex items-center justify-center text-blue-600 text-xl shadow-inner"><i class="fas fa-bolt"></i></div>
+                        <span class="text-[10px] font-black text-blue-600 bg-blue-50 px-3 py-1 rounded-full uppercase italic tracking-widest border border-blue-100">Активно</span>
                     </div>
-                    <div class="p-5 flex items-center justify-between italic">
-                        <div class="flex items-center space-x-4">
-                            <span class="w-6 font-black text-slate-300">02</span>
-                            <div class="w-10 h-10 bg-slate-100 text-slate-600 rounded-full flex items-center justify-center font-bold">АК</div>
-                            <div><p class="font-bold text-slate-800 italic">Айгерим К.</p><p class="text-[10px] font-bold text-slate-400 uppercase italic">Профи</p></div>
-                        </div>
-                        <p class="font-black text-slate-800 text-lg">1320 <span class="text-[10px] text-slate-400">ELO</span></p>
+                    <h3 class="text-2xl font-black italic mb-2 text-slate-800 uppercase tracking-tight">Блиц-тест</h3>
+                    <p class="text-slate-400 text-sm italic font-medium">10 вопросов для проверки твоего рейтинга.</p>
+                </div>
+
+                <div onclick="openModal('payment-modal')" class="card p-8 bg-slate-900 border-none group relative overflow-hidden">
+                    <div class="flex justify-between items-center mb-6">
+                        <div class="w-12 h-12 bg-white/10 rounded-xl flex items-center justify-center text-yellow-400 text-xl shadow-inner"><i class="fas fa-star"></i></div>
+                        <span class="text-[10px] font-black text-yellow-400 bg-white/10 px-3 py-1 rounded-full uppercase italic tracking-widest border border-white/5">Pro</span>
                     </div>
+                    <h3 class="text-2xl font-black italic mb-2 text-white uppercase tracking-tight">Полный ЕНТ</h3>
+                    <p class="text-slate-400 text-sm italic font-medium">120 вопросов. Реальный формат 2026 года.</p>
                 </div>
             </div>
-        </div>
 
-        <!-- ВЫБОР ПРЕДМЕТА (ДЛЯ БЛИЦА) -->
-        <div id="subject-selection" class="hidden space-y-4 animate-in slide-in-from-bottom duration-500">
-            <h3 class="text-sm font-black text-slate-400 uppercase tracking-widest text-center italic">Выбери предмет</h3>
-            <div class="grid grid-cols-2 md:grid-cols-4 gap-3">
-                <button onclick="startQuiz('math_lit')" class="p-4 card text-center space-y-2">
-                    <i class="fas fa-calculator text-blue-500"></i>
-                    <p class="text-xs font-bold italic">Мат. грамотность</p>
-                </button>
-                <button onclick="startQuiz('history')" class="p-4 card text-center space-y-2">
-                    <i class="fas fa-landmark text-red-500"></i>
-                    <p class="text-xs font-bold italic">История</p>
-                </button>
+            <!-- РЕЙТИНГ ELO -->
+            <div class="space-y-6 bg-white p-8 rounded-[40px] border border-slate-100 shadow-sm">
+                <h3 class="text-[11px] font-black text-slate-400 uppercase tracking-[0.3em] italic flex items-center px-2">
+                    <i class="fas fa-trophy text-yellow-500 mr-3"></i> Топ рейтинга ELO
+                </h3>
+                <div class="divide-y divide-slate-50 font-bold italic">
+                    <div class="py-5 flex items-center justify-between">
+                        <div class="flex items-center space-x-4">
+                            <span class="text-slate-300 font-black italic w-6">01</span>
+                            <div class="w-10 h-10 bg-blue-600 text-white rounded-full flex items-center justify-center">ДБ</div>
+                            <div><p class="text-slate-800">Данияр Б.</p><p class="text-[9px] text-blue-500 uppercase tracking-widest">Мастер</p></div>
+                        </div>
+                        <p class="text-lg text-slate-800">1450 <span class="text-[9px] text-slate-400 uppercase">ELO</span></p>
+                    </div>
+                    <div class="py-5 flex items-center justify-between">
+                        <div class="flex items-center space-x-4">
+                            <span class="text-slate-300 font-black italic w-6">02</span>
+                            <div class="w-10 h-10 bg-slate-100 text-slate-500 rounded-full flex items-center justify-center">АК</div>
+                            <div><p class="text-slate-800">Айгерим К.</p><p class="text-[9px] text-slate-400 uppercase tracking-widest font-black">Профи</p></div>
+                        </div>
+                        <p class="text-lg text-slate-800">1320 <span class="text-[9px] text-slate-400 uppercase">ELO</span></p>
+                    </div>
+                </div>
             </div>
         </div>
 
         <!-- КВИЗ -->
-        <div id="quiz-container" class="hidden space-y-8">
-            <div class="flex justify-between items-center text-xs font-black text-slate-400 uppercase tracking-widest">
-                <span id="question-number">Вопрос 1</span>
-                <span id="timer" class="font-mono text-lg text-slate-800 italic">00:00</span>
+        <div id="quiz-container" class="hidden space-y-8 animate-in fade-in duration-500">
+            <div class="flex justify-between items-end">
+                <div><p id="quiz-title" class="text-[10px] font-black text-blue-600 uppercase tracking-[0.2em] mb-1 italic"></p><h2 id="question-number" class="text-4xl font-black text-slate-900 italic tracking-tighter">Вопрос 1</h2></div>
+                <div id="timer" class="text-2xl font-black text-slate-300 font-mono italic">00:00</div>
             </div>
-            <div class="bg-white p-10 md:p-14 rounded-[40px] shadow-2xl border border-slate-50">
+            <div class="bg-white p-10 md:p-14 rounded-[48px] shadow-2xl border border-slate-50 relative">
                 <h2 id="question-text" class="text-xl md:text-2xl font-bold text-slate-800 mb-10 italic leading-relaxed"></h2>
                 <div id="options-container" class="grid grid-cols-1 gap-3"></div>
             </div>
         </div>
 
         <!-- РЕЗУЛЬТАТЫ -->
-        <div id="result-screen" class="hidden text-center space-y-10">
-            <div class="inline-block p-1 bg-blue-50 rounded-full px-6 py-2">
-                <p id="elo-display" class="text-blue-600 font-black italic uppercase text-xs"></p>
+        <div id="result-screen" class="hidden text-center space-y-10 animate-in zoom-in duration-500">
+            <div class="space-y-2">
+                <p id="elo-display" class="text-blue-600 font-black italic uppercase text-xs tracking-widest"></p>
+                <h2 id="score-display" class="text-9xl font-black italic text-slate-900 tracking-tighter">0/10</h2>
             </div>
-            <h2 id="score-display" class="text-9xl font-black italic text-slate-900 tracking-tighter">0/10</h2>
-            <button onclick="location.reload()" class="btn-primary px-12 py-5 uppercase text-xs tracking-widest italic shadow-xl">Вернуться в начало</button>
-            <div id="review-container" class="max-w-2xl mx-auto space-y-4 pt-10"></div>
+            <button onclick="location.reload()" class="bg-slate-900 text-white px-12 py-5 rounded-3xl uppercase text-[11px] font-black tracking-[0.2em] italic shadow-xl hover:bg-blue-600 transition">Вернуться в начало</button>
+            <div id="review-container" class="max-w-2xl mx-auto space-y-4 pt-10 text-left"></div>
         </div>
 
     </main>
 
     <!-- МОДАЛЬНЫЕ ОКНА -->
-    <div id="modal-bg" class="fixed inset-0 bg-slate-900/40 backdrop-blur-sm z-[100] hidden flex items-center justify-center p-6">
+    <div id="modal-bg" class="fixed inset-0 bg-slate-900/60 backdrop-blur-md z-[100] hidden flex items-center justify-center p-6 transition-all duration-300">
+        
+        <!-- ВЫБОР ПРЕДМЕТА ДЛЯ БЛИЦА -->
+        <div id="blitz-modal" class="modal-content hidden bg-white w-full max-w-lg rounded-[40px] p-10 space-y-8 animate-in slide-in-from-bottom duration-300">
+            <div class="flex justify-between items-center">
+                <h2 class="text-2xl font-black italic uppercase tracking-tight">ВЫБЕРИ ПРЕДМЕТ</h2>
+                <button onclick="closeAllModals()" class="text-slate-300 hover:text-slate-900"><i class="fas fa-times text-xl"></i></button>
+            </div>
+            <div class="grid grid-cols-1 gap-3">
+                <button onclick="startQuiz('math_lit')" class="flex items-center space-x-4 p-5 bg-slate-50 rounded-3xl hover:bg-blue-50 transition border border-transparent hover:border-blue-200 group text-left">
+                    <div class="w-12 h-12 bg-blue-100 text-blue-600 rounded-2xl flex items-center justify-center text-xl shadow-inner"><i class="fas fa-calculator"></i></div>
+                    <div><p class="font-black italic text-slate-800">Мат. грамотность</p><p class="text-[10px] font-bold text-slate-400 uppercase tracking-widest italic">10 вопросов</p></div>
+                </button>
+                <button onclick="startQuiz('history')" class="flex items-center space-x-4 p-5 bg-slate-50 rounded-3xl hover:bg-red-50 transition border border-transparent hover:border-red-200 group text-left">
+                    <div class="w-12 h-12 bg-red-100 text-red-600 rounded-2xl flex items-center justify-center text-xl shadow-inner"><i class="fas fa-landmark"></i></div>
+                    <div><p class="font-black italic text-slate-800">История Казахстана</p><p class="text-[10px] font-bold text-slate-400 uppercase tracking-widest italic">10 вопросов</p></div>
+                </button>
+            </div>
+        </div>
+
         <!-- О ПРОЕКТЕ -->
-        <div id="about-modal" class="modal-content hidden bg-white w-full max-w-lg rounded-[32px] p-10 space-y-6">
-            <h2 class="text-2xl font-black italic">О ПРОЕКТЕ</h2>
-            <p class="text-slate-500 italic leading-relaxed">Altyn Logic — платформа для тех, кто хочет набрать 140 баллов не за счет зазубривания, а через логику. Мы анализируем твой прогресс и помогаем закрыть пробелы перед ЕНТ.</p>
-            <button onclick="closeAllModals()" class="btn-primary w-full py-4 text-xs italic">ЗАКРЫТЬ</button>
+        <div id="about-modal" class="modal-content hidden bg-white w-full max-w-lg rounded-[40px] p-10 space-y-6 animate-in zoom-in duration-300">
+            <h2 class="text-2xl font-black italic tracking-tighter uppercase">О проекте</h2>
+            <p class="text-slate-500 italic leading-relaxed font-medium italic underline decoration-blue-100 underline-offset-4">Altyn Logic — это система подготовки к ЕНТ, основанная на логике и алгоритмах ELO. Мы не просто даем тесты, мы анализируем твой уровень и помогаем исправлять ошибки через лайфхаки.</p>
+            <button onclick="closeAllModals()" class="btn-primary w-full py-5 uppercase text-[10px] font-black italic tracking-[0.2em] shadow-lg">Закрыть</button>
         </div>
 
         <!-- ПРЕДМЕТЫ -->
-        <div id="subjects-modal" class="modal-content hidden bg-white w-full max-w-lg rounded-[32px] p-10 space-y-6">
-            <h2 class="text-2xl font-black italic">ПРЕДМЕТЫ 2026</h2>
-            <div class="grid grid-cols-2 gap-4 text-sm font-bold italic">
-                <div class="p-4 bg-slate-50 rounded-2xl"><p class="text-blue-600 mb-2">ОБЯЗАТЕЛЬНЫЕ</p>3 предмета (50 вопр.)</div>
-                <div class="p-4 bg-slate-50 rounded-2xl"><p class="text-purple-600 mb-2">ПРОФИЛЬНЫЕ</p>2 предмета (70 вопр.)</div>
+        <div id="subjects-modal" class="modal-content hidden bg-white w-full max-w-lg rounded-[40px] p-10 space-y-6">
+            <h2 class="text-2xl font-black italic uppercase tracking-tighter">Предметы ЕНТ 2026</h2>
+            <div class="grid grid-cols-2 gap-3 text-sm font-bold italic">
+                <div class="p-5 bg-slate-50 rounded-3xl border border-slate-100">
+                    <p class="text-blue-600 text-[10px] font-black uppercase mb-2 italic tracking-widest">Обязательные</p>
+                    <ul class="text-slate-500 space-y-1"><li>• Мат. грамотность</li><li>• История Казахстана</li><li>• Грамотность чтения</li></ul>
+                </div>
+                <div class="p-5 bg-slate-50 rounded-3xl border border-slate-100 font-black uppercase">
+                    <p class="text-purple-600 text-[10px] font-black uppercase mb-2 italic tracking-widest">Профильные</p>
+                    <p class="text-slate-500 text-xs italic">Все комбинации доступны в PRO</p>
+                </div>
             </div>
-            <button onclick="closeAllModals()" class="btn-primary w-full py-4 text-xs italic">ЗАКРЫТЬ</button>
+            <button onclick="closeAllModals()" class="btn-primary w-full py-5 text-[10px] font-black uppercase italic tracking-widest">Понятно</button>
         </div>
 
         <!-- БАТТЛ -->
-        <div id="battle-modal" class="modal-content hidden bg-white w-full max-w-lg rounded-[32px] p-10 space-y-6 text-center">
-            <div class="w-20 h-20 bg-orange-100 text-orange-500 rounded-full flex items-center justify-center text-3xl mx-auto mb-4 animate-bounce">
-                <i class="fas fa-fire"></i>
-            </div>
-            <h2 class="text-2xl font-black italic uppercase">Режим БАТТЛ</h2>
-            <p class="text-slate-500 italic">Вызывай другого ученика на дуэль! Вам выпадут одинаковые 10 вопросов. Кто быстрее и точнее — забирает ELO соперника.</p>
-            <div class="bg-orange-50 p-4 rounded-2xl font-black text-orange-600 text-xs italic tracking-widest uppercase">Скоро в обновлении</div>
-            <button onclick="closeAllModals()" class="btn-primary w-full py-4 text-xs italic uppercase">Жду с нетерпением</button>
+        <div id="battle-modal" class="modal-content hidden bg-white w-full max-w-md rounded-[40px] p-12 space-y-6 text-center">
+            <div class="w-20 h-20 bg-orange-100 text-orange-500 rounded-full flex items-center justify-center text-3xl mx-auto animate-bounce"><i class="fas fa-fire"></i></div>
+            <h2 class="text-3xl font-black italic uppercase tracking-tighter">Режим БАТТЛ</h2>
+            <p class="text-slate-500 italic font-medium italic underline decoration-orange-100 underline-offset-4 leading-relaxed">Вызывай другого ученика на дуэль! Побеждай и забирай очки рейтинга в реальном времени.</p>
+            <div class="bg-orange-50 p-3 rounded-full text-[10px] font-black text-orange-600 uppercase tracking-widest italic">Скоро в обновлении</div>
+            <button onclick="closeAllModals()" class="btn-primary w-full py-5 text-[10px] font-black uppercase tracking-widest italic">Жду</button>
         </div>
 
         <!-- ОПЛАТА -->
-        <div id="payment-modal" class="modal-content hidden bg-white w-full max-w-md rounded-[32px] p-10 space-y-6">
-            <h2 class="text-2xl font-black italic text-center">PRO ДОСТУП</h2>
-            <div class="p-6 bg-blue-50 rounded-3xl text-center space-y-2 italic">
-                <p class="text-4xl font-black text-blue-600 tracking-tighter">2 490 ₸</p>
-                <p class="text-[10px] font-bold text-blue-400 uppercase tracking-widest italic">ИП Khamidullin</p>
+        <div id="payment-modal" class="modal-content hidden bg-white w-full max-w-md rounded-[40px] p-10 space-y-8">
+            <div class="text-center italic"><h2 class="text-2xl font-black uppercase italic">Доступ PRO</h2><p class="text-slate-400 text-xs mt-1">ИП Khamidullin</p></div>
+            <div class="p-8 bg-blue-50 rounded-[32px] text-center border-2 border-blue-100/50">
+                <p class="text-5xl font-black text-slate-900 tracking-tighter italic">2 490 ₸</p>
+                <p class="text-[10px] font-black text-blue-600 uppercase mt-2 tracking-[0.2em] italic">Разовая оплата</p>
             </div>
-            <button class="btn-primary w-full py-4 text-xs italic uppercase">Оплатить доступ</button>
-            <button onclick="closeAllModals()" class="w-full text-slate-400 text-[10px] font-bold uppercase tracking-widest italic">Назад</button>
+            <button class="btn-primary w-full py-5 uppercase text-[10px] font-black italic tracking-widest shadow-2xl">Купить доступ</button>
         </div>
     </div>
 
     <script>
         const allQuestions = {
             math_lit: [
-                { q: "Найдите 25% от 80% числа 200.", a: ["20", "40", "50", "60"], c: 1, hint: "80% от 200 это 160. 25% от 160 это 40." },
+                { q: "Найдите 25% от 80% числа 200.", a: ["20", "40", "50", "60"], c: 1, hint: "80% от 200 = 160. 25% от 160 = 40." },
                 { q: "Число x увеличили на 20%, затем уменьшили на 20%.", a: ["Не изменится", "+4%", "-4%", "-2%"], c: 2, hint: "Уменьшение на (n/100)²." },
                 { q: "Сумма 3 последовательных чисел равна 72. Наименьшее?", a: ["23", "24", "22", "25"], c: 0, hint: "72/3 = 24. Числа: 23, 24, 25." },
                 { q: "5 красных и 7 синих шаров. Сколько вынуть, чтобы точно синий?", a: ["1", "6", "7", "8"], c: 1, hint: "5 красных + 1 синий." },
@@ -200,15 +207,22 @@
 
         let currentQ = 0, score = 0, startTime, userAnswers = [], activeSubject = [];
 
-        function showSubjectSelection() {
-            document.getElementById('subject-selection').classList.toggle('hidden');
-            window.scrollTo({top: document.body.scrollHeight, behavior: 'smooth'});
+        function openModal(id) {
+            document.getElementById('modal-bg').classList.remove('hidden');
+            document.querySelectorAll('.modal-content').forEach(m => m.classList.add('hidden'));
+            document.getElementById(id).classList.remove('hidden');
+        }
+
+        function closeAllModals() {
+            document.getElementById('modal-bg').classList.add('hidden');
         }
 
         function startQuiz(key) {
+            closeAllModals();
             activeSubject = allQuestions[key];
             document.getElementById('start-screen').classList.add('hidden');
             document.getElementById('quiz-container').classList.remove('hidden');
+            document.getElementById('quiz-title').innerText = key === 'math_lit' ? 'Мат. грамотность' : 'История';
             currentQ = 0; score = 0; userAnswers = [];
             startTime = Date.now();
             showQuestion();
@@ -217,13 +231,13 @@
 
         function showQuestion() {
             const q = activeSubject[currentQ];
-            document.getElementById('question-number').innerText = `Вопрос ${currentQ + 1} из ${activeSubject.length}`;
+            document.getElementById('question-number').innerText = `Вопрос ${currentQ + 1}`;
             document.getElementById('question-text').innerText = q.q;
             const container = document.getElementById('options-container');
             container.innerHTML = '';
             q.a.forEach((opt, i) => {
                 const b = document.createElement('button');
-                b.className = "w-full p-6 text-left border border-slate-100 rounded-3xl hover:border-blue-600 hover:bg-blue-50 transition font-bold italic text-slate-700";
+                b.className = "w-full p-6 text-left border border-slate-100 rounded-[30px] hover:border-blue-600 hover:bg-blue-50 transition font-bold italic text-slate-700 shadow-sm";
                 b.innerText = opt;
                 b.onclick = () => handleAnswer(i);
                 container.appendChild(b);
@@ -247,10 +261,10 @@
             activeSubject.forEach((q, i) => {
                 const ok = userAnswers[i] === q.c;
                 rev.innerHTML += `
-                    <div class="bg-white p-6 rounded-3xl border-l-4 ${ok ? 'border-green-500' : 'border-red-500'} text-left shadow-sm mb-4">
-                        <p class="font-bold text-slate-800 mb-1 italic">${q.q}</p>
-                        <p class="text-xs font-black uppercase mb-3 ${ok ? 'text-green-600' : 'text-red-600'} italic">Ответ: ${q.a[q.c]}</p>
-                        <div class="bg-blue-50/50 p-4 rounded-2xl text-[11px] text-blue-800 italic font-medium leading-relaxed">
+                    <div class="bg-white p-6 rounded-[32px] border-l-4 ${ok ? 'border-green-500' : 'border-red-500'} text-left shadow-sm mb-4">
+                        <p class="font-bold text-slate-800 mb-1 italic">Вопрос ${i+1}: ${q.q}</p>
+                        <p class="text-xs font-black italic uppercase mb-3 ${ok ? 'text-green-600' : 'text-red-600'} italic">Ответ: ${q.a[q.c]}</p>
+                        <div class="bg-blue-50/50 p-4 rounded-2xl text-[11px] text-blue-800 italic font-medium border border-blue-100/30">
                             <i class="fas fa-lightbulb text-yellow-500 mr-1"></i> ${q.hint}
                         </div>
                     </div>`;
@@ -265,13 +279,6 @@
                 el.innerText = `${Math.floor(s/60).toString().padStart(2,'0')}:${(s%60).toString().padStart(2,'0')}`;
             }, 1000);
         }
-
-        function openModal(id) { 
-            document.getElementById('modal-bg').classList.remove('hidden'); 
-            document.querySelectorAll('.modal-content').forEach(m => m.classList.add('hidden'));
-            document.getElementById(id).classList.remove('hidden');
-        }
-        function closeAllModals() { document.getElementById('modal-bg').classList.add('hidden'); }
     </script>
 </body>
 </html>
