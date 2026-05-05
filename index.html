@@ -3,162 +3,202 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Altyn Logic | Твой путь к гранту</title>
+    <title>Altyn Logic | Подготовка к ЕНТ</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
     <style>
-        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&display=swap');
-        body { font-family: 'Inter', sans-serif; background-color: #f8fafc; }
-        .gradient-bg { background: linear-gradient(135deg, #1e40af 0%, #7c3aed 100%); }
-        .hook-card { background: linear-gradient(135deg, #fff 0%, #f1f5f9 100%); }
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&display=swap');
+        body { font-family: 'Inter', sans-serif; background-color: #f8fafc; color: #1e293b; }
+        .card { background: white; border-radius: 24px; border: 1px solid #e2e8f0; transition: all 0.3s ease; }
+        .card:hover { border-color: #3b82f6; transform: translateY(-2px); box-shadow: 0 10px 30px -10px rgba(59, 130, 246, 0.2); }
+        .btn-primary { background: #1e293b; color: white; border-radius: 16px; font-weight: 700; transition: all 0.2s; }
+        .btn-primary:hover { background: #3b82f6; transform: scale(1.02); }
     </style>
 </head>
-<body class="text-slate-900">
+<body>
 
     <!-- Навигация -->
     <nav class="bg-white/80 backdrop-blur-md sticky top-0 z-50 border-b border-slate-100">
         <div class="max-w-5xl mx-auto px-4 h-16 flex items-center justify-between">
             <div class="flex items-center space-x-2 cursor-pointer" onclick="location.reload()">
-                <div class="w-9 h-9 bg-blue-600 rounded-xl flex items-center justify-center text-white font-black shadow-lg shadow-blue-200">A</div>
-                <span class="text-xl font-bold tracking-tight text-slate-800 font-black italic">Altyn Logic</span>
+                <div class="w-8 h-8 bg-blue-600 rounded-lg flex items-center justify-center text-white font-bold shadow-lg">A</div>
+                <span class="text-xl font-extrabold tracking-tight italic text-slate-800">Altyn Logic</span>
             </div>
-            <div class="hidden md:flex space-x-8 text-sm font-bold text-slate-500 uppercase tracking-widest">
-                <button onclick="openModal('subjects-modal')" class="hover:text-blue-600 transition">Предметы</button>
-                <button onclick="openModal('about-modal')" class="hover:text-blue-600 transition">О проекте</button>
+            <div class="hidden md:flex space-x-8 text-[11px] font-bold text-slate-500 uppercase tracking-widest">
+                <button onclick="openModal('subjects-modal')" class="hover:text-blue-600">Предметы</button>
+                <button onclick="openModal('battle-modal')" class="hover:text-blue-600 text-orange-500"><i class="fas fa-fire mr-1"></i>Баттл</button>
+                <button onclick="openModal('about-modal')" class="hover:text-blue-600">О проекте</button>
             </div>
-            <button class="bg-slate-900 text-white px-6 py-2 rounded-full text-xs font-black uppercase tracking-tighter hover:bg-blue-600 transition">Войти</button>
+            <button class="bg-slate-100 text-slate-800 px-5 py-2 rounded-full text-[11px] font-black uppercase tracking-tighter hover:bg-slate-200">Войти</button>
         </div>
     </nav>
 
-    <main class="max-w-4xl mx-auto px-4 py-12">
+    <main class="max-w-4xl mx-auto px-4 py-10">
         
-        <!-- ГЛАВНЫЙ ЭКРАН -->
-        <div id="start-screen" class="space-y-16">
-            
-            <!-- МАРКЕТИНГОВЫЙ ХУК -->
-            <div class="gradient-bg rounded-[2.5rem] p-8 md:p-12 text-white text-center shadow-2xl relative overflow-hidden">
-                <div class="relative z-10 space-y-6">
-                    <span class="bg-white/20 px-4 py-1 rounded-full text-xs font-bold uppercase tracking-widest">Эксклюзивно для абитуриентов 2026</span>
-                    <h1 class="text-4xl md:text-6xl font-black leading-tight italic">ХВАТИТ ГАДАТЬ.<br><span class="text-yellow-400 font-black italic">УЗНАЙ СВОЙ ШАНС НА ГРАНТ.</span></h1>
-                    <p class="text-blue-100 text-lg max-w-2xl mx-auto font-medium italic">Мы не просто даем тесты. Мы анализируем твой ELO-рейтинг и показываем, в какой университет Казахстана ты проходишь прямо сейчас.</p>
-                    <div class="flex flex-col md:flex-row justify-center gap-4 pt-4">
-                        <button onclick="showSubjectSelection()" class="bg-white text-blue-700 px-8 py-4 rounded-2xl font-black text-lg hover:bg-yellow-400 hover:text-slate-900 transition shadow-xl uppercase italic tracking-tighter">Начать Блиц (Бесплатно)</button>
-                        <button onclick="openModal('payment-modal')" class="bg-blue-500/30 border border-white/30 backdrop-blur-md text-white px-8 py-4 rounded-2xl font-black text-lg hover:bg-white/20 transition uppercase italic tracking-tighter">Получить PRO-АНАЛИЗ</button>
+        <!-- ХУК (Аккуратный) -->
+        <div class="text-center space-y-4 mb-12">
+            <h1 class="text-4xl font-extrabold italic tracking-tight text-slate-900">Твой грант — это <span class="text-blue-600">логика</span>, а не удача.</h1>
+            <p class="text-slate-500 text-lg max-w-xl mx-auto italic font-medium">Умные тесты с разбором ошибок и системой рейтинга ELO.</p>
+        </div>
+
+        <!-- КНОПКИ ДЕЙСТВИЯ -->
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-16">
+            <button onclick="showSubjectSelection()" class="card p-8 text-left group">
+                <div class="flex justify-between items-center mb-4">
+                    <div class="w-12 h-12 bg-blue-50 rounded-xl flex items-center justify-center text-blue-600 text-xl"><i class="fas fa-bolt"></i></div>
+                    <span class="text-[10px] font-black text-blue-600 uppercase tracking-widest bg-blue-50 px-3 py-1 rounded-full">Доступно</span>
+                </div>
+                <h3 class="text-xl font-bold italic mb-2 text-slate-800 uppercase">Блиц-тест</h3>
+                <p class="text-slate-400 text-sm italic">10 быстрых вопросов для прокачки твоего рейтинга.</p>
+            </button>
+
+            <button onclick="openModal('payment-modal')" class="card p-8 text-left bg-slate-900 border-none group">
+                <div class="flex justify-between items-center mb-4">
+                    <div class="w-12 h-12 bg-white/10 rounded-xl flex items-center justify-center text-yellow-400 text-xl"><i class="fas fa-star"></i></div>
+                    <span class="text-[10px] font-black text-yellow-400 uppercase tracking-widest bg-white/10 px-3 py-1 rounded-full">PRO</span>
+                </div>
+                <h3 class="text-xl font-bold italic mb-2 text-white uppercase">Полный симулятор</h3>
+                <p class="text-slate-400 text-sm italic">120 вопросов ЕНТ 2026. Анализ шансов на грант.</p>
+            </button>
+        </div>
+
+        <!-- ТАБЛИЦА ELO (ВЕРНУЛИ) -->
+        <div class="space-y-6 mb-16">
+            <h3 class="text-sm font-black text-slate-400 uppercase tracking-[0.2em] italic flex items-center">
+                <i class="fas fa-trophy text-yellow-500 mr-2"></i> Топ рейтинга ELO
+            </h3>
+            <div class="bg-white rounded-[32px] border border-slate-100 shadow-sm overflow-hidden">
+                <div class="divide-y divide-slate-50">
+                    <div class="p-5 flex items-center justify-between">
+                        <div class="flex items-center space-x-4">
+                            <span class="w-6 font-black text-slate-300 italic">01</span>
+                            <div class="w-10 h-10 bg-blue-600 text-white rounded-full flex items-center justify-center font-bold">ДБ</div>
+                            <div><p class="font-bold text-slate-800">Данияр Б.</p><p class="text-[10px] font-bold text-blue-500 uppercase">Мастер</p></div>
+                        </div>
+                        <p class="font-black text-slate-800 italic text-lg">1450 <span class="text-[10px] text-slate-400">ELO</span></p>
+                    </div>
+                    <div class="p-5 flex items-center justify-between italic">
+                        <div class="flex items-center space-x-4">
+                            <span class="w-6 font-black text-slate-300">02</span>
+                            <div class="w-10 h-10 bg-slate-100 text-slate-600 rounded-full flex items-center justify-center font-bold">АК</div>
+                            <div><p class="font-bold text-slate-800 italic">Айгерим К.</p><p class="text-[10px] font-bold text-slate-400 uppercase italic">Профи</p></div>
+                        </div>
+                        <p class="font-black text-slate-800 text-lg">1320 <span class="text-[10px] text-slate-400">ELO</span></p>
                     </div>
                 </div>
-                <!-- Декор -->
-                <div class="absolute -top-10 -left-10 w-40 h-40 bg-white/10 rounded-full blur-3xl"></div>
-                <div class="absolute -bottom-10 -right-10 w-60 h-60 bg-blue-400/20 rounded-full blur-3xl"></div>
             </div>
+        </div>
 
-            <!-- КРАТКАЯ СТАТИСТИКА (ДЛЯ ДОВЕРИЯ) -->
-            <div class="grid grid-cols-3 gap-4 text-center">
-                <div><p class="text-3xl font-black text-slate-800">12.5k</p><p class="text-[10px] text-slate-400 font-bold uppercase">Учеников</p></div>
-                <div><p class="text-3xl font-black text-blue-600">94%</p><p class="text-[10px] text-slate-400 font-bold uppercase">Поступили на грант</p></div>
-                <div><p class="text-3xl font-black text-slate-800">ELO</p><p class="text-[10px] text-slate-400 font-bold uppercase">Умная система</p></div>
-            </div>
-
-            <!-- ВЫБОР ПРЕДМЕТА -->
-            <div id="subject-selection" class="hidden space-y-8 animate-in slide-in-from-bottom duration-700">
-                <h3 class="text-2xl font-black text-slate-800 text-center italic tracking-tighter uppercase underline decoration-blue-500 underline-offset-8">Выбери предмет для разминки</h3>
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    <button onclick="startQuiz('math_lit')" class="hook-card p-6 border-2 border-slate-100 rounded-[2rem] flex items-center justify-between hover:border-blue-600 transition group">
-                        <div class="flex items-center space-x-4">
-                            <div class="w-14 h-14 bg-blue-100 rounded-2xl flex items-center justify-center text-blue-600 text-2xl shadow-inner"><i class="fas fa-calculator"></i></div>
-                            <div class="text-left"><p class="font-black text-slate-800 italic">Мат. грамотность</p><p class="text-xs text-slate-400">10 вопросов • 15 мин</p></div>
-                        </div>
-                        <i class="fas fa-chevron-right text-slate-200 group-hover:text-blue-600 transition"></i>
-                    </button>
-                    <button onclick="startQuiz('history')" class="hook-card p-6 border-2 border-slate-100 rounded-[2rem] flex items-center justify-between hover:border-blue-600 transition group">
-                        <div class="flex items-center space-x-4">
-                            <div class="w-14 h-14 bg-red-100 rounded-2xl flex items-center justify-center text-red-600 text-2xl shadow-inner"><i class="fas fa-landmark"></i></div>
-                            <div class="text-left"><p class="font-black text-slate-800 italic">История Казахстана</p><p class="text-xs text-slate-400">10 вопросов • 15 мин</p></div>
-                        </div>
-                        <i class="fas fa-chevron-right text-slate-200 group-hover:text-red-600 transition"></i>
-                    </button>
-                </div>
+        <!-- ВЫБОР ПРЕДМЕТА (ДЛЯ БЛИЦА) -->
+        <div id="subject-selection" class="hidden space-y-4 animate-in slide-in-from-bottom duration-500">
+            <h3 class="text-sm font-black text-slate-400 uppercase tracking-widest text-center italic">Выбери предмет</h3>
+            <div class="grid grid-cols-2 md:grid-cols-4 gap-3">
+                <button onclick="startQuiz('math_lit')" class="p-4 card text-center space-y-2">
+                    <i class="fas fa-calculator text-blue-500"></i>
+                    <p class="text-xs font-bold italic">Мат. грамотность</p>
+                </button>
+                <button onclick="startQuiz('history')" class="p-4 card text-center space-y-2">
+                    <i class="fas fa-landmark text-red-500"></i>
+                    <p class="text-xs font-bold italic">История</p>
+                </button>
             </div>
         </div>
 
         <!-- КВИЗ -->
         <div id="quiz-container" class="hidden space-y-8">
-            <div class="flex justify-between items-end">
-                <div><h2 id="quiz-title" class="text-xs font-black text-blue-600 uppercase tracking-[0.2em] mb-1">Загрузка...</h2><div id="question-number" class="text-3xl font-black text-slate-900 italic">Вопрос 1</div></div>
-                <div id="timer" class="text-2xl font-black text-slate-300 font-mono italic">00:00</div>
+            <div class="flex justify-between items-center text-xs font-black text-slate-400 uppercase tracking-widest">
+                <span id="question-number">Вопрос 1</span>
+                <span id="timer" class="font-mono text-lg text-slate-800 italic">00:00</span>
             </div>
-            <div class="bg-white p-8 md:p-14 rounded-[3rem] shadow-2xl border border-slate-50 relative overflow-hidden">
-                <div class="h-1 w-full bg-slate-100 absolute top-0 left-0"><div id="progress-bar" class="h-full bg-blue-600 transition-all duration-500 w-0"></div></div>
-                <h2 id="question-text" class="text-xl md:text-2xl font-black text-slate-800 mb-10 leading-snug italic"></h2>
-                <div id="options-container" class="grid grid-cols-1 gap-4"></div>
+            <div class="bg-white p-10 md:p-14 rounded-[40px] shadow-2xl border border-slate-50">
+                <h2 id="question-text" class="text-xl md:text-2xl font-bold text-slate-800 mb-10 italic leading-relaxed"></h2>
+                <div id="options-container" class="grid grid-cols-1 gap-3"></div>
             </div>
         </div>
 
         <!-- РЕЗУЛЬТАТЫ -->
-        <div id="result-screen" class="hidden space-y-12">
-            <div class="text-center space-y-4">
-                <div class="inline-block bg-yellow-400 text-slate-900 px-6 py-1 rounded-full text-xs font-black uppercase tracking-widest italic">Тест завершен</div>
-                <div id="score-display" class="text-8xl font-black text-slate-900 italic tracking-tighter">0/10</div>
-                <p id="elo-display" class="text-xl font-bold text-blue-600 italic uppercase"></p>
-                <div class="pt-6"><button onclick="location.reload()" class="bg-slate-900 text-white px-12 py-5 rounded-[2rem] font-black hover:scale-105 transition shadow-2xl uppercase tracking-widest italic text-sm">В главное меню</button></div>
+        <div id="result-screen" class="hidden text-center space-y-10">
+            <div class="inline-block p-1 bg-blue-50 rounded-full px-6 py-2">
+                <p id="elo-display" class="text-blue-600 font-black italic uppercase text-xs"></p>
             </div>
-            <div id="review-container" class="space-y-6"></div>
+            <h2 id="score-display" class="text-9xl font-black italic text-slate-900 tracking-tighter">0/10</h2>
+            <button onclick="location.reload()" class="btn-primary px-12 py-5 uppercase text-xs tracking-widest italic shadow-xl">Вернуться в начало</button>
+            <div id="review-container" class="max-w-2xl mx-auto space-y-4 pt-10"></div>
         </div>
+
     </main>
 
-    <!-- МОДАЛЬНОЕ ОКНО: ПРЕДМЕТЫ -->
-    <div id="subjects-modal" class="fixed inset-0 bg-slate-900/90 backdrop-blur-xl z-[100] hidden flex items-center justify-center p-6">
-        <div class="bg-white w-full max-w-2xl rounded-[3rem] overflow-hidden shadow-2xl">
-            <div class="p-10 space-y-8">
-                <div class="flex justify-between items-center"><h2 class="text-3xl font-black italic">ПРЕДМЕТЫ ЕНТ 2026</h2><button onclick="closeModal('subjects-modal')" class="text-slate-400 hover:text-slate-900 transition"><i class="fas fa-times text-2xl"></i></button></div>
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-6 font-bold">
-                    <div class="space-y-3"><p class="text-blue-600 uppercase text-xs tracking-widest font-black">Обязательные</p><ul class="space-y-2 text-slate-600 italic"><li>• Мат. грамотность (10)</li><li>• История Казахстана (20)</li><li>• Грамотность чтения (20)</li></ul></div>
-                    <div class="space-y-3"><p class="text-purple-600 uppercase text-xs tracking-widest font-black">Профильные (на выбор)</p><ul class="space-y-2 text-slate-600 italic"><li>• Математика + Физика</li><li>• Химия + Биология</li><li>• И еще 12 комбинаций</li></ul></div>
-                </div>
-                <div class="bg-slate-50 p-6 rounded-2xl border-2 border-dashed border-slate-200 text-center"><p class="text-sm font-bold text-slate-500 italic">Полная подготовка по всем предметам доступна в PRO версии.</p></div>
-            </div>
+    <!-- МОДАЛЬНЫЕ ОКНА -->
+    <div id="modal-bg" class="fixed inset-0 bg-slate-900/40 backdrop-blur-sm z-[100] hidden flex items-center justify-center p-6">
+        <!-- О ПРОЕКТЕ -->
+        <div id="about-modal" class="modal-content hidden bg-white w-full max-w-lg rounded-[32px] p-10 space-y-6">
+            <h2 class="text-2xl font-black italic">О ПРОЕКТЕ</h2>
+            <p class="text-slate-500 italic leading-relaxed">Altyn Logic — платформа для тех, кто хочет набрать 140 баллов не за счет зазубривания, а через логику. Мы анализируем твой прогресс и помогаем закрыть пробелы перед ЕНТ.</p>
+            <button onclick="closeAllModals()" class="btn-primary w-full py-4 text-xs italic">ЗАКРЫТЬ</button>
         </div>
-    </div>
 
-    <!-- МОДАЛЬНОЕ ОКНО: О ПРОЕКТЕ -->
-    <div id="about-modal" class="fixed inset-0 bg-slate-900/90 backdrop-blur-xl z-[100] hidden flex items-center justify-center p-6">
-        <div class="bg-white w-full max-w-2xl rounded-[3rem] overflow-hidden shadow-2xl">
-            <div class="p-10 space-y-6">
-                <div class="flex justify-between items-center"><h2 class="text-3xl font-black italic">О ПРОЕКТЕ</h2><button onclick="closeModal('about-modal')" class="text-slate-400 hover:text-slate-900 transition"><i class="fas fa-times text-2xl"></i></button></div>
-                <p class="text-lg text-slate-600 leading-relaxed font-medium italic">Altyn Logic — это не просто сборник тестов. Мы создали систему, которая работает как личный наставник. Мы анализируем твою скорость ответов и сложность вопросов, чтобы вычислить реальный уровень готовности к гранту. Наша миссия: <span class="text-blue-600 font-black italic underline decoration-yellow-400 underline-offset-4">никакого зазубривания, только логика и лайфхаки.</span></p>
-                <div class="grid grid-cols-2 gap-4 pt-4 font-black italic uppercase text-center"><div class="bg-blue-50 p-4 rounded-2xl"><p class="text-blue-600">94%</p><p class="text-[8px] text-slate-400">Поступление</p></div><div class="bg-green-50 p-4 rounded-2xl"><p class="text-green-600">140</p><p class="text-[8px] text-slate-400">Макс. балл</p></div></div>
+        <!-- ПРЕДМЕТЫ -->
+        <div id="subjects-modal" class="modal-content hidden bg-white w-full max-w-lg rounded-[32px] p-10 space-y-6">
+            <h2 class="text-2xl font-black italic">ПРЕДМЕТЫ 2026</h2>
+            <div class="grid grid-cols-2 gap-4 text-sm font-bold italic">
+                <div class="p-4 bg-slate-50 rounded-2xl"><p class="text-blue-600 mb-2">ОБЯЗАТЕЛЬНЫЕ</p>3 предмета (50 вопр.)</div>
+                <div class="p-4 bg-slate-50 rounded-2xl"><p class="text-purple-600 mb-2">ПРОФИЛЬНЫЕ</p>2 предмета (70 вопр.)</div>
             </div>
+            <button onclick="closeAllModals()" class="btn-primary w-full py-4 text-xs italic">ЗАКРЫТЬ</button>
+        </div>
+
+        <!-- БАТТЛ -->
+        <div id="battle-modal" class="modal-content hidden bg-white w-full max-w-lg rounded-[32px] p-10 space-y-6 text-center">
+            <div class="w-20 h-20 bg-orange-100 text-orange-500 rounded-full flex items-center justify-center text-3xl mx-auto mb-4 animate-bounce">
+                <i class="fas fa-fire"></i>
+            </div>
+            <h2 class="text-2xl font-black italic uppercase">Режим БАТТЛ</h2>
+            <p class="text-slate-500 italic">Вызывай другого ученика на дуэль! Вам выпадут одинаковые 10 вопросов. Кто быстрее и точнее — забирает ELO соперника.</p>
+            <div class="bg-orange-50 p-4 rounded-2xl font-black text-orange-600 text-xs italic tracking-widest uppercase">Скоро в обновлении</div>
+            <button onclick="closeAllModals()" class="btn-primary w-full py-4 text-xs italic uppercase">Жду с нетерпением</button>
+        </div>
+
+        <!-- ОПЛАТА -->
+        <div id="payment-modal" class="modal-content hidden bg-white w-full max-w-md rounded-[32px] p-10 space-y-6">
+            <h2 class="text-2xl font-black italic text-center">PRO ДОСТУП</h2>
+            <div class="p-6 bg-blue-50 rounded-3xl text-center space-y-2 italic">
+                <p class="text-4xl font-black text-blue-600 tracking-tighter">2 490 ₸</p>
+                <p class="text-[10px] font-bold text-blue-400 uppercase tracking-widest italic">ИП Khamidullin</p>
+            </div>
+            <button class="btn-primary w-full py-4 text-xs italic uppercase">Оплатить доступ</button>
+            <button onclick="closeAllModals()" class="w-full text-slate-400 text-[10px] font-bold uppercase tracking-widest italic">Назад</button>
         </div>
     </div>
 
     <script>
         const allQuestions = {
             math_lit: [
-                { q: "Найдите 25% от 80% числа 200.", a: ["20", "40", "50", "60"], c: 1, hint: "80% от 200 это 160. 25% (четверть) от 160 это 40." },
-                { q: "Если число x увеличить на 20%, а затем уменьшить на 20%, как изменится число?", a: ["Не изменится", "Увеличится на 4%", "Уменьшится на 4%", "Уменьшится на 2%"], c: 2, hint: "Формула: уменьшение на (n/100)²." },
-                { q: "Сумма трех последовательных целых чисел равна 72. Найдите наименьшее.", a: ["23", "24", "22", "25"], c: 0, hint: "72/3 = 24 (среднее). Числа: 23, 24, 25." },
-                { q: "В корзине 5 красных и 7 синих шаров. Сколько нужно вынуть, чтобы точно был синий?", a: ["1", "6", "7", "8"], c: 1, hint: "Метод худшего случая: 5 красных + 1 синий." },
-                { q: "Найдите закономерность: 2; 5; 11; 23; ...", a: ["47", "46", "35", "50"], c: 0, hint: "Формула: 2n + 1." },
-                { q: "Масштаб 1:500 000. В 4 см на карте сколько км в реальности?", a: ["2 км", "20 км", "200 км", "50 км"], c: 1, hint: "1 см = 5 км. 4 * 5 = 20 км." },
-                { q: "Во дворе гуляют куры и кролики. Всего 10 голов и 28 ног. Сколько кроликов?", a: ["4", "5", "6", "3"], c: 0, hint: "У кролика 4 ноги, у куры 2. 4*4 + 6*2 = 16+12=28." },
-                { q: "Число 120 увеличили на 10%, затем уменьшили на 10%. Какое число получилось?", a: ["120", "118.8", "119", "121.2"], c: 1, hint: "120 * 1.1 * 0.9 = 118.8." },
-                { q: "Часы показывают 15:00. Какой угол между стрелками?", a: ["90°", "100°", "85°", "120°"], c: 0, hint: "Каждый час — это 30°. 3 * 30 = 90°." },
-                { q: "Среднее арифметическое чисел 10, 20, 30, 40, x равно 30. Найдите x.", a: ["40", "50", "60", "30"], c: 1, hint: "(100+x)/5 = 30 -> 100+x=150." }
+                { q: "Найдите 25% от 80% числа 200.", a: ["20", "40", "50", "60"], c: 1, hint: "80% от 200 это 160. 25% от 160 это 40." },
+                { q: "Число x увеличили на 20%, затем уменьшили на 20%.", a: ["Не изменится", "+4%", "-4%", "-2%"], c: 2, hint: "Уменьшение на (n/100)²." },
+                { q: "Сумма 3 последовательных чисел равна 72. Наименьшее?", a: ["23", "24", "22", "25"], c: 0, hint: "72/3 = 24. Числа: 23, 24, 25." },
+                { q: "5 красных и 7 синих шаров. Сколько вынуть, чтобы точно синий?", a: ["1", "6", "7", "8"], c: 1, hint: "5 красных + 1 синий." },
+                { q: "Закономерность: 2; 5; 11; 23; ...", a: ["47", "46", "35", "50"], c: 0, hint: "2n + 1." },
+                { q: "Масштаб 1:500 000. В 4 см сколько км?", a: ["2 км", "20 км", "200 км", "50 км"], c: 1, hint: "4 * 5 = 20 км." },
+                { q: "10 голов и 28 ног (куры и кролики). Кроликов?", a: ["4", "5", "6", "3"], c: 0, hint: "4*4 + 6*2 = 28." },
+                { q: "120 увеличили на 10%, затем уменьшили на 10%.", a: ["120", "118.8", "119", "121.2"], c: 1, hint: "120 * 1.1 * 0.9 = 118.8." },
+                { q: "Угол между стрелками в 15:00?", a: ["90°", "100°", "85°", "120°"], c: 0, hint: "3 * 30° = 90°." },
+                { q: "Среднее 10, 20, 30, 40, x равно 30. x?", a: ["40", "50", "60", "30"], c: 1, hint: "100+x=150." }
             ],
             history: [
-                { q: "В каком году произошло Анракайское сражение?", a: ["1723", "1726", "1729", "1730"], c: 2, hint: "Победное сражение в конце 20-х годов." },
-                { q: "Основатели Казахского ханства?", a: ["Керей и Жанибек", "Абылай и Абулхаир", "Касым и Хакназар", "Есим и Тауке"], c: 0, hint: "1465 год, урочище Козыбасы." },
-                { q: "Столица Караханидов?", a: ["Суяб", "Сыгнак", "Баласагун", "Сарайчик"], c: 2, hint: "Один из центров Жетысу." },
-                { q: "Законы хана Тауке назывались...", a: ["Жеты Жаргы", "Каска жол", "Ески жол", "Яса"], c: 0, hint: "Тауке объединил 7 родов и 7 законов." },
-                { q: "Первая столица КазАССР?", a: ["Оренбург", "Кызылорда", "Алматы", "Акмола"], c: 0, hint: "1920-1925 гг." },
-                { q: "В каком кургане найден 'Золотой человек'?", a: ["Берельский", "Иссыкский", "Шиликтинский", "Бесшатыр"], c: 1, hint: "Алматинская область, саки-тиграхауда." },
-                { q: "В каком году Казахстан стал членом ООН?", a: ["1991", "1992", "1993", "1995"], c: 1, hint: "2 марта 1992 года." },
-                { q: "Кто возглавил восстание 1837-1847 гг.?", a: ["Исатай Тайманов", "Кенесары Касымов", "Сырым Датов", "Жанкожа Нурмухамедов"], c: 1, hint: "Последний хан всех трех жузов." },
-                { q: "Когда было принято решение о переносе столицы в Акмолу?", a: ["1994", "1995", "1997", "1998"], c: 0, hint: "Решение ВС РК от 6 июля 1994 года." },
-                { q: "Первый президент Академии наук КазССР?", a: ["К. Сатпаев", "А. Байтурсынов", "М. Ауэзов", "Ш. Валиханов"], c: 0, hint: "Великий геолог." }
+                { q: "Год Анракайского сражения?", a: ["1723", "1726", "1729", "1730"], c: 2, hint: "1729 год." },
+                { q: "Основатели Казахского ханства?", a: ["Керей и Жанибек", "Абылай и Абулхаир", "Касым и Хакназар", "Есим и Тауке"], c: 0, hint: "1465 год." },
+                { q: "Столица Караханидов?", a: ["Суяб", "Сыгнак", "Баласагун", "Сарайчик"], c: 2, hint: "Баласагун." },
+                { q: "Законы хана Тауке?", a: ["Жеты Жаргы", "Каска жол", "Ески жол", "Яса"], c: 0, hint: "Жеты Жаргы." },
+                { q: "Первая столица КазАССР?", a: ["Оренбург", "Кызылорда", "Алматы", "Акмола"], c: 0, hint: "Оренбург." },
+                { q: "Где найден Золотой человек?", a: ["Берель", "Иссык", "Шиликти", "Бесшатыр"], c: 1, hint: "Иссыкский курган." },
+                { q: "Вступление Казахстана в ООН?", a: ["1991", "1992", "1993", "1995"], c: 1, hint: "1992 год." },
+                { q: "Лидер восстания 1837-1847?", a: ["Тайманов", "Кенесары", "Датов", "Нурмухамедов"], c: 1, hint: "Кенесары Касымов." },
+                { q: "Решение о переносе столицы в Акмолу?", a: ["1994", "1995", "1997", "1998"], c: 0, hint: "1994 год." },
+                { q: "Первый президент Академии наук?", a: ["Сатпаев", "Байтурсынов", "Ауэзов", "Валиханов"], c: 0, hint: "Каныш Сатпаев." }
             ]
         };
 
-        let currentQ = 0, score = 0, startTime, userAnswers = [], activeSubject = [], subjectKey = "";
+        let currentQ = 0, score = 0, startTime, userAnswers = [], activeSubject = [];
 
         function showSubjectSelection() {
             document.getElementById('subject-selection').classList.toggle('hidden');
@@ -166,11 +206,9 @@
         }
 
         function startQuiz(key) {
-            subjectKey = key;
             activeSubject = allQuestions[key];
             document.getElementById('start-screen').classList.add('hidden');
             document.getElementById('quiz-container').classList.remove('hidden');
-            document.getElementById('quiz-title').innerText = key === 'math_lit' ? 'Математическая грамотность' : 'История Казахстана';
             currentQ = 0; score = 0; userAnswers = [];
             startTime = Date.now();
             showQuestion();
@@ -179,14 +217,13 @@
 
         function showQuestion() {
             const q = activeSubject[currentQ];
-            document.getElementById('question-number').innerText = `Вопрос ${currentQ + 1}`;
+            document.getElementById('question-number').innerText = `Вопрос ${currentQ + 1} из ${activeSubject.length}`;
             document.getElementById('question-text').innerText = q.q;
-            document.getElementById('progress-bar').style.width = `${((currentQ + 1) / activeSubject.length) * 100}%`;
             const container = document.getElementById('options-container');
             container.innerHTML = '';
             q.a.forEach((opt, i) => {
                 const b = document.createElement('button');
-                b.className = "w-full p-6 text-left border-2 border-slate-100 rounded-3xl hover:border-blue-600 hover:bg-blue-50 transition font-black text-slate-700 italic text-lg shadow-sm";
+                b.className = "w-full p-6 text-left border border-slate-100 rounded-3xl hover:border-blue-600 hover:bg-blue-50 transition font-bold italic text-slate-700";
                 b.innerText = opt;
                 b.onclick = () => handleAnswer(i);
                 container.appendChild(b);
@@ -205,16 +242,16 @@
             document.getElementById('quiz-container').classList.add('hidden');
             document.getElementById('result-screen').classList.remove('hidden');
             document.getElementById('score-display').innerText = `${score}/${activeSubject.length}`;
-            document.getElementById('elo-display').innerText = `Твой ELO за тест: ${1200 + (score * 40)}`;
+            document.getElementById('elo-display').innerText = `ELO за тест: +${score * 20}`;
             const rev = document.getElementById('review-container');
             activeSubject.forEach((q, i) => {
                 const ok = userAnswers[i] === q.c;
                 rev.innerHTML += `
-                    <div class="bg-white p-8 rounded-[2.5rem] shadow-lg border-l-8 ${ok ? 'border-green-500' : 'border-red-500'}">
-                        <p class="font-black text-slate-800 mb-2 italic">Вопрос ${i+1}: ${q.q}</p>
-                        <p class="text-sm font-black uppercase italic ${ok ? 'text-green-600' : 'text-red-600'} mb-4">Ответ: ${q.a[q.c]}</p>
-                        <div class="bg-slate-50 p-5 rounded-2xl text-sm text-slate-600 italic font-medium border border-slate-100">
-                            <i class="fas fa-lightbulb text-yellow-500 mr-2"></i> ${q.hint}
+                    <div class="bg-white p-6 rounded-3xl border-l-4 ${ok ? 'border-green-500' : 'border-red-500'} text-left shadow-sm mb-4">
+                        <p class="font-bold text-slate-800 mb-1 italic">${q.q}</p>
+                        <p class="text-xs font-black uppercase mb-3 ${ok ? 'text-green-600' : 'text-red-600'} italic">Ответ: ${q.a[q.c]}</p>
+                        <div class="bg-blue-50/50 p-4 rounded-2xl text-[11px] text-blue-800 italic font-medium leading-relaxed">
+                            <i class="fas fa-lightbulb text-yellow-500 mr-1"></i> ${q.hint}
                         </div>
                     </div>`;
             });
@@ -229,8 +266,12 @@
             }, 1000);
         }
 
-        function openModal(id) { document.getElementById(id).classList.remove('hidden'); }
-        function closeModal(id) { document.getElementById(id).classList.add('hidden'); }
+        function openModal(id) { 
+            document.getElementById('modal-bg').classList.remove('hidden'); 
+            document.querySelectorAll('.modal-content').forEach(m => m.classList.add('hidden'));
+            document.getElementById(id).classList.remove('hidden');
+        }
+        function closeAllModals() { document.getElementById('modal-bg').classList.add('hidden'); }
     </script>
 </body>
 </html>
