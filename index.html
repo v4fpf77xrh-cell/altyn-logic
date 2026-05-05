@@ -10,24 +10,24 @@
         @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap');
         body { font-family: 'Inter', sans-serif; background-color: #f8fafc; }
         .gradient-text { background: linear-gradient(90deg, #2563eb, #7c3aed); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
-        .leaderboard-row:nth-child(1) { background-color: #fefce8; border-color: #fde047; }
+        .modal-active { overflow: hidden; }
     </style>
 </head>
-<body>
+<body class="transition-all duration-300">
 
     <!-- Навигация -->
     <nav class="bg-white shadow-sm sticky top-0 z-50">
         <div class="max-w-5xl mx-auto px-4 h-16 flex items-center justify-between">
             <div class="flex items-center space-x-2">
                 <div class="w-8 h-8 bg-blue-600 rounded-lg flex items-center justify-center text-white font-bold">A</div>
-                <span class="text-xl font-bold text-slate-800">Altyn Logic</span>
+                <span class="text-xl font-bold text-slate-800 tracking-tight">Altyn Logic</span>
             </div>
             <div class="hidden md:flex space-x-6 text-sm font-semibold text-slate-600">
                 <a href="#" class="hover:text-blue-600 transition">Главная</a>
                 <a href="#" class="hover:text-blue-600 transition">Предметы</a>
                 <a href="#" class="hover:text-blue-600 transition">О проекте</a>
             </div>
-            <button class="bg-slate-100 text-slate-800 px-4 py-2 rounded-full text-sm font-bold">Войти</button>
+            <button class="bg-slate-900 text-white px-5 py-2 rounded-full text-sm font-bold hover:bg-blue-600 transition">Войти</button>
         </div>
     </nav>
 
@@ -35,109 +35,135 @@
         <!-- Главный экран -->
         <div id="start-screen" class="space-y-12">
             <div class="text-center space-y-6">
-                <h1 class="text-4xl md:text-5xl font-extrabold text-slate-900 leading-tight">Твой путь к <span class="gradient-text">140 баллам</span></h1>
-                <p class="text-slate-600 text-lg">Подготовка к ЕНТ с системой ELO-рейтинга.</p>
+                <h1 class="text-4xl md:text-5xl font-extrabold text-slate-900 leading-tight tracking-tight">Твой путь к <span class="gradient-text">140 баллам</span></h1>
+                <p class="text-slate-600 text-lg max-w-xl mx-auto">Умная подготовка с системой ELO-рейтинга и разбором ошибок от экспертов Altyn Logic.</p>
                 
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mt-8">
-                    <button onclick="startQuiz()" class="p-6 bg-white border-2 border-blue-600 rounded-2xl hover:bg-blue-50 transition text-left group shadow-lg shadow-blue-100">
-                        <div class="flex justify-between items-center mb-2">
-                            <span class="text-blue-600 font-bold text-xl text-center">Блиц-тест</span>
-                            <i class="fas fa-bolt text-yellow-500"></i>
+                <!-- КНОПКИ ТЕСТОВ -->
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mt-10">
+                    <button onclick="startQuiz()" class="p-6 bg-white border-2 border-blue-600 rounded-2xl hover:bg-blue-50 transition text-left shadow-lg shadow-blue-100">
+                        <div class="flex justify-between items-center mb-3">
+                            <span class="text-blue-600 font-extrabold text-xl">Блиц-тест</span>
+                            <i class="fas fa-bolt text-yellow-500 text-xl"></i>
                         </div>
-                        <p class="text-slate-500 text-sm text-center">10 вопросов для оценки ELO.</p>
+                        <p class="text-slate-500 text-sm leading-relaxed text-center">10 вопросов для быстрой оценки твоего уровня и рейтинга.</p>
                     </button>
-                    <div class="p-6 bg-slate-50 border-2 border-dashed border-slate-200 rounded-2xl text-left opacity-60">
-                        <div class="flex justify-between items-center mb-2">
-                            <span class="text-slate-400 font-bold text-xl">Полный тест</span>
-                            <i class="fas fa-lock text-slate-400"></i>
+
+                    <!-- ТЕПЕРЬ ЭТА КНОПКА АКТИВНА -->
+                    <button onclick="openPayment()" class="p-6 bg-gradient-to-br from-slate-800 to-slate-900 border-2 border-slate-800 rounded-2xl hover:scale-[1.02] transition text-left shadow-xl relative overflow-hidden group">
+                        <div class="flex justify-between items-center mb-3 relative z-10">
+                            <span class="text-white font-extrabold text-xl">Полный тест</span>
+                            <i class="fas fa-star text-yellow-400 text-xl animate-pulse"></i>
                         </div>
-                        <p class="text-slate-400 text-sm text-center">140 вопросов. Доступно в Pro.</p>
-                    </div>
+                        <p class="text-slate-300 text-sm leading-relaxed relative z-10 text-center">140 вопросов. Полная симуляция ЕНТ и детальная аналитика.</p>
+                        <div class="absolute -right-4 -bottom-4 opacity-10 group-hover:scale-150 transition-transform">
+                             <i class="fas fa-rocket text-8xl text-white"></i>
+                        </div>
+                    </button>
                 </div>
             </div>
 
-            <!-- ТАБЛИЦА ЛИДЕРОВ (Вернули!) -->
+            <!-- ТАБЛИЦА ЛИДЕРОВ -->
             <div class="bg-white rounded-3xl shadow-xl overflow-hidden border border-slate-100">
-                <div class="bg-slate-900 p-4 text-white flex justify-between items-center">
+                <div class="bg-slate-900 p-4 text-white flex justify-between items-center px-6">
                     <h3 class="font-bold"><i class="fas fa-trophy text-yellow-400 mr-2"></i> Топ учеников недели</h3>
-                    <span class="text-xs bg-slate-700 px-2 py-1 rounded">Обновлено сегодня</span>
+                    <span class="text-xs bg-blue-600 px-3 py-1 rounded-full font-bold">LIVE</span>
                 </div>
                 <div class="divide-y divide-slate-100">
-                    <div class="p-4 flex items-center justify-between leaderboard-row border-l-4">
+                    <div class="p-5 flex items-center justify-between hover:bg-slate-50 transition">
                         <div class="flex items-center space-x-4">
-                            <span class="font-bold text-slate-400 w-4">1</span>
-                            <div class="w-10 h-10 bg-blue-100 rounded-full flex items-center justify-center font-bold text-blue-600">ДБ</div>
+                            <span class="font-black text-slate-300 text-xl w-6 italic">1</span>
+                            <div class="w-12 h-12 bg-blue-100 border-2 border-blue-200 rounded-full flex items-center justify-center font-bold text-blue-600 shadow-inner">ДБ</div>
                             <div>
                                 <p class="font-bold text-slate-800">Данияр Б.</p>
-                                <p class="text-xs text-slate-500">Математика / История</p>
+                                <p class="text-xs text-slate-400">Мастер (ELO 1450)</p>
                             </div>
                         </div>
-                        <div class="text-right">
-                            <p class="font-bold text-blue-600">1450 ELO</p>
-                            <p class="text-[10px] text-green-500 uppercase font-bold">Мастер</p>
+                        <div class="bg-blue-50 px-3 py-1 rounded-lg">
+                            <p class="font-bold text-blue-600 text-sm italic">138 балл</p>
                         </div>
                     </div>
-                    <div class="p-4 flex items-center justify-between">
+                    <div class="p-5 flex items-center justify-between hover:bg-slate-50 transition">
                         <div class="flex items-center space-x-4">
-                            <span class="font-bold text-slate-400 w-4">2</span>
-                            <div class="w-10 h-10 bg-slate-100 rounded-full flex items-center justify-center font-bold text-slate-600">АК</div>
+                            <span class="font-black text-slate-300 text-xl w-6 italic">2</span>
+                            <div class="w-12 h-12 bg-slate-100 border-2 border-slate-200 rounded-full flex items-center justify-center font-bold text-slate-600">АК</div>
                             <div>
                                 <p class="font-bold text-slate-800">Айгерим К.</p>
-                                <p class="text-xs text-slate-500">Грамотность чтения</p>
+                                <p class="text-xs text-slate-400">Профи (ELO 1320)</p>
                             </div>
                         </div>
-                        <div class="text-right">
-                            <p class="font-bold text-slate-700">1320 ELO</p>
-                            <p class="text-[10px] text-blue-500 uppercase font-bold">Профи</p>
-                        </div>
-                    </div>
-                    <div class="p-4 flex items-center justify-between">
-                        <div class="flex items-center space-x-4">
-                            <span class="font-bold text-slate-400 w-4">3</span>
-                            <div class="w-10 h-10 bg-slate-100 rounded-full flex items-center justify-center font-bold text-slate-600">МС</div>
-                            <div>
-                                <p class="font-bold text-slate-800">Мурат С.</p>
-                                <p class="text-xs text-slate-500">История Казахстана</p>
-                            </div>
-                        </div>
-                        <div class="text-right">
-                            <p class="font-bold text-slate-700">1280 ELO</p>
-                            <p class="text-[10px] text-slate-400 uppercase font-bold">Ученик</p>
+                        <div class="bg-slate-50 px-3 py-1 rounded-lg">
+                            <p class="font-bold text-slate-600 text-sm italic">129 балл</p>
                         </div>
                     </div>
                 </div>
             </div>
         </div>
 
-        <!-- Квиз -->
+        <!-- КВИЗ (Скрыт до старта) -->
         <div id="quiz-container" class="hidden space-y-6">
             <div class="flex justify-between items-center text-sm font-bold text-slate-400 mb-4">
                 <span id="question-number">Вопрос 1 из 10</span>
-                <span id="timer" class="bg-blue-100 text-blue-600 px-3 py-1 rounded-full">00:00</span>
+                <span id="timer" class="bg-blue-100 text-blue-600 px-4 py-1.5 rounded-full shadow-sm">00:00</span>
             </div>
-            
-            <div class="bg-white p-8 rounded-3xl shadow-xl shadow-blue-100/50 border border-blue-50">
-                <h2 id="question-text" class="text-xl font-bold text-slate-800 mb-8 leading-relaxed">Загрузка...</h2>
-                <div id="options-container" class="grid grid-cols-1 gap-3"></div>
+            <div class="bg-white p-8 md:p-12 rounded-3xl shadow-2xl border border-blue-50">
+                <h2 id="question-text" class="text-xl md:text-2xl font-bold text-slate-800 mb-10 leading-relaxed"></h2>
+                <div id="options-container" class="grid grid-cols-1 gap-4"></div>
             </div>
         </div>
 
-        <!-- Результаты -->
+        <!-- РЕЗУЛЬТАТЫ (Скрыты до конца) -->
         <div id="result-screen" class="hidden space-y-8">
-            <div class="bg-white p-10 rounded-3xl shadow-xl border-4 border-blue-600 text-center">
-                <h2 class="text-2xl font-bold text-slate-800 mb-2">Ваш результат</h2>
-                <div id="score-display" class="text-6xl font-black text-blue-600 mb-4">0/10</div>
-                <div id="elo-display" class="text-xl font-bold text-slate-500 mb-6">Ваш новый ELO: 1200</div>
-                <p id="time-analysis" class="text-slate-600 text-sm italic"></p>
-                <button onclick="location.reload()" class="mt-6 bg-slate-900 text-white px-8 py-3 rounded-full font-bold hover:bg-slate-800 transition shadow-lg">Вернуться на главную</button>
+            <div class="bg-white p-10 rounded-3xl shadow-xl border-4 border-blue-600 text-center relative overflow-hidden">
+                <div class="absolute top-0 right-0 p-4 opacity-10"><i class="fas fa-certificate text-8xl"></i></div>
+                <h2 class="text-2xl font-bold text-slate-800 mb-2">Твой результат</h2>
+                <div id="score-display" class="text-7xl font-black text-blue-600 mb-4 tracking-tighter">0/10</div>
+                <div id="elo-display" class="text-xl font-bold text-slate-500 mb-8"></div>
+                <button onclick="location.reload()" class="bg-slate-900 text-white px-10 py-4 rounded-full font-bold hover:scale-105 transition shadow-lg">На главную</button>
             </div>
-
-            <div class="space-y-4">
-                <h3 class="text-xl font-bold text-slate-800 text-center">Разбор ошибок и лайфхаки</h3>
-                <div id="review-container" class="space-y-4"></div>
-            </div>
+            <div id="review-container" class="space-y-4"></div>
         </div>
     </main>
+
+    <!-- ОКНО ОПЛАТЫ (MODAL) -->
+    <div id="payment-modal" class="fixed inset-0 bg-slate-900/80 backdrop-blur-sm z-[100] hidden flex items-center justify-center p-4">
+        <div class="bg-white w-full max-w-md rounded-3xl shadow-2xl overflow-hidden animate-in fade-in zoom-in duration-300">
+            <div class="bg-blue-600 p-8 text-white text-center relative">
+                <button onclick="closePayment()" class="absolute top-4 right-4 text-white/50 hover:text-white transition">
+                    <i class="fas fa-times text-xl"></i>
+                </button>
+                <i class="fas fa-crown text-4xl mb-4 text-yellow-300"></i>
+                <h2 class="text-2xl font-bold italic">PRO ДОСТУП</h2>
+                <p class="text-blue-100 text-sm mt-2 font-medium italic">Разблокируй все возможности Altyn Logic</p>
+            </div>
+            <div class="p-8 space-y-6">
+                <ul class="space-y-4">
+                    <li class="flex items-center text-slate-700">
+                        <i class="fas fa-check-circle text-green-500 mr-3"></i>
+                        <span class="font-medium italic">140 вопросов (Полный тест ЕНТ)</span>
+                    </li>
+                    <li class="flex items-center text-slate-700">
+                        <i class="fas fa-check-circle text-green-500 mr-3"></i>
+                        <span class="font-medium italic">Разбор абсолютно всех ошибок</span>
+                    </li>
+                    <li class="flex items-center text-slate-700">
+                        <i class="fas fa-check-circle text-green-500 mr-3"></i>
+                        <span class="font-medium italic">Доступ в закрытый чат с лайфхаками</span>
+                    </li>
+                </ul>
+                <div class="bg-slate-50 p-6 rounded-2xl border border-slate-100 text-center">
+                    <p class="text-slate-400 text-sm line-through">4 990 ₸</p>
+                    <p class="text-4xl font-black text-slate-900 italic">2 490 ₸</p>
+                    <p class="text-blue-600 text-xs font-bold mt-1 uppercase italic tracking-widest">Скидка -50% на запуск</p>
+                </div>
+                <div class="space-y-3">
+                    <button class="w-full bg-blue-600 text-white py-4 rounded-2xl font-bold text-lg hover:bg-blue-700 transition shadow-lg shadow-blue-200">
+                        Оплатить картой (ИП Khamidullin)
+                    </button>
+                    <p class="text-[10px] text-slate-400 text-center uppercase tracking-tighter">Безопасная оплата через Kaspi / Банковской картой</p>
+                </div>
+            </div>
+        </div>
+    </div>
 
     <script>
         const questions = [
@@ -153,10 +179,7 @@
             { q: "Где найден 'Золотой человек' (Иссыкский курган)?", a: ["Туркестанская", "Алматинская", "ВКО", "Атырауская"], c: 1, hint: "Иссык находится прямо рядом с Алматы." }
         ];
 
-        let currentQ = 0;
-        let score = 0;
-        let startTime;
-        let userAnswers = [];
+        let currentQ = 0, score = 0, startTime, userAnswers = [];
 
         function startQuiz() {
             document.getElementById('start-screen').classList.add('hidden');
@@ -167,63 +190,66 @@
         }
 
         function startTimer() {
-            const timerEl = document.getElementById('timer');
+            const el = document.getElementById('timer');
             setInterval(() => {
-                const sec = Math.floor((Date.now() - startTime) / 1000);
-                const m = Math.floor(sec / 60).toString().padStart(2, '0');
-                const s = (sec % 60).toString().padStart(2, '0');
-                timerEl.innerText = `${m}:${s}`;
+                const s = Math.floor((Date.now() - startTime) / 1000);
+                el.innerText = `${Math.floor(s/60).toString().padStart(2,'0')}:${(s%60).toString().padStart(2,'0')}`;
             }, 1000);
         }
 
         function showQuestion() {
             const q = questions[currentQ];
-            document.getElementById('question-number').innerText = `Вопрос ${currentQ + 1} из ${questions.length}`;
+            document.getElementById('question-number').innerText = `Вопрос ${currentQ + 1} из 10`;
             document.getElementById('question-text').innerText = q.q;
             const container = document.getElementById('options-container');
             container.innerHTML = '';
-            
             q.a.forEach((opt, i) => {
-                const btn = document.createElement('button');
-                btn.className = "w-full p-5 text-left border-2 border-slate-100 rounded-2xl hover:border-blue-600 hover:bg-blue-50 transition font-semibold text-slate-700";
-                btn.innerText = opt;
-                btn.onclick = () => handleAnswer(i);
-                container.appendChild(btn);
+                const b = document.createElement('button');
+                b.className = "w-full p-5 text-left border-2 border-slate-100 rounded-2xl hover:border-blue-600 hover:bg-blue-50 transition font-bold text-slate-700";
+                b.innerText = opt;
+                b.onclick = () => handleAnswer(i);
+                container.appendChild(b);
             });
         }
 
-        function handleAnswer(index) {
-            userAnswers.push(index);
-            if(index === questions[currentQ].c) score++;
+        function handleAnswer(idx) {
+            userAnswers.push(idx);
+            if(idx === questions[currentQ].c) score++;
             currentQ++;
             if(currentQ < questions.length) showQuestion();
             else showResults();
         }
 
         function showResults() {
-            const totalTime = Math.floor((Date.now() - startTime) / 1000);
-            const avgTime = (totalTime / questions.length).toFixed(1);
             document.getElementById('quiz-container').classList.add('hidden');
             document.getElementById('result-screen').classList.remove('hidden');
             document.getElementById('score-display').innerText = `${score}/${questions.length}`;
-            document.getElementById('elo-display').innerText = `Ваш новый ELO: ${1200 + (score * 25)}`;
-            document.getElementById('time-analysis').innerText = `Среднее время на вопрос: ${avgTime} сек.`;
-
-            const review = document.getElementById('review-container');
+            document.getElementById('elo-display').innerText = `Ваш ELO: ${1200 + (score * 25)}`;
+            const rev = document.getElementById('review-container');
             questions.forEach((q, i) => {
-                const isCorrect = userAnswers[i] === q.c;
-                review.innerHTML += `
-                    <div class="bg-white p-6 rounded-2xl shadow-sm border-l-4 ${isCorrect ? 'border-green-500' : 'border-red-500'}">
-                        <p class="font-bold text-slate-800 mb-2">${q.q}</p>
-                        <p class="text-sm ${isCorrect ? 'text-green-600' : 'text-red-600'} font-bold mb-2">
-                            ${isCorrect ? 'Правильно' : 'Ошибка'}. Ответ: ${q.a[q.c]}
+                const ok = userAnswers[i] === q.c;
+                rev.innerHTML += `
+                    <div class="bg-white p-6 rounded-2xl shadow-sm border-l-4 ${ok ? 'border-green-500' : 'border-red-500'}">
+                        <p class="font-bold text-slate-800 mb-1 italic">${q.q}</p>
+                        <p class="text-sm font-black ${ok ? 'text-green-600' : 'text-red-600'} mb-3 uppercase italic">
+                            ${ok ? 'Верно' : 'Ошибка'}. Ответ: ${q.a[q.c]}
                         </p>
-                        <div class="bg-blue-50 p-3 rounded-lg text-sm text-blue-800">
-                            <i class="fas fa-lightbulb mr-2"></i> ${q.hint}
+                        <div class="bg-blue-50 p-4 rounded-xl text-sm text-blue-900 italic font-medium leading-relaxed shadow-inner">
+                            <i class="fas fa-lightbulb text-yellow-500 mr-2"></i> ${q.hint}
                         </div>
-                    </div>
-                `;
+                    </div>`;
             });
+        }
+
+        // ФУНКЦИИ МОДАЛЬНОГО ОКНА
+        function openPayment() {
+            document.getElementById('payment-modal').classList.remove('hidden');
+            document.body.classList.add('modal-active');
+        }
+
+        function closePayment() {
+            document.getElementById('payment-modal').classList.add('hidden');
+            document.body.classList.remove('modal-active');
         }
     </script>
 </body>
