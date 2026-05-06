@@ -3,12 +3,14 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Altyn Logic | Professional Edition</title>
+    <title>Altyn Logic | Cloud Edition</title>
     
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
     <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+    <!-- Supabase SDK -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;700;800&display=swap');
@@ -20,10 +22,9 @@
         .btn-action { border-radius: 20px; font-weight: 800; transition: all 0.3s; text-transform: uppercase; letter-spacing: 0.05em; cursor: pointer; }
         .gradient-blue { background: linear-gradient(135deg, #2563eb 0%, #7c3aed 100%); }
         .pro-badge { background: linear-gradient(90deg, #f59e0b, #ef4444); color: white; padding: 2px 8px; border-radius: 8px; font-size: 9px; font-weight: 900; }
-        @keyframes slideUp { from { transform: translateY(20px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
-        .animate-up { animation: slideUp 0.5s ease-out forwards; }
         #toast-container { position: fixed; bottom: 24px; right: 24px; z-index: 1000; }
         .toast { background: #1e293b; color: white; padding: 16px 24px; border-radius: 16px; margin-top: 8px; box-shadow: 0 10px 20px rgba(0,0,0,0.2); display: flex; align-items: center; gap: 12px; animation: slideUp 0.3s ease-out; }
+        @keyframes slideUp { from { transform: translateY(20px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
     </style>
 </head>
 <body class="antialiased" onload="initApp()">
@@ -34,7 +35,7 @@
     <nav class="glass sticky top-0 z-[100]">
         <div class="max-w-6xl mx-auto px-6 h-20 flex items-center justify-between">
             <div class="flex items-center space-x-3 cursor-pointer" onclick="router.navigate('hero')">
-                <div class="w-10 h-10 gradient-blue rounded-xl flex items-center justify-center text-white shadow-lg"><i class="fas fa-brain"></i></div>
+                <div class="w-10 h-10 gradient-blue rounded-xl flex items-center justify-center text-white shadow-lg"><i class="fas fa-cloud"></i></div>
                 <span class="text-2xl font-extrabold tracking-tighter italic">ALTYN LOGIC</span>
             </div>
             
@@ -54,8 +55,8 @@
         <section id="sec-hero" class="app-section space-y-20">
             <div class="text-center space-y-8 py-10 animate-up">
                 <div id="status-tag"></div>
-                <h1 class="text-6xl md:text-8xl font-extrabold tracking-tighter leading-[0.85] italic uppercase">Твоя Победа <br><span class="text-blue-600">на Гранте.</span></h1>
-                <p class="text-slate-400 text-xl max-w-2xl mx-auto font-medium italic">Первая в Казахстане адаптивная платформа подготовки к ЕНТ.</p>
+                <h1 class="text-6xl md:text-8xl font-extrabold tracking-tighter leading-[0.85] italic uppercase">Cloud <br><span class="text-blue-600">Education.</span></h1>
+                <p class="text-slate-400 text-xl max-w-2xl mx-auto font-medium italic">Твой прогресс теперь в облаке. Готов к ЕНТ 2026?</p>
                 <div class="flex flex-col sm:flex-row justify-center gap-4 pt-6">
                     <button onclick="quiz.init()" class="btn-action gradient-blue text-white px-12 py-6 text-sm shadow-2xl">Начать Блиц</button>
                     <button onclick="openModal('payment-modal')" class="btn-action bg-white text-slate-900 border-2 border-slate-100 px-12 py-6 text-sm">PRO Аналитика</button>
@@ -66,21 +67,20 @@
                 <div onclick="academy.open()" class="neo-card p-10 cursor-pointer group">
                     <div class="w-14 h-14 bg-purple-50 text-purple-600 rounded-2xl flex items-center justify-center text-2xl mb-8 group-hover:rotate-12 transition"><i class="fas fa-lightbulb"></i></div>
                     <h3 class="text-2xl font-bold uppercase italic">Академия</h3>
-                    <p class="text-slate-400 text-sm italic">Интерактивные разборы сложных тем.</p>
+                    <p class="text-slate-400 text-sm italic">Интерактивные лайфхаки.</p>
                 </div>
                 <div class="neo-card p-10 bg-blue-50/50 border-blue-100">
                     <div class="w-14 h-14 bg-blue-600 text-white rounded-2xl flex items-center justify-center text-2xl mb-8 shadow-xl"><i class="fas fa-chart-line"></i></div>
                     <h3 class="text-2xl font-bold uppercase italic text-blue-900">AI Анализ</h3>
-                    <p class="text-blue-600/60 text-sm italic" id="hero-prediction">Войдите для прогноза гранта.</p>
+                    <p class="text-blue-600/60 text-sm italic" id="hero-prediction">Войдите для прогноза.</p>
                 </div>
                 <div onclick="ui.checkPaywall('battle')" class="neo-card p-10 cursor-pointer">
-                    <div class="w-14 h-14 bg-orange-100 text-orange-600 rounded-2xl flex items-center justify-center text-2xl mb-8"><i class="fas fa-shield-alt"></i></div>
+                    <div class="w-14 h-14 bg-orange-100 text-orange-600 rounded-2xl flex items-center justify-center text-2xl mb-8"><i class="fas fa-bolt"></i></div>
                     <h3 class="text-2xl font-bold uppercase italic">Battle</h3>
-                    <p class="text-slate-400 text-sm italic">Соревнования за рейтинг ELO.</p>
+                    <p class="text-slate-400 text-sm italic">ELO баттлы.</p>
                 </div>
             </div>
 
-            <!-- LEADERBOARD -->
             <div class="space-y-8 pb-20">
                 <h3 class="text-[11px] font-black text-slate-400 uppercase tracking-[0.4em] italic flex items-center">
                     <i class="fas fa-crown text-yellow-500 mr-3"></i> Глобальный рейтинг
@@ -110,7 +110,7 @@
                 <div class="lg:col-span-8 space-y-8">
                     <div class="neo-card p-10">
                         <div class="flex justify-between items-center mb-8">
-                            <h3 class="text-xs font-black text-slate-900 uppercase italic">Матрица навыков</h3>
+                            <h3 class="text-xs font-black text-slate-900 uppercase italic">Анализ навыков</h3>
                             <div id="pro-lock-analytics"></div>
                         </div>
                         <div class="h-80"><canvas id="statsChart"></canvas></div>
@@ -148,10 +148,10 @@
         </section>
     </main>
 
-    <!-- MODAL SYSTEM (SINGLE BACKGROUND) -->
+    <!-- MODAL SYSTEM -->
     <div id="modal-bg" class="fixed inset-0 bg-slate-900/90 backdrop-blur-2xl z-[200] hidden flex items-center justify-center p-4">
         
-        <!-- AUTH MODAL -->
+        <!-- AUTH -->
         <div id="auth-modal" class="modal-content hidden bg-white w-full max-w-md rounded-[56px] p-12 space-y-8">
             <div class="flex justify-center space-x-10 border-b border-slate-100 pb-4">
                 <button onclick="auth.setMode('login')" id="tab-login" class="font-black text-sm uppercase italic">Вход</button>
@@ -167,9 +167,9 @@
             </div>
         </div>
 
-        <!-- BLITZ MODAL -->
+        <!-- BLITZ -->
         <div id="blitz-modal" class="modal-content hidden bg-white w-full max-w-xl rounded-[64px] p-16 space-y-10">
-            <div class="flex justify-between items-center"><h2 class="text-4xl font-black italic uppercase">Выбери предмет</h2><button onclick="closeAllModals()" class="text-slate-300 hover:text-red-500 transition"><i class="fas fa-times text-2xl"></i></button></div>
+            <div class="flex justify-between items-center"><h2 class="text-4xl font-black italic uppercase">Выбери предмет</h2><button onclick="closeAllModals()" class="text-slate-300"><i class="fas fa-times text-2xl"></i></button></div>
             <div class="grid grid-cols-1 gap-4">
                 <button onclick="quiz.start('math_lit')" class="flex items-center space-x-8 p-8 bg-slate-50 rounded-[32px] hover:bg-blue-50 transition-all border-2 border-transparent hover:border-blue-200 text-left">
                     <div class="w-16 h-16 bg-blue-100 text-blue-600 rounded-2xl flex items-center justify-center text-3xl"><i class="fas fa-calculator"></i></div>
@@ -182,19 +182,19 @@
             </div>
         </div>
 
-        <!-- ACADEMY MODAL -->
+        <!-- ACADEMY -->
         <div id="academy-modal" class="modal-content hidden bg-white w-full max-w-4xl rounded-[64px] flex overflow-hidden h-[80vh]">
             <div class="w-1/3 bg-slate-50 p-10 border-r border-slate-100 space-y-4">
                 <h2 class="text-2xl font-black italic uppercase mb-10">Темы</h2>
                 <div id="academy-menu" class="space-y-2"></div>
             </div>
             <div class="w-2/3 p-16 overflow-y-auto relative">
-                <button onclick="closeAllModals()" class="absolute top-8 right-8 text-slate-300 hover:text-red-500"><i class="fas fa-times text-2xl"></i></button>
+                <button onclick="closeAllModals()" class="absolute top-8 right-8 text-slate-300"><i class="fas fa-times text-2xl"></i></button>
                 <div id="academy-content" class="animate-up"></div>
             </div>
         </div>
 
-        <!-- PAYMENT MODAL -->
+        <!-- PAYMENT -->
         <div id="payment-modal" class="modal-content hidden bg-white w-full max-w-md rounded-[64px] p-16 text-center space-y-8">
             <h2 class="text-4xl font-black italic uppercase italic">PRO Доступ</h2>
             <div class="p-10 gradient-blue text-white rounded-[48px] shadow-2xl">
@@ -204,10 +204,10 @@
             <button onclick="auth.upgradeToPro()" class="w-full btn-action bg-slate-900 text-white py-6 text-xs italic tracking-widest shadow-2xl">Активировать PRO</button>
         </div>
 
-        <!-- SUBJECTS MODAL -->
+        <!-- SUBJECTS -->
         <div id="subjects-modal" class="modal-content hidden bg-white w-full max-w-lg rounded-[40px] p-12 space-y-6 font-bold italic">
             <h2 class="text-2xl font-black uppercase italic underline decoration-blue-500">Структура 2026</h2>
-            <p class="text-slate-500">3 Обязательных (МатГрамотность, История Каз, ГрамЧтения). 2 Профильных. Порог на грант: 110+.</p>
+            <p class="text-slate-500">3 Обязательных. 2 Профильных. Порог: 110+.</p>
             <button onclick="closeAllModals()" class="btn-action bg-slate-900 text-white w-full py-4 text-xs italic">Понятно</button>
         </div>
     </div>
@@ -217,27 +217,46 @@
             questions: {
                 math_lit: [
                     { id: "m1", q: "Найдите 25% от 80% числа 200.", a: ["20", "40", "50", "60"], c: 1, h: "80% от 200 = 160. 25% от 160 = 40." },
-                    { id: "m2", q: "Если \(x + y = 10\) и \(x - y = 4\), то \(x\) равно?", a: ["7", "6", "8", "5"], c: 0, h: "Сложите уравнения: 2x = 14." }
+                    { id: "m2", q: "Если \(x + y = 10\) и \(x - y = 4\), то \(x\) равно?", a: ["7", "6", "8", "5"], c: 0, h: "2x = 14." }
                 ],
                 history: [
                     { id: "h1", q: "В каком году образовано Казахское ханство?", a: ["1456", "1465", "1470", "1501"], c: 1, h: "1465 год." }
                 ]
             },
             academy: [
-                { id: "proc", title: "Проценты", content: "<h3>Лайфхак на %</h3><p>Чтобы найти \(x\%\) от \(y\), можно просто найти \(y\%\) от \(x\). Например, 4% от 75 — это 75% от 4 (ответ 3).</p>" },
-                { id: "hist", title: "Золотая Орда", content: "<h3>Ключевая дата</h3><p>1219 год — начало нашествия Чингисхана на территорию Казахстана.</p>" }
+                { id: "proc", title: "Проценты", content: "<h3>Лайфхак</h3><p>x% от y = y% от x.</p>" },
+                { id: "hist", title: "Золотая Орда", content: "<h3>1219 год</h3><p>Начало нашествия.</p>" }
             ]
         };
 
+        // --- КЛЮЧИ SUPABASE (ИНТЕГРИРОВАНО) ---
+        const SUPABASE_URL = 'https://ixjowqkwcgkksatgkmqd.supabase.co';
+        const SUPABASE_KEY = 'sb_publishable_JGImt2KS6mStnbnAcJcEPg_8qbal1zc';
+        const sbClient = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+
         let appState = {
-            user: { name: "", email: "", elo: 1200, streak: 0, status: "FREE", weakPoints: [], isLoggedIn: false, lastActive: null }
+            user: { id: null, name: "Гость", email: "", elo: 1200, streak: 0, status: "FREE", weakPoints: [], isLoggedIn: false }
         };
 
-        const storage = {
-            save: () => localStorage.setItem('altyn_logic_v5.1', JSON.stringify(appState)),
-            load: () => {
-                const data = localStorage.getItem('altyn_logic_v5.1');
-                if(data) appState = JSON.parse(data);
+        const db = {
+            syncUp: async () => {
+                if(!appState.user.id) return;
+                await sbClient.from('profiles').upsert({
+                    id: appState.user.id,
+                    name: appState.user.name,
+                    email: appState.user.email,
+                    elo: appState.user.elo,
+                    streak: appState.user.streak,
+                    status: appState.user.status,
+                    weak_points: appState.user.weakPoints
+                });
+            },
+            syncDown: async (userId) => {
+                const { data } = await sbClient.from('profiles').select('*').eq('id', userId).single();
+                if(data) {
+                    appState.user = { ...appState.user, ...data, isLoggedIn: true };
+                    ui.update();
+                }
             }
         };
 
@@ -257,25 +276,38 @@
                 document.getElementById('tab-reg').className = (m === 'reg') ? 'font-black text-blue-600 italic border-b-2 border-blue-600' : 'font-black text-slate-300 italic';
                 document.getElementById('reg-name-field').style.display = (m === 'reg') ? 'block' : 'none';
             },
-            process: () => {
+            process: async () => {
                 const e = document.getElementById('in-email').value;
-                if(!e) return ui.toast("Введите E-mail");
-                appState.user.name = document.getElementById('in-name').value || "Ученик";
-                appState.user.email = e;
-                appState.user.isLoggedIn = true;
-                appState.user.streak = 1;
-                storage.save();
-                ui.update();
-                closeAllModals();
-                ui.toast("Добро пожаловать!");
+                const p = document.getElementById('in-pass').value;
+                const n = document.getElementById('in-name').value;
+
+                let result;
+                if(auth.mode === 'reg') {
+                    result = await sbClient.auth.signUp({ email: e, password: p });
+                } else {
+                    result = await sbClient.auth.signInWithPassword({ email: e, password: p });
+                }
+
+                if(result.error) return ui.toast(result.error.message);
+                
+                if(result.data.user) {
+                    appState.user.id = result.data.user.id;
+                    appState.user.name = n || e.split('@')[0];
+                    appState.user.email = e;
+                    appState.user.isLoggedIn = true;
+                    await db.syncUp();
+                    ui.update();
+                    closeAllModals();
+                    ui.toast("Успешный вход!");
+                }
             },
-            logout: () => { appState.user.isLoggedIn = false; storage.save(); location.reload(); },
-            upgradeToPro: () => {
+            logout: async () => { await sbClient.auth.signOut(); location.reload(); },
+            upgradeToPro: async () => {
                 appState.user.status = "PRO";
-                storage.save();
+                await db.syncUp();
                 ui.update();
                 closeAllModals();
-                ui.toast("PRO статус активирован! 👑");
+                ui.toast("PRO статус активирован!");
             }
         };
 
@@ -287,12 +319,12 @@
                     area.innerHTML = `
                         <div class="flex items-center space-x-2 text-orange-500 font-bold text-xs bg-orange-50 px-3 py-1 rounded-full"><i class="fas fa-fire"></i> ${u.streak}</div>
                         <button onclick="router.navigate('profile')" class="flex items-center space-x-3 bg-slate-900 text-white p-1 pr-5 rounded-full hover:bg-blue-600 transition shadow-lg">
-                            <div class="w-8 h-8 bg-white/20 rounded-full flex items-center justify-center font-bold">${u.name[0]}</div>
+                            <div class="w-8 h-8 bg-white/20 rounded-full flex items-center justify-center font-bold">${u.name[0].toUpperCase()}</div>
                             <span class="text-[10px] font-black uppercase italic">${u.name}</span>
                         </button>`;
                     document.getElementById('p-name').innerText = u.name;
                     document.getElementById('p-email').innerText = u.email;
-                    document.getElementById('p-avatar').innerText = u.name[0];
+                    document.getElementById('p-avatar').innerText = u.name[0].toUpperCase();
                     document.getElementById('p-elo').innerText = u.elo;
                     document.getElementById('p-streak').innerText = u.streak;
                     document.getElementById('status-tag').innerHTML = u.status === 'PRO' ? '<span class="pro-badge">PRO ACCOUNT</span>' : '';
@@ -362,20 +394,20 @@
                 });
                 if(window.MathJax) MathJax.typeset();
             },
-            answer: (idx) => {
+            answer: async (idx) => {
                 const q = quiz.subject[quiz.currentIdx];
                 if(idx === q.c) quiz.score++;
                 else appState.user.weakPoints.push(q.id);
                 quiz.answers.push(idx);
                 quiz.currentIdx++;
                 if(quiz.currentIdx < quiz.subject.length) quiz.render();
-                else quiz.finish();
+                else await quiz.finish();
             },
-            finish: () => {
+            finish: async () => {
                 router.navigate('results');
                 const gained = quiz.score * 25;
                 appState.user.elo += gained;
-                storage.save();
+                await db.syncUp();
                 document.getElementById('res-score').innerText = `${quiz.score}/${quiz.subject.length}`;
                 document.getElementById('res-elo-gain').innerText = `Rating: +${gained} ELO`;
                 const review = document.getElementById('res-review'); review.innerHTML = '';
@@ -419,7 +451,12 @@
             if(id === 'auth-modal') auth.setMode('login');
         }
         function closeAllModals() { document.getElementById('modal-bg').classList.add('hidden'); }
-        function initApp() { storage.load(); ui.update(); }
+        
+        async function initApp() { 
+            const { data: { session } } = await sbClient.auth.getSession();
+            if(session) await db.syncDown(session.user.id);
+            ui.update(); 
+        }
     </script>
 </body>
 </html>
