@@ -3,121 +3,127 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Altyn Logic | Ultimate ENT Platform</title>
+    <title>Altyn Logic | Платформа Поступления</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
-    <!-- Математический движок для глубины -->
-    <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
-    <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;700;800&display=swap');
         body { font-family: 'Plus Jakarta Sans', sans-serif; background-color: #fcfdfe; color: #0f172a; scroll-behavior: smooth; }
-        .glass { background: rgba(255, 255, 255, 0.75); backdrop-filter: blur(15px); border-bottom: 1px solid rgba(241, 245, 249, 1); }
+        .glass { background: rgba(255, 255, 255, 0.8); backdrop-filter: blur(20px); border-bottom: 1px solid #f1f5f9; }
         .neo-card { background: white; border-radius: 32px; border: 1px solid #f1f5f9; transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1); }
-        .neo-card:hover { transform: translateY(-6px); box-shadow: 0 30px 60px -12px rgba(37, 99, 235, 0.15); border-color: #3b82f6; }
+        .neo-card:hover { transform: translateY(-8px); box-shadow: 0 40px 80px -15px rgba(37, 99, 235, 0.1); border-color: #3b82f6; }
         .btn-action { border-radius: 20px; font-weight: 800; transition: all 0.3s; text-transform: uppercase; letter-spacing: 0.05em; cursor: pointer; }
-        .btn-action:hover { transform: scale(1.02); box-shadow: 0 10px 25px -5px rgba(37, 99, 235, 0.3); }
+        .btn-action:hover { transform: scale(1.02); box-shadow: 0 15px 30px -10px rgba(37, 99, 235, 0.4); }
         .gradient-blue { background: linear-gradient(135deg, #2563eb 0%, #7c3aed 100%); }
-        .auth-input { width: 100%; padding: 1.25rem; background: #f8fafc; border-radius: 20px; border: 2px solid transparent; font-weight: 700; transition: all 0.2s; }
-        .auth-input:focus { border-color: #3b82f6; background: white; outline: none; }
-        .tab-active { color: #2563eb; border-bottom: 3px solid #2563eb; }
+        
+        /* Анимация уведомлений */
+        #toast-container { position: fixed; top: 24px; right: 24px; z-index: 1000; }
+        .toast { background: white; padding: 16px 24px; border-radius: 20px; box-shadow: 0 20px 40px rgba(0,0,0,0.1); border-left: 6px solid #2563eb; margin-bottom: 12px; animation: slideIn 0.5s ease-out; }
+        @keyframes slideIn { from { transform: translateX(100%); opacity: 0; } to { transform: translateX(0); opacity: 1; } }
     </style>
 </head>
 <body class="antialiased" onload="initApp()">
 
-    <!-- НАВИГАЦИЯ (ЗАКРЕПЛЕНО) -->
+    <div id="toast-container"></div>
+
+    <!-- Навигация -->
     <nav class="glass sticky top-0 z-[100]">
         <div class="max-w-6xl mx-auto px-6 h-20 flex items-center justify-between">
             <div class="flex items-center space-x-3 cursor-pointer" onclick="showSection('main-hero')">
-                <div class="w-10 h-10 gradient-blue rounded-xl flex items-center justify-center text-white shadow-lg"><i class="fas fa-rocket"></i></div>
+                <div class="w-10 h-10 gradient-blue rounded-xl flex items-center justify-center text-white shadow-xl"><i class="fas fa-gem"></i></div>
                 <span class="text-2xl font-extrabold tracking-tighter text-slate-900 italic">ALTYN LOGIC</span>
             </div>
             
-            <div class="hidden lg:flex items-center space-x-8 text-[11px] font-black uppercase tracking-widest text-slate-400">
+            <div class="hidden lg:flex items-center space-x-10 text-[10px] font-black uppercase tracking-[0.2em] text-slate-400">
                 <button onclick="openModal('subjects-modal')" class="hover:text-blue-600 transition">Предметы</button>
                 <button onclick="openModal('academy-modal')" class="hover:text-blue-600 transition">Академия</button>
-                <button onclick="openModal('battle-modal')" class="text-orange-500 flex items-center"><i class="fas fa-fire mr-1"></i> Баттл</button>
+                <button onclick="openModal('battle-modal')" class="text-orange-500"><i class="fas fa-fire mr-1"></i> Баттл</button>
             </div>
 
             <div class="flex items-center space-x-4" id="nav-auth-container">
-                <!-- Содержимое меняется через JS (updateUI) -->
+                <!-- Контент через JS -->
             </div>
         </div>
     </nav>
 
     <main class="max-w-5xl mx-auto px-6 py-12">
         
-        <!-- ГЛАВНЫЙ ЭКРАН (HERO) -->
+        <!-- ГЛАВНЫЙ ЭКРАН -->
         <div id="main-hero" class="section-content space-y-20">
             <div class="text-center space-y-8 py-10">
-                <h1 class="text-6xl md:text-8xl font-extrabold tracking-tighter leading-[0.9] text-slate-900 italic uppercase">Грант — это <span class="text-blue-600">Система.</span></h1>
-                <p class="text-slate-400 text-xl max-w-2xl mx-auto font-medium italic">Твой текущий рейтинг: <span id="hero-elo" class="text-blue-600 font-black">1200</span>. Готов побить рекорд недели?</p>
+                <div class="inline-flex items-center space-x-2 bg-blue-50 text-blue-700 px-4 py-2 rounded-full text-[10px] font-black uppercase tracking-widest mb-4">
+                    <i class="fas fa-shield-alt"></i> <span>Подготовка к ЕНТ 2026 • Официально</span>
+                </div>
+                <h1 class="text-6xl md:text-8xl font-extrabold tracking-tighter leading-[0.85] text-slate-900 italic uppercase">Твой Грант <br><span class="text-blue-600">начинается здесь.</span></h1>
+                <p class="text-slate-400 text-xl max-w-2xl mx-auto font-medium italic">ELO рейтинг: <span id="hero-elo" class="text-blue-600 font-black">1200</span>. Узнай свой шанс на поступление в ВУЗы Казахстана.</p>
                 <div class="flex flex-col sm:flex-row justify-center gap-4 pt-6">
-                    <button onclick="handleQuizStartClick()" class="btn-action gradient-blue text-white px-10 py-5 text-sm shadow-2xl">Начать Тренировку</button>
-                    <button onclick="openModal('payment-modal')" class="btn-action bg-white text-slate-900 border-2 border-slate-100 px-10 py-5 text-sm">PRO Аналитика</button>
+                    <button onclick="handleQuizStartClick()" class="btn-action gradient-blue text-white px-12 py-6 text-sm shadow-2xl">Начать Тренировку</button>
+                    <button onclick="openModal('payment-modal')" class="btn-action bg-white text-slate-900 border-2 border-slate-100 px-12 py-6 text-sm">PRO Доступ</button>
                 </div>
             </div>
 
             <!-- СЕТКА ФУНКЦИЙ -->
-            <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
-                <div onclick="openModal('academy-modal')" class="neo-card p-8 cursor-pointer">
-                    <div class="w-12 h-12 bg-purple-50 text-purple-600 rounded-2xl flex items-center justify-center text-xl mb-6"><i class="fas fa-book-reader"></i></div>
-                    <h3 class="text-xl font-bold mb-2 uppercase italic">Академия</h3>
-                    <p class="text-slate-400 text-sm font-medium italic">Глубокие разборы и формулы поступления.</p>
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+                <div onclick="openModal('academy-modal')" class="neo-card p-10 cursor-pointer group">
+                    <div class="w-14 h-14 bg-purple-50 text-purple-600 rounded-2xl flex items-center justify-center text-2xl mb-8 group-hover:scale-110 transition"><i class="fas fa-university"></i></div>
+                    <h3 class="text-2xl font-bold mb-3 uppercase italic tracking-tight">Академия</h3>
+                    <p class="text-slate-400 text-sm font-medium italic leading-relaxed">База данных лайфхаков и видео-разборов ЕНТ.</p>
                 </div>
-                <div class="neo-card p-8 bg-blue-50/30 border-blue-100">
-                    <div class="w-12 h-12 bg-blue-600 text-white rounded-2xl flex items-center justify-center text-xl mb-6"><i class="fas fa-graduation-cap"></i></div>
-                    <h3 class="text-xl font-bold mb-2 uppercase italic text-blue-900">Шанс на Грант</h3>
-                    <p class="text-blue-600/60 text-sm font-medium italic" id="grant-prediction">Войдите, чтобы увидеть прогноз.</p>
+                <div class="neo-card p-10 bg-blue-50/30 border-blue-100 group">
+                    <div class="w-14 h-14 bg-blue-600 text-white rounded-2xl flex items-center justify-center text-2xl mb-8 shadow-lg shadow-blue-200 group-hover:scale-110 transition"><i class="fas fa-chart-pie"></i></div>
+                    <h3 class="text-2xl font-bold mb-3 uppercase italic text-blue-900 tracking-tight">Шанс на Грант</h3>
+                    <p class="text-blue-600/60 text-sm font-medium italic leading-relaxed" id="grant-prediction">Пройдите Блиц-тест для анализа баллов.</p>
                 </div>
-                <div onclick="openModal('battle-modal')" class="neo-card p-8">
-                    <div class="w-12 h-12 bg-orange-100 text-orange-600 rounded-2xl flex items-center justify-center text-xl mb-6"><i class="fas fa-bolt"></i></div>
-                    <h3 class="text-xl font-bold mb-2 uppercase italic">Баттл-Арена</h3>
-                    <p class="text-slate-400 text-sm font-medium italic">Соревнования 1 на 1 в реальном времени.</p>
+                <div onclick="openModal('battle-modal')" class="neo-card p-10 group">
+                    <div class="w-14 h-14 bg-orange-100 text-orange-600 rounded-2xl flex items-center justify-center text-2xl mb-8 group-hover:scale-110 transition"><i class="fas fa-fire"></i></div>
+                    <h3 class="text-2xl font-bold mb-3 uppercase italic tracking-tight">Баттл</h3>
+                    <p class="text-slate-400 text-sm font-medium italic leading-relaxed">Вызывай друзей на дуэль за очки ELO.</p>
                 </div>
             </div>
 
-            <!-- ЛИДЕРБОРД (ФИКСИРОВАННЫЙ БЛОК) -->
-            <div class="space-y-8 pb-20">
-                <div class="flex items-center justify-between">
-                    <h3 class="text-[11px] font-black text-slate-400 uppercase tracking-[0.4em] italic flex items-center">
-                        <i class="fas fa-trophy text-yellow-500 mr-3"></i> Лидеры рейтинга ELO
-                    </h3>
-                </div>
-                <div class="neo-card overflow-hidden" id="leaderboard-container">
-                    <!-- Заполняется автоматически через JS -->
-                </div>
+            <!-- ЛИДЕРБОРД -->
+            <div class="space-y-10">
+                <h3 class="text-[11px] font-black text-slate-400 uppercase tracking-[0.4em] italic flex items-center">
+                    <i class="fas fa-crown text-yellow-500 mr-3"></i> Глобальный Лидерборд
+                </h3>
+                <div class="neo-card overflow-hidden" id="leaderboard-container"></div>
             </div>
         </div>
 
         <!-- ЛИЧНЫЙ КАБИНЕТ -->
-        <div id="profile-section" class="section-content hidden animate-in fade-in duration-500 space-y-12">
-            <div class="grid grid-cols-1 lg:grid-cols-12 gap-8">
-                <div class="lg:col-span-4 space-y-6">
-                    <div class="neo-card p-10 text-center space-y-8 border-t-4 border-t-blue-600">
+        <div id="profile-section" class="section-content hidden animate-in fade-in duration-700 space-y-12">
+            <div class="grid grid-cols-1 lg:grid-cols-12 gap-10">
+                <div class="lg:col-span-4 space-y-8">
+                    <div class="neo-card p-10 text-center space-y-8 relative overflow-hidden">
+                        <div class="absolute top-0 left-0 w-full h-2 gradient-blue"></div>
                         <div class="w-32 h-32 gradient-blue text-white rounded-[40px] mx-auto flex items-center justify-center text-5xl font-black shadow-2xl" id="profile-avatar">?</div>
                         <div>
                             <h2 class="text-3xl font-black italic text-slate-900" id="profile-name-display">...</h2>
                             <p class="text-[10px] font-black text-slate-400 uppercase tracking-widest mt-2" id="profile-email-display">...</p>
                         </div>
                         <div class="grid grid-cols-2 gap-4">
-                            <div class="bg-slate-50 p-4 rounded-3xl"><p class="text-[9px] font-black text-slate-400 uppercase italic mb-1">ELO Rating</p><p class="text-2xl font-black text-blue-600 italic" id="profile-elo">1200</p></div>
-                            <div class="bg-slate-50 p-4 rounded-3xl"><p class="text-[9px] font-black text-slate-400 uppercase italic mb-1">Day Streak</p><p class="text-2xl font-black text-orange-500 italic" id="profile-streak">0</p></div>
+                            <div class="bg-slate-50 p-6 rounded-3xl"><p class="text-[9px] font-black text-slate-400 uppercase italic mb-1 text-center">ELO</p><p class="text-3xl font-black text-blue-600 italic" id="profile-elo">1200</p></div>
+                            <div class="bg-slate-50 p-6 rounded-3xl"><p class="text-[9px] font-black text-slate-400 uppercase italic mb-1 text-center">Стрик</p><p class="text-3xl font-black text-orange-500 italic" id="profile-streak">0</p></div>
                         </div>
-                        <button onclick="logout()" class="w-full btn-action bg-slate-100 text-slate-500 py-4 text-[10px]">Выйти из аккаунта</button>
+                        <button onclick="logout()" class="w-full btn-action bg-slate-50 text-slate-400 py-4 text-[10px]">Выйти из системы</button>
                     </div>
                 </div>
-                <div class="lg:col-span-8 space-y-6">
+                <div class="lg:col-span-8 space-y-8">
                     <div class="neo-card p-10">
-                        <h3 class="text-xs font-black text-slate-400 uppercase tracking-[0.3em] italic mb-8">Матрица навыков</h3>
+                        <h3 class="text-xs font-black text-slate-400 uppercase tracking-[0.3em] italic mb-8">Матрица Знаний</h3>
                         <div class="h-80"><canvas id="progressChart"></canvas></div>
+                    </div>
+                    <div class="neo-card p-10 border-l-8 border-blue-600">
+                        <h3 class="text-xs font-black text-slate-900 uppercase italic mb-4">Рекомендации от Altyn Logic AI:</h3>
+                        <p class="text-slate-500 italic font-medium leading-relaxed">На основе твоих тестов по Истории: обрати внимание на даты XVII века. По Математике — улучши навыки решения задач на проценты.</p>
                     </div>
                 </div>
             </div>
         </div>
 
-        <!-- КВИЗ (ИНТЕРФЕЙС ТЕСТА) -->
+        <!-- КВИЗ -->
         <div id="quiz-container" class="section-content hidden space-y-12">
             <div class="flex justify-between items-end">
                 <div class="space-y-2">
@@ -126,110 +132,81 @@
                 </div>
                 <div id="timer" class="text-3xl font-black text-slate-200 font-mono italic tabular-nums">00:00</div>
             </div>
-            <div class="bg-white p-12 md:p-20 rounded-[64px] shadow-2xl border border-slate-50 relative overflow-hidden text-center">
-                <div class="h-1.5 w-full bg-slate-50 absolute top-0 left-0"><div id="progress-bar" class="h-full gradient-blue transition-all duration-700" style="width: 0%"></div></div>
-                <h2 id="question-text" class="text-2xl md:text-3xl font-bold text-slate-800 mb-16 italic tracking-tight"></h2>
-                <div id="options-container" class="grid grid-cols-1 md:grid-cols-2 gap-4"></div>
+            <div class="bg-white p-12 md:p-24 rounded-[72px] shadow-2xl border border-slate-50 relative overflow-hidden text-center">
+                <div class="h-2 w-full bg-slate-50 absolute top-0 left-0"><div id="progress-bar" class="h-full gradient-blue transition-all duration-700" style="width: 0%"></div></div>
+                <h2 id="question-text" class="text-3xl md:text-4xl font-bold text-slate-800 mb-20 italic tracking-tight leading-snug"></h2>
+                <div id="options-container" class="grid grid-cols-1 md:grid-cols-2 gap-5"></div>
             </div>
         </div>
 
         <!-- РЕЗУЛЬТАТЫ -->
-        <div id="result-screen" class="section-content hidden text-center space-y-16 py-10">
-            <div class="space-y-4">
-                <h2 id="score-display" class="text-[10rem] font-black italic text-slate-900 leading-none tracking-tighter">0/10</h2>
-                <p id="result-elo" class="text-2xl font-black text-blue-600 italic uppercase"></p>
+        <div id="result-screen" class="section-content hidden text-center space-y-16 py-10 animate-in zoom-in duration-500">
+            <div class="space-y-6">
+                <h2 id="score-display" class="text-[12rem] font-black italic text-slate-900 leading-none tracking-tighter">0/10</h2>
+                <p id="result-elo" class="text-3xl font-black text-blue-600 italic uppercase"></p>
             </div>
-            <button onclick="location.reload()" class="btn-action bg-slate-900 text-white px-16 py-6 text-sm italic shadow-2xl">Вернуться в меню</button>
-            <div id="review-container" class="max-w-3xl mx-auto space-y-6 pt-20 text-left"></div>
+            <button onclick="location.reload()" class="btn-action bg-slate-900 text-white px-20 py-7 text-sm italic shadow-2xl">В Главное Меню</button>
+            <div id="review-container" class="max-w-3xl mx-auto space-y-8 pt-20 text-left"></div>
         </div>
     </main>
 
-    <!-- МОДАЛЬНЫЕ ОКНА (ЗАКРЕПЛЕНО) -->
-    <div id="modal-bg" class="fixed inset-0 bg-slate-900/80 backdrop-blur-xl z-[200] hidden flex items-center justify-center p-4">
+    <!-- МОДАЛЬНЫЕ ОКНА -->
+    <div id="modal-bg" class="fixed inset-0 bg-slate-900/85 backdrop-blur-2xl z-[200] hidden flex items-center justify-center p-4">
         
         <!-- МОДАЛКА: АВТОРИЗАЦИЯ -->
-        <div id="auth-modal" class="modal-content hidden bg-white w-full max-w-md rounded-[56px] p-12 space-y-8">
-            <div class="flex justify-center space-x-8 border-b border-slate-100 pb-4">
-                <button onclick="toggleAuthMode('login')" id="btn-tab-login" class="font-black text-sm uppercase italic transition-all pb-2">Вход</button>
-                <button onclick="toggleAuthMode('register')" id="btn-tab-reg" class="font-black text-sm uppercase italic transition-all pb-2 text-slate-300">Регистрация</button>
+        <div id="auth-modal" class="modal-content hidden bg-white w-full max-w-md rounded-[56px] p-14 space-y-8 shadow-2xl">
+            <div class="flex justify-center space-x-10 border-b border-slate-100 pb-6">
+                <button onclick="toggleAuthMode('login')" id="btn-tab-login" class="font-black text-sm uppercase italic pb-2 transition-all">Вход</button>
+                <button onclick="toggleAuthMode('register')" id="btn-tab-reg" class="font-black text-sm uppercase italic pb-2 text-slate-300 transition-all">Регистрация</button>
             </div>
-            
-            <div class="space-y-4">
+            <div class="space-y-5">
                 <div id="reg-name-field" style="display:none">
-                    <input type="text" id="auth-name" placeholder="ТВОЕ ИМЯ" class="auth-input">
+                    <input type="text" id="auth-name" placeholder="ТВОЕ ИМЯ" class="w-full p-6 bg-slate-50 rounded-3xl font-black italic uppercase text-xs outline-none focus:ring-4 focus:ring-blue-100">
                 </div>
-                <input type="email" id="auth-email" placeholder="E-MAIL ИЛИ ТЕЛЕФОН" class="auth-input">
-                <input type="password" id="auth-pass" placeholder="ПАРОЛЬ" class="auth-input">
-                
-                <button onclick="processAuth()" class="w-full btn-action gradient-blue text-white py-6 text-xs italic tracking-widest shadow-xl mt-4">
-                    <span id="auth-submit-text">Войти в кабинет</span>
-                </button>
+                <input type="email" id="auth-email" placeholder="E-MAIL ИЛИ ТЕЛЕФОН" class="w-full p-6 bg-slate-50 rounded-3xl font-black italic uppercase text-xs outline-none focus:ring-4 focus:ring-blue-100">
+                <input type="password" id="auth-pass" placeholder="ПАРОЛЬ" class="w-full p-6 bg-slate-50 rounded-3xl font-black italic uppercase text-xs outline-none focus:ring-4 focus:ring-blue-100">
+                <button onclick="processAuth()" class="w-full btn-action gradient-blue text-white py-6 text-xs italic tracking-widest shadow-xl mt-4">Начать</button>
             </div>
-            <p class="text-center text-[9px] font-black text-slate-300 uppercase italic tracking-widest">Powered by Altyn Logic Core</p>
         </div>
 
-        <!-- МОДАЛКА: ВЫБОР БЛИЦА -->
-        <div id="blitz-modal" class="modal-content hidden bg-white w-full max-w-xl rounded-[56px] p-12 space-y-10">
-            <div class="flex justify-between items-center"><h2 class="text-3xl font-black italic uppercase">Выбери предмет</h2><button onclick="closeAllModals()" class="text-slate-300"><i class="fas fa-times text-2xl"></i></button></div>
-            <div class="grid grid-cols-1 gap-4">
-                <button onclick="startQuiz('math_lit')" class="flex items-center space-x-6 p-8 bg-slate-50 rounded-[32px] hover:bg-blue-50 transition border-2 border-transparent hover:border-blue-100 text-left group">
-                    <div class="w-16 h-16 bg-blue-100 text-blue-600 rounded-2xl flex items-center justify-center text-2xl group-hover:scale-110 transition"><i class="fas fa-calculator"></i></div>
-                    <div><p class="font-black italic text-slate-800 text-xl uppercase leading-none">Мат. грамотность</p><p class="text-[10px] font-bold text-slate-400 mt-1 uppercase italic">База ЕНТ</p></div>
+        <!-- МОДАЛКА: БЛИЦ -->
+        <div id="blitz-modal" class="modal-content hidden bg-white w-full max-w-xl rounded-[64px] p-16 space-y-12">
+            <div class="flex justify-between items-center"><h2 class="text-4xl font-black italic uppercase italic">Тренажер</h2><button onclick="closeAllModals()" class="text-slate-300"><i class="fas fa-times text-2xl"></i></button></div>
+            <div class="grid grid-cols-1 gap-5">
+                <button onclick="startQuiz('math_lit')" class="flex items-center space-x-8 p-8 bg-slate-50 rounded-[32px] hover:bg-blue-50 transition-all border-2 border-transparent hover:border-blue-100 text-left group">
+                    <div class="w-20 h-20 bg-blue-100 text-blue-600 rounded-2xl flex items-center justify-center text-3xl group-hover:rotate-12 transition"><i class="fas fa-calculator"></i></div>
+                    <div><p class="font-black italic text-slate-800 text-2xl uppercase leading-none mb-1">Мат. грамотность</p><p class="text-xs font-bold text-slate-400 uppercase italic">Проверка логики • 10 вопр.</p></div>
                 </button>
-                <button onclick="startQuiz('history')" class="flex items-center space-x-6 p-8 bg-slate-50 rounded-[32px] hover:bg-red-50 transition border-2 border-transparent hover:border-red-100 text-left group">
-                    <div class="w-16 h-16 bg-red-100 text-red-600 rounded-2xl flex items-center justify-center text-2xl group-hover:scale-110 transition"><i class="fas fa-landmark"></i></div>
-                    <div><p class="font-black italic text-slate-800 text-xl uppercase leading-none">История Казахстана</p><p class="text-[10px] font-bold text-slate-400 mt-1 uppercase italic">Даты и личности</p></div>
-                </button>
-                <button onclick="startQuiz('reading')" class="flex items-center space-x-6 p-8 bg-slate-50 rounded-[32px] hover:bg-green-50 transition border-2 border-transparent hover:border-green-100 text-left group">
-                    <div class="w-16 h-16 bg-green-100 text-green-600 rounded-2xl flex items-center justify-center text-2xl group-hover:scale-110 transition"><i class="fas fa-book-open"></i></div>
-                    <div><p class="font-black italic text-slate-800 text-xl uppercase leading-none">Грамотность чтения</p><p class="text-[10px] font-bold text-slate-400 mt-1 uppercase italic">Анализ текста</p></div>
+                <button onclick="startQuiz('history')" class="flex items-center space-x-8 p-8 bg-slate-50 rounded-[32px] hover:bg-red-50 transition-all border-2 border-transparent hover:border-red-100 text-left group">
+                    <div class="w-20 h-20 bg-red-100 text-red-600 rounded-2xl flex items-center justify-center text-3xl group-hover:rotate-12 transition"><i class="fas fa-landmark"></i></div>
+                    <div><p class="font-black italic text-slate-800 text-2xl uppercase leading-none mb-1">История</p><p class="text-xs font-bold text-slate-400 uppercase italic">Казахстан • 10 вопр.</p></div>
                 </button>
             </div>
         </div>
 
-        <!-- МОДАЛКА: АКАДЕМИЯ (ГЛУБИНА) -->
-        <div id="academy-modal" class="modal-content hidden bg-white w-full max-w-2xl rounded-[56px] p-12 space-y-8 max-h-[80vh] overflow-y-auto">
-            <div class="flex justify-between items-center"><h2 class="text-3xl font-black italic uppercase italic">Академия Логики</h2><button onclick="closeAllModals()" class="text-slate-300"><i class="fas fa-times text-2xl"></i></button></div>
-            <div class="space-y-6 font-medium italic text-slate-600">
-                <div class="p-8 bg-blue-50 rounded-[32px] space-y-4">
-                    <h4 class="font-black text-blue-800 uppercase text-xs tracking-widest">Математика: Проценты</h4>
-                    <p>Формула быстрого изменения: если число увеличили на \(x\%\), а потом уменьшили на \(x\%\), итоговое изменение всегда отрицательное: \( -\left(\frac{x}{100}\right)^2 \cdot 100\% \).</p>
+        <!-- МОДАЛКА: АКАДЕМИЯ -->
+        <div id="academy-modal" class="modal-content hidden bg-white w-full max-w-3xl rounded-[64px] p-16 space-y-12 max-h-[85vh] overflow-y-auto">
+            <div class="flex justify-between items-center"><h2 class="text-4xl font-black italic uppercase italic">Academy</h2><button onclick="closeAllModals()" class="text-slate-300"><i class="fas fa-times text-2xl"></i></button></div>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div class="p-8 bg-blue-50 rounded-[40px] space-y-4">
+                    <h4 class="font-black italic text-blue-800 uppercase text-xs tracking-widest flex items-center"><i class="fas fa-play-circle mr-2"></i> Видео-разбор</h4>
+                    <p class="text-slate-600 italic font-medium leading-relaxed">Как решать задачи на проценты за 10 секунд без калькулятора.</p>
                 </div>
-                <div class="p-8 bg-purple-50 rounded-[32px] space-y-4">
-                    <h4 class="font-black text-purple-800 uppercase text-xs tracking-widest">История: Жеты Жаргы</h4>
-                    <p>Свод законов хана Тауке (XVII век). Основные принципы: кровная месть заменена выкупом (кун). Помни про "7 родов" и цифру 7.</p>
+                <div class="p-8 bg-purple-50 rounded-[40px] space-y-4">
+                    <h4 class="font-black italic text-purple-800 uppercase text-xs tracking-widest flex items-center"><i class="fas fa-file-alt mr-2"></i> Конспект</h4>
+                    <p class="text-slate-600 italic font-medium leading-relaxed">Все даты по истории Казахстана (XVIII век) на одной странице.</p>
                 </div>
             </div>
-            <button onclick="closeAllModals()" class="w-full btn-action bg-slate-900 text-white py-6 text-xs italic tracking-widest">Понятно</button>
         </div>
-
-        <!-- МОДАЛКА: ПРЕДМЕТЫ -->
-        <div id="subjects-modal" class="modal-content hidden bg-white w-full max-w-lg rounded-[40px] p-12 space-y-6 font-bold italic">
-            <h2 class="text-2xl font-black uppercase italic">Структура ЕНТ 2026</h2>
-            <div class="space-y-4">
-                <div class="flex justify-between p-4 bg-slate-50 rounded-2xl"><span>Обязательные</span><span class="text-blue-600">3 предмета</span></div>
-                <div class="flex justify-between p-4 bg-slate-50 rounded-2xl"><span>Профильные</span><span class="text-blue-600">2 предмета</span></div>
-                <div class="flex justify-between p-4 bg-slate-50 rounded-2xl"><span>Макс. балл</span><span class="text-blue-600">140 баллов</span></div>
-            </div>
-            <button onclick="closeAllModals()" class="btn-action bg-slate-900 text-white w-full py-4 text-xs italic">Закрыть</button>
-        </div>
-
-        <!-- МОДАЛКА: БАТТЛ -->
-        <div id="battle-modal" class="modal-content hidden bg-white w-full max-w-md rounded-[56px] p-14 text-center space-y-8">
-            <div class="w-24 h-24 bg-orange-100 text-orange-500 rounded-[32px] flex items-center justify-center text-4xl mx-auto animate-bounce"><i class="fas fa-fire"></i></div>
-            <h2 class="text-3xl font-black italic uppercase">Battle Mode</h2>
-            <p class="text-slate-400 italic">Сражайся 1 на 1 и забирай ELO соперника. Доступно после регистрации 1000 учеников.</p>
-            <button onclick="closeAllModals()" class="btn-action bg-slate-900 text-white w-full py-5 text-xs italic">Жду</button>
-        </div>
-
+        
         <!-- МОДАЛКА: ОПЛАТА -->
-        <div id="payment-modal" class="modal-content hidden bg-white w-full max-w-md rounded-[56px] p-12 space-y-10 text-center">
-            <h2 class="text-4xl font-black uppercase italic tracking-tighter">Pro Доступ</h2>
-            <div class="p-10 gradient-blue text-white rounded-[40px] shadow-2xl">
-                <p class="text-7xl font-black italic tracking-tighter leading-none mb-2">2 490 ₸</p>
-                <p class="text-[10px] font-black uppercase opacity-60 italic tracking-widest">Kaspi • ИП Khamidullin</p>
+        <div id="payment-modal" class="modal-content hidden bg-white w-full max-w-md rounded-[64px] p-16 space-y-10 text-center">
+            <h2 class="text-4xl font-black uppercase italic tracking-tighter italic">Altyn Logic Pro</h2>
+            <div class="p-12 gradient-blue text-white rounded-[48px] shadow-2xl shadow-blue-200">
+                <p class="text-7xl font-black italic tracking-tighter mb-2">2 490 ₸</p>
+                <p class="text-[10px] font-black uppercase opacity-60 italic tracking-widest italic leading-none">Единоразово • ИП Khamidullin</p>
             </div>
-            <button onclick="window.open('https://kaspi.kz', '_blank')" class="w-full btn-action bg-slate-900 text-white py-6 text-sm italic uppercase tracking-widest">Оплатить через Kaspi</button>
+            <button onclick="window.open('https://kaspi.kz', '_blank')" class="w-full btn-action bg-slate-900 text-white py-7 text-xs italic tracking-widest shadow-2xl uppercase">Купить через Kaspi</button>
         </div>
     </div>
 
@@ -237,39 +214,45 @@
         const allQuestions = {
             math_lit: [
                 { q: "Найдите 25% от 80% числа 200.", a: ["20", "40", "50", "60"], c: 1, hint: "80% от 200 = 160. 25% от 160 = 40." },
-                { q: "Число x увеличили на 20%, затем уменьшили на 20%.", a: ["Не изменилось", "+4%", "-4%", "-2%"], c: 2, hint: "Изменение = (20/100)² = 4%." },
+                { q: "Число x увеличили на 20%, затем уменьшили на 20%. Изменение?", a: ["Не изменилось", "+4%", "-4%", "-2%"], c: 2, hint: "Формула: (n/100)²." },
                 { q: "У двора 10 голов и 28 ног (куры и кролики). Кроликов?", a: ["4", "5", "6", "3"], c: 0, hint: "4*4 + 6*2 = 28." }
             ],
             history: [
-                { q: "Год Анракайского сражения?", a: ["1723", "1726", "1729", "1730"], c: 2, hint: "1729 год." },
-                { q: "Основатели Казахского ханства?", a: ["Керей и Жанибек", "Абылай и Абулхаир", "Касым и Хакназар", "Есим и Тауке"], c: 0, hint: "1465 год." }
-            ],
-            reading: [
-                { q: "Автор сказал: 'Время — самый дорогой ресурс'. Основная мысль?", a: ["Время - деньги", "Время нельзя вернуть", "Нужно беречь время", "Часы сломались"], c: 2, hint: "Фокус на ценности времени." }
+                { q: "В каком году произошло Анракайское сражение?", a: ["1723", "1726", "1729", "1730"], c: 2, hint: "1729 год." }
             ]
         };
 
-        const STORAGE_KEY = 'altyn_logic_titan_v1';
+        const STORAGE_KEY = 'altyn_logic_final_v4';
         let state = { name: "", email: "", elo: 1200, streak: 0, lastActive: null, isLoggedIn: false };
-        let authMode = 'login';
-        let currentQ = 0, score = 0, startTime, activeSubject = [], userAnswers = [];
+        let authMode = 'login', currentQ = 0, score = 0, startTime, activeSubject = [], userAnswers = [];
 
         function initApp() {
             const saved = localStorage.getItem(STORAGE_KEY);
             if (saved) {
                 state = JSON.parse(saved);
-                checkStreak();
+                if(state.isLoggedIn) {
+                    showToast(`С возвращением, ${state.name}!`);
+                    checkStreak();
+                }
             }
             updateUI();
             renderLeaderboard();
         }
 
+        function showToast(msg) {
+            const container = document.getElementById('toast-container');
+            const toast = document.createElement('div');
+            toast.className = 'toast';
+            toast.innerText = msg;
+            container.appendChild(toast);
+            setTimeout(() => toast.remove(), 4000);
+        }
+
         function toggleAuthMode(mode) {
             authMode = mode;
-            document.getElementById('btn-tab-login').className = (mode === 'login') ? 'font-black text-sm uppercase italic transition-all pb-2 text-blue-600 border-b-4 border-blue-600' : 'font-black text-sm uppercase italic transition-all pb-2 text-slate-300';
-            document.getElementById('btn-tab-reg').className = (mode === 'register') ? 'font-black text-sm uppercase italic transition-all pb-2 text-blue-600 border-b-4 border-blue-600' : 'font-black text-sm uppercase italic transition-all pb-2 text-slate-300';
+            document.getElementById('btn-tab-login').className = (mode === 'login') ? 'font-black text-sm uppercase italic pb-2 text-blue-600 border-b-4 border-blue-600' : 'font-black text-sm uppercase italic pb-2 text-slate-300';
+            document.getElementById('btn-tab-reg').className = (mode === 'register') ? 'font-black text-sm uppercase italic pb-2 text-blue-600 border-b-4 border-blue-600' : 'font-black text-sm uppercase italic pb-2 text-slate-300';
             document.getElementById('reg-name-field').style.display = (mode === 'register') ? 'block' : 'none';
-            document.getElementById('auth-submit-text').innerText = (mode === 'login') ? 'Войти в кабинет' : 'Создать аккаунт';
         }
 
         function processAuth() {
@@ -287,28 +270,28 @@
             updateUI();
             closeAllModals();
             renderLeaderboard();
+            showToast("Вход выполнен успешно!");
         }
 
         function updateUI() {
             const authContainer = document.getElementById('nav-auth-container');
             if (state.isLoggedIn) {
                 authContainer.innerHTML = `
-                    <div class="flex items-center space-x-2 text-orange-500 font-bold text-sm bg-orange-50 px-3 py-1.5 rounded-full">
+                    <div class="flex items-center space-x-2 text-orange-500 font-bold text-sm bg-orange-50 px-4 py-2 rounded-full">
                         <i class="fas fa-fire"></i> <span>${state.streak}</span>
                     </div>
-                    <button onclick="showSection('profile-section')" class="flex items-center space-x-3 bg-slate-900 text-white p-1.5 pr-5 rounded-full hover:bg-blue-600 transition">
-                        <div class="w-8 h-8 bg-white/20 rounded-full flex items-center justify-center font-bold">${state.name ? state.name[0].toUpperCase() : 'U'}</div>
-                        <span class="text-xs font-bold uppercase tracking-tight">${state.name || 'Профиль'}</span>
+                    <button onclick="showSection('profile-section')" class="flex items-center space-x-4 bg-slate-900 text-white p-2 pr-6 rounded-full hover:bg-blue-600 transition shadow-lg">
+                        <div class="w-10 h-10 bg-white/20 rounded-full flex items-center justify-center font-bold text-lg">${state.name ? state.name[0].toUpperCase() : 'U'}</div>
+                        <span class="text-xs font-bold uppercase tracking-widest">${state.name}</span>
                     </button>
                 `;
             } else {
                 authContainer.innerHTML = `
-                    <button onclick="openModal('auth-modal')" class="text-[10px] font-black uppercase text-slate-400 hover:text-blue-600">Вход</button>
-                    <button onclick="toggleAuthMode('register'); openModal('auth-modal');" class="bg-slate-900 text-white px-6 py-2.5 rounded-full text-[10px] font-black uppercase tracking-widest hover:bg-blue-600 shadow-lg">Регистрация</button>
+                    <button onclick="openModal('auth-modal')" class="text-[10px] font-black uppercase text-slate-400 hover:text-blue-600 mr-4">Вход</button>
+                    <button onclick="toggleAuthMode('register'); openModal('auth-modal');" class="bg-slate-900 text-white px-8 py-3.5 rounded-full text-[10px] font-black uppercase tracking-widest hover:bg-blue-600 shadow-xl transition">Регистрация</button>
                 `;
             }
 
-            document.getElementById('welcome-name').innerText = state.name || "Абитуриент";
             document.getElementById('hero-elo').innerText = state.elo;
             document.getElementById('profile-name-display').innerText = state.name;
             document.getElementById('profile-email-display').innerText = state.email;
@@ -318,16 +301,7 @@
             
             const predicted = Math.floor((state.elo - 500) / 10);
             const scoreEnt = predicted > 140 ? 140 : (predicted < 0 ? 0 : predicted);
-            document.getElementById('grant-prediction').innerHTML = `Прогноз ЕНТ: <span class="text-blue-600 font-black">${scoreEnt} / 140</span>`;
-        }
-
-        function handleQuizStartClick() {
-            if(!state.isLoggedIn) {
-                alert("Пожалуйста, зарегистрируйся, чтобы сохранять свой рейтинг!");
-                openModal('auth-modal');
-            } else {
-                openModal('blitz-modal');
-            }
+            document.getElementById('grant-prediction').innerHTML = `Твой балл ЕНТ (прогноз): <span class="text-blue-600 font-black">${scoreEnt} / 140</span>`;
         }
 
         function renderLeaderboard() {
@@ -339,20 +313,20 @@
             ].sort((a,b) => b.e - a.e);
             
             container.innerHTML = data.map((p, i) => `
-                <div class="p-6 flex items-center justify-between ${p.me ? 'bg-blue-50/50 border-l-4 border-l-blue-600' : ''}">
-                    <div class="flex items-center space-x-6">
-                        <span class="text-xl font-black text-slate-200 w-8">0${i+1}</span>
-                        <div class="w-12 h-12 ${p.me ? 'gradient-blue' : 'bg-slate-100'} text-${p.me ? 'white' : 'slate-500'} rounded-2xl flex items-center justify-center font-black shadow-lg">${p.n[0]}</div>
-                        <div><p class="font-bold italic">${p.n}</p><p class="text-[9px] font-black text-blue-500 uppercase tracking-widest">🔥 Streak: ${p.s}</p></div>
+                <div class="p-8 flex items-center justify-between ${p.me ? 'bg-blue-50/50 border-l-8 border-l-blue-600' : ''} border-b border-slate-50 last:border-none">
+                    <div class="flex items-center space-x-8">
+                        <span class="text-3xl font-black text-slate-100 w-10">0${i+1}</span>
+                        <div class="w-16 h-16 ${p.me ? 'gradient-blue' : 'bg-slate-100'} text-${p.me ? 'white' : 'slate-500'} rounded-3xl flex items-center justify-center font-black shadow-lg text-xl">${p.n[0]}</div>
+                        <div><p class="font-bold text-xl italic text-slate-800 leading-none mb-1">${p.n}</p><p class="text-[9px] font-black text-blue-500 uppercase tracking-widest italic">Streak: ${p.s} 🔥</p></div>
                     </div>
-                    <p class="text-xl font-black italic text-slate-800">${p.e} <span class="text-[9px] text-slate-400">ELO</span></p>
+                    <div class="text-right"><p class="text-3xl font-black italic text-slate-800">${p.e}</p><p class="text-[9px] text-slate-400 font-black uppercase italic">ELO Score</p></div>
                 </div>
             `).join('');
         }
 
         function startQuiz(key) {
             closeAllModals(); activeSubject = allQuestions[key]; showSection('quiz-container');
-            document.getElementById('quiz-title').innerText = (key === 'math_lit' ? 'Мат. грамотность' : (key === 'history' ? 'История' : 'Чтение'));
+            document.getElementById('quiz-title').innerText = (key === 'math_lit' ? 'Мат. грамотность' : 'История');
             currentQ = 0; score = 0; userAnswers = []; startTime = Date.now(); showQuestion(); startTimer();
         }
 
@@ -364,7 +338,7 @@
             const cont = document.getElementById('options-container'); cont.innerHTML = '';
             q.a.forEach((opt, i) => {
                 const b = document.createElement('button');
-                b.className = "w-full p-8 text-left bg-white border-2 border-slate-50 rounded-[32px] hover:border-blue-600 transition font-bold italic shadow-sm text-lg";
+                b.className = "w-full p-10 text-left bg-white border-2 border-slate-50 rounded-[40px] hover:border-blue-600 hover:bg-blue-50 transition-all font-bold italic shadow-sm text-xl";
                 b.innerText = opt; b.onclick = () => handleAnswer(i); cont.appendChild(b);
             });
         }
@@ -381,8 +355,9 @@
             const rev = document.getElementById('review-container'); rev.innerHTML = '';
             activeSubject.forEach((q, i) => {
                 const ok = userAnswers[i] === q.c;
-                rev.innerHTML += `<div class="neo-card p-10 border-l-[12px] ${ok ? 'border-green-500' : 'border-red-500'} mb-4 font-bold italic"><p class="text-xl text-slate-800 mb-2">${q.q}</p><p class="text-xs uppercase ${ok ? 'text-green-600' : 'text-red-600'}">Ответ: ${q.a[q.c]}</p><div class="bg-blue-50/50 p-4 rounded-2xl text-[11px] text-blue-900 mt-4">${q.hint}</div></div>`;
+                rev.innerHTML += `<div class="neo-card p-12 border-l-[16px] ${ok ? 'border-green-500' : 'border-red-500'} mb-6 font-bold italic"><p class="text-2xl text-slate-800 mb-3 leading-tight">${q.q}</p><p class="text-xs uppercase ${ok ? 'text-green-600' : 'text-red-600'} mb-6">Верный ответ: ${q.a[q.c]}</p><div class="bg-blue-50/50 p-6 rounded-3xl text-sm text-blue-900 border border-blue-100/30"><i class="fas fa-lightbulb mr-2 text-yellow-500"></i> ${q.hint}</div></div>`;
             });
+            showToast(`Тест завершен! Получено +${gained} ELO`);
         }
 
         function checkStreak() {
@@ -395,18 +370,22 @@
             }
         }
 
-        function saveState() { localStorage.setItem(STORAGE_KEY, JSON.stringify(state)); }
-        function showSection(id) { 
-            document.querySelectorAll('.section-content').forEach(s => s.classList.add('hidden')); 
-            document.getElementById(id).classList.remove('hidden'); 
-            if(id === 'profile-section') setTimeout(initChart, 100);
-            window.scrollTo({top: 0, behavior: 'smooth'});
+        function handleQuizStartClick() {
+            if(!state.isLoggedIn) {
+                showToast("Сначала нужно войти!");
+                openModal('auth-modal');
+            } else {
+                openModal('blitz-modal');
+            }
         }
+
+        function saveState() { localStorage.setItem(STORAGE_KEY, JSON.stringify(state)); }
+        function showSection(id) { document.querySelectorAll('.section-content').forEach(s => s.classList.add('hidden')); document.getElementById(id).classList.remove('hidden'); if(id === 'profile-section') setTimeout(initChart, 100); window.scrollTo({top: 0, behavior: 'smooth'}); }
         function openModal(id) { document.getElementById('modal-bg').classList.remove('hidden'); document.querySelectorAll('.modal-content').forEach(m => m.classList.add('hidden')); document.getElementById(id).classList.remove('hidden'); if(id === 'auth-modal') toggleAuthMode(authMode); }
         function closeAllModals() { document.getElementById('modal-bg').classList.add('hidden'); }
         function startTimer() { const el = document.getElementById('timer'); setInterval(() => { if(!document.getElementById('quiz-container').classList.contains('hidden')){ const s = Math.floor((Date.now() - startTime) / 1000); el.innerText = `${Math.floor(s/60).toString().padStart(2,'0')}:${(s%60).toString().padStart(2,'0')}` } }, 1000); }
         function logout() { state.isLoggedIn = false; saveState(); location.reload(); }
-        function initChart() { const ctx = document.getElementById('progressChart').getContext('2d'); if (window.myChart) window.myChart.destroy(); window.myChart = new Chart(ctx, { type: 'radar', data: { labels: ['Мат.Грам', 'История', 'Грам.Чтения', 'Проф.Мат', 'Проф.Физ'], datasets: [{ data: [85, 45, 65, 90, 75], backgroundColor: 'rgba(37, 99, 235, 0.15)', borderColor: '#2563eb', borderWidth: 4 }] }, options: { scales: { r: { beginAtZero: true, max: 100, ticks: { display: false } } }, plugins: { legend: { display: false } } } }); }
+        function initChart() { const ctx = document.getElementById('progressChart').getContext('2d'); if (window.myChart) window.myChart.destroy(); window.myChart = new Chart(ctx, { type: 'radar', data: { labels: ['Мат.Грам', 'История', 'Грам.Чтения', 'Проф.Мат', 'Проф.Физ'], datasets: [{ data: [85, 45, 65, 90, 75], backgroundColor: 'rgba(37, 99, 235, 0.15)', borderColor: '#2563eb', borderWidth: 5, pointRadius: 5 }] }, options: { scales: { r: { beginAtZero: true, max: 100, ticks: { display: false }, grid: { color: '#f1f5f9' }, pointLabels: { font: { weight: '800', size: 10 } } } }, plugins: { legend: { display: false } } } }); }
     </script>
 </body>
 </html>
