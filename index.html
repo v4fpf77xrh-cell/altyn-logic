@@ -3,206 +3,186 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Altyn Logic | Analytics Prime</title>
-    
+    <title>Altyn Logic | Admin & Cloud</title>
     <script src="https://cdn.tailwindcss.com"></script>
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
-    <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-    <script src="questions.js"></script>
-    
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;700;800&display=swap');
-        :root { --accent: #2563eb; --glass: rgba(255, 255, 255, 0.85); }
-        body { font-family: 'Plus Jakarta Sans', sans-serif; background: #f8fafc; color: #0f172a; scroll-behavior: smooth; }
-        .glass { background: var(--glass); backdrop-filter: blur(20px); border-bottom: 1px solid rgba(226, 232, 240, 0.8); }
-        .neo-card { background: white; border-radius: 32px; border: 1px solid #e2e8f0; transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275); }
-        .neo-card:hover { transform: translateY(-8px); box-shadow: 0 40px 80px -15px rgba(37, 99, 235, 0.1); border-color: var(--accent); }
-        .btn-action { border-radius: 20px; font-weight: 800; transition: all 0.3s; text-transform: uppercase; letter-spacing: 0.05em; cursor: pointer; }
+        body { font-family: 'Plus Jakarta Sans', sans-serif; background: #f8fafc; }
+        .neo-card { background: white; border-radius: 24px; border: 1px solid #e2e8f0; transition: all 0.3s; }
         .gradient-blue { background: linear-gradient(135deg, #2563eb 0%, #7c3aed 100%); }
-        #toast-container { position: fixed; bottom: 24px; right: 24px; z-index: 1000; }
-        .toast { background: #1e293b; color: white; padding: 16px 24px; border-radius: 16px; margin-top: 8px; box-shadow: 0 10px 20px rgba(0,0,0,0.2); display: flex; align-items: center; gap: 12px; animation: slideUp 0.3s ease-out; }
-        @keyframes slideUp { from { transform: translateY(20px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
+        .glass { background: rgba(255, 255, 255, 0.8); backdrop-filter: blur(10px); border-bottom: 1px solid #e2e8f0; }
+        .hidden { display: none; }
     </style>
 </head>
 <body class="antialiased" onload="initApp()">
 
-    <div id="toast-container"></div>
-
-    <nav class="glass sticky top-0 z-[100]">
-        <div class="max-w-6xl mx-auto px-6 h-20 flex items-center justify-between">
-            <div class="flex items-center space-x-3 cursor-pointer" onclick="router.navigate('hero')">
-                <div class="w-10 h-10 gradient-blue rounded-xl flex items-center justify-center text-white shadow-lg"><i class="fas fa-chart-pie"></i></div>
-                <span class="text-2xl font-extrabold tracking-tighter italic">ALTYN LOGIC</span>
-            </div>
-            
-            <div class="hidden lg:flex items-center space-x-8 text-[10px] font-black uppercase tracking-widest text-slate-400">
-                <button onclick="openModal('subjects-modal')" data-i18n="nav_subjects" class="hover:text-blue-600 transition">Предметы</button>
-                <button onclick="academy.open()" data-i18n="nav_academy" class="hover:text-blue-600 transition">Академия</button>
-                <button onclick="ui.checkPaywall('battle')" data-i18n="nav_battle" class="text-orange-500"><i class="fas fa-fire mr-1"></i> Баттл</button>
-                <div class="flex bg-slate-100 rounded-full p-1 ml-4">
-                    <button onclick="ui.setLang('ru')" id="lang-ru" class="px-3 py-1 rounded-full transition-all text-[9px] font-bold">RU</button>
-                    <button onclick="ui.setLang('kk')" id="lang-kk" class="px-3 py-1 rounded-full transition-all text-[9px] font-bold">KK</button>
-                </div>
-            </div>
-            <div class="flex items-center space-x-4" id="nav-user-area"></div>
+    <nav class="glass sticky top-0 z-[100] h-20 flex items-center px-6 justify-between">
+        <div class="flex items-center space-x-3 cursor-pointer" onclick="router.navigate('hero')">
+            <div class="w-10 h-10 gradient-blue rounded-xl flex items-center justify-center text-white shadow-lg"><i class="fas fa-lock"></i></div>
+            <span class="text-xl font-extrabold italic">ALTYN LOGIC</span>
+        </div>
+        <div class="flex items-center space-x-4">
+            <!-- КНОПКА АДМИНА (Скрытая) -->
+            <button onclick="router.navigate('admin')" class="text-slate-300 hover:text-blue-600"><i class="fas fa-cog"></i></button>
+            <div id="nav-user-area"></div>
         </div>
     </nav>
 
-    <main class="max-w-5xl mx-auto px-6 py-12">
-        <!-- HERO -->
-        <section id="sec-hero" class="app-section space-y-20">
-            <div class="text-center space-y-8 py-10">
-                <h1 class="text-6xl md:text-8xl font-extrabold tracking-tighter leading-[0.85] italic uppercase" data-i18n="hero_title">Cloud <br><span class="text-blue-600">Education.</span></h1>
-                <p class="text-slate-400 text-xl max-w-2xl mx-auto font-medium italic" data-i18n="hero_subtitle">Твой прогресс в облаке. Грант начинается здесь.</p>
-                <div class="flex flex-col sm:flex-row justify-center gap-4 pt-6">
-                    <button onclick="quiz.init()" data-i18n="btn_start" class="btn-action gradient-blue text-white px-12 py-6 text-sm shadow-2xl">Начать Блиц</button>
-                    <button onclick="openModal('payment-modal')" data-i18n="btn_pro" class="btn-action bg-white text-slate-900 border-2 border-slate-100 px-12 py-6 text-sm">PRO Аналитика</button>
-                </div>
+    <main class="max-w-4xl mx-auto p-6">
+        
+        <!-- SECTION: HERO -->
+        <section id="sec-hero" class="app-section space-y-10 py-10">
+            <div class="text-center space-y-4">
+                <h1 class="text-5xl font-black italic">УПРАВЛЕНИЕ КОНТЕНТОМ</h1>
+                <p class="text-slate-400">Добавляй новые вопросы в облако в реальном времени.</p>
             </div>
-            <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
-                <div onclick="academy.open()" class="neo-card p-10 cursor-pointer"><h3 class="text-2xl font-bold uppercase italic" data-i18n="card_academy_title">Академия</h3><p class="text-slate-400 text-sm italic" data-i18n="card_academy_desc">Лайфхаки.</p></div>
-                <div class="neo-card p-10 bg-blue-50/50 border-blue-100"><h3 class="text-2xl font-bold uppercase italic text-blue-900" data-i18n="card_ai_title">AI Анализ</h3><p class="text-blue-600/60 text-sm italic" id="hero-prediction">...</p></div>
-                <div onclick="ui.checkPaywall('battle')" class="neo-card p-10 cursor-pointer"><h3 class="text-2xl font-bold uppercase italic" data-i18n="card_battle_title">Battle</h3><p class="text-slate-400 text-sm italic">ELO баттлы.</p></div>
-            </div>
-        </section>
-
-        <!-- PROFILE -->
-        <section id="sec-profile" class="app-section hidden space-y-12">
-            <div class="grid grid-cols-1 lg:grid-cols-12 gap-10">
-                <div class="lg:col-span-4 space-y-6">
-                    <div class="neo-card p-10 text-center space-y-8 relative border-t-8 border-blue-600 overflow-hidden">
-                        <div id="p-avatar" class="w-32 h-32 gradient-blue text-white rounded-[40px] mx-auto flex items-center justify-center text-5xl font-black">?</div>
-                        <h2 class="text-3xl font-black italic" id="p-name">...</h2>
-                        <div class="grid grid-cols-2 gap-4">
-                            <div class="bg-slate-50 p-6 rounded-3xl"><p class="text-[9px] font-black text-slate-400 mb-1 uppercase text-center">ELO</p><p class="text-3xl font-black text-blue-600 italic" id="p-elo">0</p></div>
-                            <div class="bg-slate-50 p-6 rounded-3xl"><p class="text-[9px] font-black text-slate-400 mb-1 uppercase text-center">Streak</p><p class="text-3xl font-black text-orange-500 italic" id="p-streak">0</p></div>
-                        </div>
-                        <button onclick="auth.logout()" data-i18n="btn_logout" class="w-full text-slate-300 font-black text-[10px] uppercase italic">Выйти</button>
-                    </div>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div onclick="quiz.init()" class="neo-card p-8 cursor-pointer hover:border-blue-500">
+                    <h3 class="text-xl font-bold italic uppercase">Запустить Тест</h3>
+                    <p class="text-slate-400 text-sm">Проверь новые вопросы.</p>
                 </div>
-                <div class="lg:col-span-8 space-y-8">
-                    <div class="neo-card p-10">
-                        <h3 class="text-xs font-black text-slate-900 uppercase italic mb-8" data-i18n="profile_matrix">Матрица навыков</h3>
-                        <div class="h-80"><canvas id="statsChart"></canvas></div>
-                    </div>
-                    <div class="neo-card p-10 border-l-8 border-red-500">
-                        <h3 class="text-xs font-black text-red-600 uppercase italic mb-6" data-i18n="profile_errors">Работа над ошибками</h3>
-                        <div id="weak-points-list" class="space-y-3"></div>
-                    </div>
+                <div onclick="router.navigate('admin')" class="neo-card p-8 cursor-pointer hover:border-purple-500">
+                    <h3 class="text-xl font-bold italic uppercase">База Данных</h3>
+                    <p class="text-slate-400 text-sm">Управление вопросами.</p>
                 </div>
             </div>
         </section>
 
-        <!-- QUIZ & RESULTS (Остались без изменений) -->
-        <section id="sec-quiz" class="app-section hidden space-y-12"></section>
-        <section id="sec-results" class="app-section hidden text-center space-y-16 py-10"></section>
+        <!-- SECTION: ADMIN PANEL -->
+        <section id="sec-admin" class="app-section hidden space-y-8">
+            <div class="flex justify-between items-center">
+                <h2 class="text-3xl font-black italic underline decoration-blue-500">ADMIN PANEL</h2>
+                <button onclick="router.navigate('hero')" class="text-xs font-bold uppercase text-slate-400">Закрыть</button>
+            </div>
+
+            <div class="neo-card p-10 space-y-6 shadow-2xl border-2 border-blue-50">
+                <div class="grid grid-cols-2 gap-4">
+                    <div>
+                        <label class="text-[10px] font-black uppercase text-slate-400 ml-2">Предмет</label>
+                        <select id="adm-subject" class="w-full p-4 bg-slate-50 rounded-2xl outline-none focus:ring-2 ring-blue-100 font-bold">
+                            <option value="math_lit">Мат. грамотность</option>
+                            <option value="history">История Казахстана</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label class="text-[10px] font-black uppercase text-slate-400 ml-2">Язык</label>
+                        <select id="adm-lang" class="w-full p-4 bg-slate-50 rounded-2xl outline-none focus:ring-2 ring-blue-100 font-bold">
+                            <option value="ru">Русский</option>
+                            <option value="kk">Қазақ тілі</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div>
+                    <label class="text-[10px] font-black uppercase text-slate-400 ml-2">Текст вопроса</label>
+                    <textarea id="adm-q-text" class="w-full p-6 bg-slate-50 rounded-3xl outline-none focus:ring-2 ring-blue-100 font-medium" rows="3"></textarea>
+                </div>
+
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <input type="text" id="adm-opt-0" placeholder="Вариант А" class="p-4 bg-slate-50 rounded-2xl outline-none">
+                    <input type="text" id="adm-opt-1" placeholder="Вариант B" class="p-4 bg-slate-50 rounded-2xl outline-none">
+                    <input type="text" id="adm-opt-2" placeholder="Вариант C" class="p-4 bg-slate-50 rounded-2xl outline-none">
+                    <input type="text" id="adm-opt-3" placeholder="Вариант D" class="p-4 bg-slate-50 rounded-2xl outline-none">
+                </div>
+
+                <div class="grid grid-cols-2 gap-4">
+                    <div>
+                        <label class="text-[10px] font-black uppercase text-slate-400 ml-2">Верный индекс (0-3)</label>
+                        <input type="number" id="adm-correct" min="0" max="3" class="w-full p-4 bg-slate-50 rounded-2xl outline-none font-bold">
+                    </div>
+                    <div class="flex items-end">
+                        <label class="flex items-center space-x-3 cursor-pointer bg-slate-50 p-4 rounded-2xl w-full">
+                            <input type="checkbox" id="adm-is-pro" class="w-5 h-5 rounded border-none text-blue-600">
+                            <span class="text-xs font-black uppercase italic">PRO Вопрос</span>
+                        </label>
+                    </div>
+                </div>
+
+                <button onclick="admin.saveQuestion()" class="w-full p-6 gradient-blue text-white rounded-3xl font-black italic uppercase tracking-widest shadow-xl hover:scale-[1.02] transition">Сохранить в облако</button>
+            </div>
+        </section>
+
+        <!-- SECTION: QUIZ -->
+        <section id="sec-quiz" class="app-section hidden">
+            <!-- Код квиза из прошлых версий -->
+            <div id="quiz-container" class="neo-card p-10 text-center space-y-10">
+                <h2 id="q-text" class="text-2xl font-bold italic">Загрузка вопросов...</h2>
+                <div id="q-options" class="grid grid-cols-1 gap-4"></div>
+            </div>
+        </section>
+
     </main>
 
-    <!-- MODALS -->
-    <div id="modal-bg" class="fixed inset-0 bg-slate-900/90 backdrop-blur-2xl z-[200] hidden flex items-center justify-center p-4"></div>
-
     <script>
-        const i18n = {
-            ru: {
-                nav_subjects: "Предметы", nav_academy: "Академия", nav_battle: "Баттл",
-                hero_title: "Cloud <br><span class='text-blue-600'>Education.</span>",
-                hero_subtitle: "Твой прогресс в облаке. Поступление на Грант начинается здесь.",
-                btn_start: "Начать Блиц", btn_pro: "PRO Аналитика",
-                card_academy_title: "Академия", card_academy_desc: "Лайфхаки для ЕНТ.",
-                card_ai_title: "AI Анализ", card_ai_desc: "Прогноз гранта.",
-                card_battle_title: "Battle", card_battle_desc: "ELO баттлы.",
-                profile_matrix: "Матрица навыков", profile_errors: "Работа над ошибками",
-                btn_logout: "Выйти", math_lit: "Мат. грамотность", history: "История Казахстана"
-            },
-            kk: {
-                nav_subjects: "Пәндер", nav_academy: "Академия", nav_battle: "Баттл",
-                hero_title: "Cloud <br><span class='text-blue-600'>Education.</span>",
-                hero_subtitle: "Сенің прогресің бұлтта. Грантқа түсу осы жерден басталады.",
-                btn_start: "Блиц бастау", btn_pro: "PRO Аналитика",
-                card_academy_title: "Академия", card_academy_desc: "ҰБТ лайфхактары.",
-                card_ai_title: "AI Талдау", card_ai_desc: "Грант болжамы.",
-                card_battle_title: "Battle", card_battle_desc: "ELO сайыстары.",
-                profile_matrix: "Дағдылар матрицасы", profile_errors: "Қатемен жұмыс",
-                btn_logout: "Шығу", math_lit: "Мат. сауаттылық", history: "Қазақстан тарихы"
-            }
-        };
-
         const SUPABASE_URL = 'https://ixjowqkwcgkksatgkmqd.supabase.co';
         const SUPABASE_KEY = 'sb_publishable_JGImt2KS6mStnbnAcJcEPg_8qbal1zc';
         const sbClient = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
-        let appState = {
-            lang: localStorage.getItem('lang') || 'ru',
-            user: { id: null, name: "Гость", elo: 1200, streak: 0, status: "FREE", weakPoints: [], isLoggedIn: false }
+        const router = {
+            navigate: (sec) => {
+                document.querySelectorAll('.app-section').forEach(s => s.classList.add('hidden'));
+                document.getElementById(`sec-${sec}`).classList.remove('hidden');
+            }
         };
 
-        // --- НОВАЯ ЛОГИКА АНАЛИТИКИ ---
-        function calculateAnalytics() {
-            const scores = { m: 100, h: 100, r: 100, pm: 100, pf: 100 };
-            appState.user.weakPoints.forEach(id => {
-                if (id.startsWith('m')) scores.m -= 10;
-                if (id.startsWith('h')) scores.h -= 10;
-            });
-            return Object.values(scores).map(s => Math.max(s, 20)); // Минимум 20% для красоты
-        }
+        const admin = {
+            saveQuestion: async () => {
+                const qData = {
+                    subject: document.getElementById('adm-subject').value,
+                    lang: document.getElementById('adm-lang').value,
+                    question_text: document.getElementById('adm-q-text').value,
+                    options: [
+                        document.getElementById('adm-opt-0').value,
+                        document.getElementById('adm-opt-1').value,
+                        document.getElementById('adm-opt-2').value,
+                        document.getElementById('adm-opt-3').value
+                    ],
+                    correct_idx: parseInt(document.getElementById('adm-correct').value),
+                    is_pro: document.getElementById('adm-is-pro').checked
+                };
 
-        function initChart() {
-            const ctx = document.getElementById('statsChart').getContext('2d');
-            const dataValues = calculateAnalytics();
-            if (window.myChart) window.myChart.destroy();
-            window.myChart = new Chart(ctx, {
-                type: 'radar',
-                data: {
-                    labels: appState.lang === 'ru' ? ['Мат.Грам', 'История', 'Грам.Чтения', 'Проф.Мат', 'Проф.Физ'] : ['Мат.сауат', 'Тарих', 'Оқу сауат.', 'Проф.Мат', 'Проф.Физ'],
-                    datasets: [{
-                        data: dataValues,
-                        backgroundColor: 'rgba(37, 99, 235, 0.15)',
-                        borderColor: '#2563eb',
-                        borderWidth: 4,
-                        pointRadius: 5,
-                        pointBackgroundColor: '#2563eb'
-                    }]
-                },
-                options: { scales: { r: { beginAtZero: true, max: 100, ticks: { display: false }, grid: { color: '#f1f5f9' } } }, plugins: { legend: { display: false } } }
-            });
-        }
-
-        const ui = {
-            setLang: (l) => { appState.lang = l; localStorage.setItem('lang', l); ui.updateTranslations(); ui.update(); },
-            updateTranslations: () => {
-                const d = i18n[appState.lang];
-                document.querySelectorAll('[data-i18n]').forEach(el => { const k = el.getAttribute('data-i18n'); if (d[k]) el.innerHTML = d[k]; });
-                document.getElementById('lang-ru').className = appState.lang === 'ru' ? 'px-3 py-1 rounded-full bg-white shadow-sm text-blue-600 font-bold' : 'px-3 py-1 rounded-full text-slate-400';
-                document.getElementById('lang-kk').className = appState.lang === 'kk' ? 'px-3 py-1 rounded-full bg-white shadow-sm text-blue-600 font-bold' : 'px-3 py-1 rounded-full text-slate-400';
-            },
-            update: () => {
-                const u = appState.user;
-                const area = document.getElementById('nav-user-area');
-                if(u.isLoggedIn) {
-                    area.innerHTML = `<div class="flex items-center space-x-2 text-orange-500 font-bold text-xs bg-orange-50 px-3 py-1 rounded-full"><i class="fas fa-fire"></i> ${u.streak}</div>
-                                     <button onclick="router.navigate('profile')" class="bg-slate-900 text-white px-4 py-2 rounded-full text-[10px] font-black uppercase italic">${u.name}</button>`;
-                    document.getElementById('p-name').innerText = u.name;
-                    document.getElementById('p-avatar').innerText = u.name[0].toUpperCase();
-                    document.getElementById('p-elo').innerText = u.elo;
-                    document.getElementById('p-streak').innerText = u.streak;
-                    const wpList = document.getElementById('weak-points-list');
-                    wpList.innerHTML = u.weakPoints.length > 0 ? u.weakPoints.slice(-3).map(id => `<div class="p-4 bg-red-50 text-red-600 rounded-2xl text-xs font-bold italic border border-red-100">ID: ${id}</div>`).join('') : '<p class="text-slate-400 italic text-sm">...</p>';
+                const { error } = await sbClient.from('questions').insert([qData]);
+                
+                if (error) {
+                    alert("Ошибка: " + error.message);
                 } else {
-                    area.innerHTML = `<button onclick="openModal('auth-modal')" class="bg-slate-900 text-white px-8 py-3 rounded-full text-[10px] font-black uppercase tracking-widest">Login</button>`;
+                    alert("Вопрос успешно добавлен в облако!");
+                    // Очистка полей
+                    document.getElementById('adm-q-text').value = '';
+                    [0,1,2,3].forEach(i => document.getElementById(`adm-opt-${i}`).value = '');
                 }
             }
         };
 
-        const db = {
-            syncUp: async () => { if(!appState.user.id) return; await sbClient.from('profiles').upsert({ id: appState.user.id, name: appState.user.name, elo: appState.user.elo, streak: appState.user.streak, status: appState.user.status, weak_points: appState.user.weakPoints }); },
-            syncDown: async (userId) => { const { data } = await sbClient.from('profiles').select('*').eq('id', userId).single(); if(data) { appState.user = { ...appState.user, ...data, isLoggedIn: true }; ui.update(); } }
+        const quiz = {
+            init: async () => {
+                router.navigate('quiz');
+                // Загружаем вопросы из Supabase вместо статического файла
+                const { data, error } = await sbClient.from('questions').select('*');
+                if (data && data.length > 0) {
+                    quiz.render(data[0]);
+                } else {
+                    document.getElementById('q-text').innerText = "В базе пока нет вопросов. Добавь их через Admin Panel!";
+                }
+            },
+            render: (q) => {
+                document.getElementById('q-text').innerText = q.question_text;
+                const opts = document.getElementById('q-options');
+                opts.innerHTML = '';
+                q.options.forEach((opt, i) => {
+                    const btn = document.createElement('button');
+                    btn.className = "p-6 neo-card font-bold hover:bg-blue-50 transition";
+                    btn.innerText = opt;
+                    opts.appendChild(btn);
+                });
+            }
         };
 
-        const router = { navigate: (sec) => { document.querySelectorAll('.app-section').forEach(s => s.classList.add('hidden')); document.getElementById(`sec-${sec}`).classList.remove('hidden'); if(sec === 'profile') setTimeout(initChart, 100); } };
-
-        async function initApp() { ui.updateTranslations(); const { data: { session } } = await sbClient.auth.getSession(); if(session) await db.syncDown(session.user.id); ui.update(); }
+        function initApp() {
+            console.log("Altyn Logic Admin Engine Ready");
+        }
     </script>
 </body>
 </html>
