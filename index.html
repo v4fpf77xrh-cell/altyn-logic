@@ -3,8 +3,9 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Altyn Logic | Cloud Edition</title>
+    <title>Altyn Logic | Cloud Titan</title>
     
+    <!-- Внешние библиотеки -->
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
@@ -15,64 +16,78 @@
         @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;700;800&display=swap');
         :root { --accent: #2563eb; --glass: rgba(255, 255, 255, 0.85); }
         body { font-family: 'Plus Jakarta Sans', sans-serif; background: #f8fafc; color: #0f172a; scroll-behavior: smooth; }
+        
+        /* Glassmorphism & Cards */
         .glass { background: var(--glass); backdrop-filter: blur(20px); border-bottom: 1px solid rgba(226, 232, 240, 0.8); }
         .neo-card { background: white; border-radius: 32px; border: 1px solid #e2e8f0; transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275); }
         .neo-card:hover { transform: translateY(-8px); box-shadow: 0 40px 80px -15px rgba(37, 99, 235, 0.1); border-color: var(--accent); }
+        
+        /* UI Elements */
         .btn-action { border-radius: 20px; font-weight: 800; transition: all 0.3s; text-transform: uppercase; letter-spacing: 0.05em; cursor: pointer; }
         .gradient-blue { background: linear-gradient(135deg, #2563eb 0%, #7c3aed 100%); }
         .pro-badge { background: linear-gradient(90deg, #f59e0b, #ef4444); color: white; padding: 2px 8px; border-radius: 8px; font-size: 9px; font-weight: 900; }
+        
+        /* Notifications & Animations */
         #toast-container { position: fixed; bottom: 24px; right: 24px; z-index: 1000; }
         .toast { background: #1e293b; color: white; padding: 16px 24px; border-radius: 16px; margin-top: 8px; box-shadow: 0 10px 20px rgba(0,0,0,0.2); display: flex; align-items: center; gap: 12px; animation: slideUp 0.3s ease-out; }
         @keyframes slideUp { from { transform: translateY(20px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
+        .animate-up { animation: slideUp 0.5s ease-out forwards; }
     </style>
 </head>
 <body class="antialiased" onload="initApp()">
 
     <div id="toast-container"></div>
 
+    <!-- NAVBAR -->
     <nav class="glass sticky top-0 z-[100]">
         <div class="max-w-6xl mx-auto px-6 h-20 flex items-center justify-between">
             <div class="flex items-center space-x-3 cursor-pointer" onclick="router.navigate('hero')">
                 <div class="w-10 h-10 gradient-blue rounded-xl flex items-center justify-center text-white shadow-lg"><i class="fas fa-cloud"></i></div>
                 <span class="text-2xl font-extrabold tracking-tighter italic">ALTYN LOGIC</span>
             </div>
+            
             <div class="hidden lg:flex items-center space-x-8 text-[10px] font-black uppercase tracking-widest text-slate-400">
                 <button onclick="openModal('subjects-modal')" class="hover:text-blue-600 transition">Предметы</button>
                 <button onclick="academy.open()" class="hover:text-blue-600 transition">Академия</button>
                 <button onclick="ui.checkPaywall('battle')" class="text-orange-500"><i class="fas fa-fire mr-1"></i> Баттл</button>
             </div>
+
             <div class="flex items-center space-x-4" id="nav-user-area"></div>
         </div>
     </nav>
 
     <main class="max-w-5xl mx-auto px-6 py-12">
+        
+        <!-- SECTION: HERO -->
         <section id="sec-hero" class="app-section space-y-20">
             <div class="text-center space-y-8 py-10 animate-up">
                 <div id="status-tag"></div>
                 <h1 class="text-6xl md:text-8xl font-extrabold tracking-tighter leading-[0.85] italic uppercase">Cloud <br><span class="text-blue-600">Education.</span></h1>
-                <p class="text-slate-400 text-xl max-w-2xl mx-auto font-medium italic">Твой прогресс теперь в облаке. Готов к ЕНТ 2026?</p>
+                <p class="text-slate-400 text-xl max-w-2xl mx-auto font-medium italic">Твой прогресс в облаке. Поступление на Грант начинается здесь.</p>
                 <div class="flex flex-col sm:flex-row justify-center gap-4 pt-6">
                     <button onclick="quiz.init()" class="btn-action gradient-blue text-white px-12 py-6 text-sm shadow-2xl">Начать Блиц</button>
                     <button onclick="openModal('payment-modal')" class="btn-action bg-white text-slate-900 border-2 border-slate-100 px-12 py-6 text-sm">PRO Аналитика</button>
                 </div>
             </div>
+
             <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
                 <div onclick="academy.open()" class="neo-card p-10 cursor-pointer group">
                     <div class="w-14 h-14 bg-purple-50 text-purple-600 rounded-2xl flex items-center justify-center text-2xl mb-8 group-hover:rotate-12 transition"><i class="fas fa-lightbulb"></i></div>
                     <h3 class="text-2xl font-bold uppercase italic">Академия</h3>
-                    <p class="text-slate-400 text-sm italic">Интерактивные лайфхаки.</p>
+                    <p class="text-slate-400 text-sm italic">Интерактивные лайфхаки для ЕНТ.</p>
                 </div>
                 <div class="neo-card p-10 bg-blue-50/50 border-blue-100">
                     <div class="w-14 h-14 bg-blue-600 text-white rounded-2xl flex items-center justify-center text-2xl mb-8 shadow-xl"><i class="fas fa-chart-line"></i></div>
                     <h3 class="text-2xl font-bold uppercase italic text-blue-900">AI Анализ</h3>
-                    <p class="text-blue-600/60 text-sm italic" id="hero-prediction">Войдите для прогноза.</p>
+                    <p class="text-blue-600/60 text-sm italic" id="hero-prediction">Войдите для прогноза гранта.</p>
                 </div>
                 <div onclick="ui.checkPaywall('battle')" class="neo-card p-10 cursor-pointer">
                     <div class="w-14 h-14 bg-orange-100 text-orange-600 rounded-2xl flex items-center justify-center text-2xl mb-8"><i class="fas fa-bolt"></i></div>
                     <h3 class="text-2xl font-bold uppercase italic">Battle</h3>
-                    <p class="text-slate-400 text-sm italic">ELO баттлы.</p>
+                    <p class="text-slate-400 text-sm italic">Соревнуйся за рейтинг ELO.</p>
                 </div>
             </div>
+
             <div class="space-y-8 pb-20">
                 <h3 class="text-[11px] font-black text-slate-400 uppercase tracking-[0.4em] italic flex items-center">
                     <i class="fas fa-crown text-yellow-500 mr-3"></i> Глобальный рейтинг
@@ -81,6 +96,7 @@
             </div>
         </section>
 
+        <!-- SECTION: PROFILE -->
         <section id="sec-profile" class="app-section hidden space-y-12">
             <div class="grid grid-cols-1 lg:grid-cols-12 gap-10">
                 <div class="lg:col-span-4 space-y-6">
@@ -101,7 +117,7 @@
                 <div class="lg:col-span-8 space-y-8">
                     <div class="neo-card p-10">
                         <div class="flex justify-between items-center mb-8">
-                            <h3 class="text-xs font-black text-slate-900 uppercase italic">Анализ навыков</h3>
+                            <h3 class="text-xs font-black text-slate-900 uppercase italic">Матрица навыков</h3>
                             <div id="pro-lock-analytics"></div>
                         </div>
                         <div class="h-80"><canvas id="statsChart"></canvas></div>
@@ -114,6 +130,7 @@
             </div>
         </section>
 
+        <!-- SECTION: QUIZ -->
         <section id="sec-quiz" class="app-section hidden space-y-12">
             <div class="flex justify-between items-end">
                 <div class="space-y-2">
@@ -129,6 +146,7 @@
             </div>
         </section>
 
+        <!-- SECTION: RESULTS -->
         <section id="sec-results" class="app-section hidden text-center space-y-16 py-10">
             <h2 id="res-score" class="text-[12rem] font-black italic text-slate-900 leading-none tracking-tighter">0/0</h2>
             <div id="res-elo-gain" class="text-3xl font-black text-blue-600 uppercase italic"></div>
@@ -137,7 +155,10 @@
         </section>
     </main>
 
+    <!-- MODAL SYSTEM -->
     <div id="modal-bg" class="fixed inset-0 bg-slate-900/90 backdrop-blur-2xl z-[200] hidden flex items-center justify-center p-4">
+        
+        <!-- AUTH -->
         <div id="auth-modal" class="modal-content hidden bg-white w-full max-w-md rounded-[56px] p-12 space-y-8">
             <div class="flex justify-center space-x-10 border-b border-slate-100 pb-4">
                 <button onclick="auth.setMode('login')" id="tab-login" class="font-black text-sm uppercase italic">Вход</button>
@@ -152,8 +173,10 @@
                 <button onclick="auth.process()" class="w-full btn-action gradient-blue text-white py-6 text-xs italic tracking-widest shadow-xl mt-4">Подтвердить</button>
             </div>
         </div>
+
+        <!-- BLITZ -->
         <div id="blitz-modal" class="modal-content hidden bg-white w-full max-w-xl rounded-[64px] p-16 space-y-10">
-            <div class="flex justify-between items-center"><h2 class="text-4xl font-black italic uppercase">Выбери предмет</h2><button onclick="closeAllModals()" class="text-slate-300"><i class="fas fa-times text-2xl"></i></button></div>
+            <div class="flex justify-between items-center"><h2 class="text-4xl font-black italic uppercase">Выбери предмет</h2><button onclick="closeAllModals()" class="text-slate-300 hover:text-red-500 transition"><i class="fas fa-times text-2xl"></i></button></div>
             <div class="grid grid-cols-1 gap-4">
                 <button onclick="quiz.start('math_lit')" class="flex items-center space-x-8 p-8 bg-slate-50 rounded-[32px] hover:bg-blue-50 transition-all border-2 border-transparent hover:border-blue-200 text-left">
                     <div class="w-16 h-16 bg-blue-100 text-blue-600 rounded-2xl flex items-center justify-center text-3xl"><i class="fas fa-calculator"></i></div>
@@ -165,16 +188,20 @@
                 </button>
             </div>
         </div>
+
+        <!-- ACADEMY -->
         <div id="academy-modal" class="modal-content hidden bg-white w-full max-w-4xl rounded-[64px] flex overflow-hidden h-[80vh]">
             <div class="w-1/3 bg-slate-50 p-10 border-r border-slate-100 space-y-4">
                 <h2 class="text-2xl font-black italic uppercase mb-10">Темы</h2>
                 <div id="academy-menu" class="space-y-2"></div>
             </div>
             <div class="w-2/3 p-16 overflow-y-auto relative">
-                <button onclick="closeAllModals()" class="absolute top-8 right-8 text-slate-300"><i class="fas fa-times text-2xl"></i></button>
+                <button onclick="closeAllModals()" class="absolute top-8 right-8 text-slate-300 hover:text-red-500"><i class="fas fa-times text-2xl"></i></button>
                 <div id="academy-content" class="animate-up"></div>
             </div>
         </div>
+
+        <!-- PAYMENT -->
         <div id="payment-modal" class="modal-content hidden bg-white w-full max-w-md rounded-[64px] p-16 text-center space-y-8">
             <h2 class="text-4xl font-black italic uppercase">PRO Доступ</h2>
             <div class="p-10 gradient-blue text-white rounded-[48px] shadow-2xl">
@@ -183,9 +210,11 @@
             </div>
             <button onclick="auth.upgradeToPro()" class="w-full btn-action bg-slate-900 text-white py-6 text-xs italic tracking-widest shadow-2xl">Активировать PRO</button>
         </div>
+
+        <!-- SUBJECTS -->
         <div id="subjects-modal" class="modal-content hidden bg-white w-full max-w-lg rounded-[40px] p-12 space-y-6 font-bold italic">
             <h2 class="text-2xl font-black uppercase italic underline decoration-blue-500">Структура 2026</h2>
-            <p class="text-slate-500">3 Обязательных. 2 Профильных. Порог: 110+.</p>
+            <p class="text-slate-500">3 Обязательных. 2 Профильных. Порог на грант: 110+.</p>
             <button onclick="closeAllModals()" class="btn-action bg-slate-900 text-white w-full py-4 text-xs italic">Понятно</button>
         </div>
     </div>
@@ -202,11 +231,12 @@
                 ]
             },
             academy: [
-                { id: "proc", title: "Проценты", content: "<h3>Лайфхак</h3><p>x% от y = y% от x.</p>" },
-                { id: "hist", title: "Золотая Орда", content: "<h3>1219 год</h3><p>Начало нашествия.</p>" }
+                { id: "proc", title: "Проценты", content: "<h3>Лайфхак</h3><p>x% от y = y% от x. Например, 4% от 75 — это 75% от 4 (ответ 3).</p>" },
+                { id: "hist", title: "Золотая Орда", content: "<h3>1219 год</h3><p>Начало нашествия Чингисхана на территорию Казахстана.</p>" }
             ]
         };
 
+        // --- КЛЮЧИ SUPABASE ---
         const SUPABASE_URL = 'https://ixjowqkwcgkksatgkmqd.supabase.co';
         const SUPABASE_KEY = 'sb_publishable_JGImt2KS6mStnbnAcJcEPg_8qbal1zc';
         const sbClient = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
@@ -215,6 +245,7 @@
             user: { id: null, name: "Гость", email: "", elo: 1200, streak: 0, status: "FREE", weakPoints: [], isLoggedIn: false }
         };
 
+        // --- DATABASE SYNC ---
         const db = {
             syncUp: async () => {
                 if(!appState.user.id) return;
@@ -237,14 +268,17 @@
             }
         };
 
+        // --- ROUTER ---
         const router = {
             navigate: (sec) => {
                 document.querySelectorAll('.app-section').forEach(s => s.classList.add('hidden'));
                 document.getElementById(`sec-${sec}`).classList.remove('hidden');
+                if(sec === 'profile') setTimeout(initChart, 100);
                 ui.update();
             }
         };
 
+        // --- AUTH ---
         const auth = {
             mode: 'login',
             setMode: (m) => {
@@ -281,10 +315,11 @@
                 await db.syncUp();
                 ui.update();
                 closeAllModals();
-                ui.toast("PRO статус активирован!");
+                ui.toast("PRO статус активирован! 👑");
             }
         };
 
+        // --- UI ENGINE ---
         const ui = {
             update: () => {
                 const u = appState.user;
@@ -338,6 +373,38 @@
             }
         };
 
+        // --- ANALYTICS CHART ---
+        function initChart() {
+            const ctx = document.getElementById('statsChart').getContext('2d');
+            if (window.myChart) window.myChart.destroy();
+            window.myChart = new Chart(ctx, {
+                type: 'radar',
+                data: {
+                    labels: ['Мат.Грам', 'История', 'Грам.Чтения', 'Проф.Мат', 'Проф.Физ'],
+                    datasets: [{
+                        data: [85, 45, 65, 90, 75],
+                        backgroundColor: 'rgba(37, 99, 235, 0.15)',
+                        borderColor: '#2563eb',
+                        borderWidth: 4,
+                        pointRadius: 4
+                    }]
+                },
+                options: {
+                    scales: {
+                        r: {
+                            beginAtZero: true,
+                            max: 100,
+                            ticks: { display: false },
+                            grid: { color: '#f1f5f9' },
+                            pointLabels: { font: { weight: '800', size: 10 } }
+                        }
+                    },
+                    plugins: { legend: { display: false } }
+                }
+            });
+        }
+
+        // --- QUIZ ENGINE ---
         const quiz = {
             subject: null, currentIdx: 0, score: 0, startTime: 0, answers: [],
             init: () => {
@@ -402,6 +469,7 @@
             }
         };
 
+        // --- ACADEMY ENGINE ---
         const academy = {
             open: () => {
                 openModal('academy-modal');
@@ -416,6 +484,7 @@
             }
         };
 
+        // --- UTILS ---
         function openModal(id) {
             document.getElementById('modal-bg').classList.remove('hidden');
             document.querySelectorAll('.modal-content').forEach(m => m.classList.add('hidden'));
