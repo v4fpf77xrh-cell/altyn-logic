@@ -3,389 +3,513 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Altyn Logic | Платформа Поступления</title>
+    <title>Altyn Logic | Professional Edition</title>
+    
+    <!-- Стили и Шрифты -->
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
     <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+    
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;700;800&display=swap');
-        body { font-family: 'Plus Jakarta Sans', sans-serif; background-color: #fcfdfe; color: #0f172a; scroll-behavior: smooth; }
-        .glass { background: rgba(255, 255, 255, 0.8); backdrop-filter: blur(20px); border-bottom: 1px solid #f1f5f9; }
-        .neo-card { background: white; border-radius: 32px; border: 1px solid #f1f5f9; transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1); }
-        .neo-card:hover { transform: translateY(-8px); box-shadow: 0 40px 80px -15px rgba(37, 99, 235, 0.1); border-color: #3b82f6; }
-        .btn-action { border-radius: 20px; font-weight: 800; transition: all 0.3s; text-transform: uppercase; letter-spacing: 0.05em; cursor: pointer; }
-        .btn-action:hover { transform: scale(1.02); box-shadow: 0 15px 30px -10px rgba(37, 99, 235, 0.4); }
-        .gradient-blue { background: linear-gradient(135deg, #2563eb 0%, #7c3aed 100%); }
         
-        /* Анимация уведомлений */
-        #toast-container { position: fixed; top: 24px; right: 24px; z-index: 1000; }
-        .toast { background: white; padding: 16px 24px; border-radius: 20px; box-shadow: 0 20px 40px rgba(0,0,0,0.1); border-left: 6px solid #2563eb; margin-bottom: 12px; animation: slideIn 0.5s ease-out; }
-        @keyframes slideIn { from { transform: translateX(100%); opacity: 0; } to { transform: translateX(0); opacity: 1; } }
+        :root { --accent: #2563eb; --glass: rgba(255, 255, 255, 0.85); }
+        
+        body { font-family: 'Plus Jakarta Sans', sans-serif; background: #f8fafc; color: #0f172a; scroll-behavior: smooth; }
+        
+        /* Glassmorphism Core */
+        .glass { background: var(--glass); backdrop-filter: blur(20px); border-bottom: 1px solid rgba(226, 232, 240, 0.8); }
+        .neo-card { background: white; border-radius: 32px; border: 1px solid #e2e8f0; transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275); }
+        .neo-card:hover { transform: translateY(-8px); box-shadow: 0 40px 80px -15px rgba(37, 99, 235, 0.1); border-color: var(--accent); }
+        
+        /* UI Elements */
+        .btn-action { border-radius: 20px; font-weight: 800; transition: all 0.3s; text-transform: uppercase; letter-spacing: 0.05em; cursor: pointer; }
+        .gradient-blue { background: linear-gradient(135deg, #2563eb 0%, #7c3aed 100%); }
+        .pro-badge { background: linear-gradient(90deg, #f59e0b, #ef4444); color: white; padding: 2px 8px; border-radius: 8px; font-size: 9px; font-weight: 900; }
+        
+        /* Animations */
+        @keyframes slideUp { from { transform: translateY(20px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
+        .animate-up { animation: slideUp 0.5s ease-out forwards; }
+        
+        /* Toast */
+        #toast-container { position: fixed; bottom: 24px; right: 24px; z-index: 1000; }
+        .toast { background: #1e293b; color: white; padding: 16px 24px; border-radius: 16px; margin-top: 8px; box-shadow: 0 10px 20px rgba(0,0,0,0.2); display: flex; align-items: center; gap: 12px; }
     </style>
 </head>
 <body class="antialiased" onload="initApp()">
 
     <div id="toast-container"></div>
 
-    <!-- Навигация -->
+    <!-- NAVBAR -->
     <nav class="glass sticky top-0 z-[100]">
         <div class="max-w-6xl mx-auto px-6 h-20 flex items-center justify-between">
-            <div class="flex items-center space-x-3 cursor-pointer" onclick="showSection('main-hero')">
-                <div class="w-10 h-10 gradient-blue rounded-xl flex items-center justify-center text-white shadow-xl"><i class="fas fa-gem"></i></div>
-                <span class="text-2xl font-extrabold tracking-tighter text-slate-900 italic">ALTYN LOGIC</span>
+            <div class="flex items-center space-x-3 cursor-pointer" onclick="router.navigate('hero')">
+                <div class="w-10 h-10 gradient-blue rounded-xl flex items-center justify-center text-white shadow-lg"><i class="fas fa-brain"></i></div>
+                <span class="text-2xl font-extrabold tracking-tighter italic">ALTYN LOGIC</span>
             </div>
             
-            <div class="hidden lg:flex items-center space-x-10 text-[10px] font-black uppercase tracking-[0.2em] text-slate-400">
+            <div class="hidden lg:flex items-center space-x-8 text-[10px] font-black uppercase tracking-widest text-slate-400">
                 <button onclick="openModal('subjects-modal')" class="hover:text-blue-600 transition">Предметы</button>
-                <button onclick="openModal('academy-modal')" class="hover:text-blue-600 transition">Академия</button>
-                <button onclick="openModal('battle-modal')" class="text-orange-500"><i class="fas fa-fire mr-1"></i> Баттл</button>
+                <button onclick="academy.open()" class="hover:text-blue-600 transition">Академия</button>
+                <button onclick="ui.checkPaywall('battle')" class="text-orange-500"><i class="fas fa-fire mr-1"></i> Баттл</button>
             </div>
 
-            <div class="flex items-center space-x-4" id="nav-auth-container">
-                <!-- Контент через JS -->
+            <div class="flex items-center space-x-4" id="nav-user-area">
+                <!-- Dynamic Content -->
             </div>
         </div>
     </nav>
 
     <main class="max-w-5xl mx-auto px-6 py-12">
         
-        <!-- ГЛАВНЫЙ ЭКРАН -->
-        <div id="main-hero" class="section-content space-y-20">
-            <div class="text-center space-y-8 py-10">
-                <div class="inline-flex items-center space-x-2 bg-blue-50 text-blue-700 px-4 py-2 rounded-full text-[10px] font-black uppercase tracking-widest mb-4">
-                    <i class="fas fa-shield-alt"></i> <span>Подготовка к ЕНТ 2026 • Официально</span>
-                </div>
-                <h1 class="text-6xl md:text-8xl font-extrabold tracking-tighter leading-[0.85] text-slate-900 italic uppercase">Твой Грант <br><span class="text-blue-600">начинается здесь.</span></h1>
-                <p class="text-slate-400 text-xl max-w-2xl mx-auto font-medium italic">ELO рейтинг: <span id="hero-elo" class="text-blue-600 font-black">1200</span>. Узнай свой шанс на поступление в ВУЗы Казахстана.</p>
+        <!-- SECTION: HERO -->
+        <section id="sec-hero" class="app-section space-y-20">
+            <div class="text-center space-y-8 py-10 animate-up">
+                <div id="status-tag"></div>
+                <h1 class="text-6xl md:text-8xl font-extrabold tracking-tighter leading-[0.85] italic uppercase">Твоя Победа <br><span class="text-blue-600">на Гранте.</span></h1>
+                <p class="text-slate-400 text-xl max-w-2xl mx-auto font-medium italic">Первая в Казахстане адаптивная платформа подготовки к ЕНТ.</p>
                 <div class="flex flex-col sm:flex-row justify-center gap-4 pt-6">
-                    <button onclick="handleQuizStartClick()" class="btn-action gradient-blue text-white px-12 py-6 text-sm shadow-2xl">Начать Тренировку</button>
-                    <button onclick="openModal('payment-modal')" class="btn-action bg-white text-slate-900 border-2 border-slate-100 px-12 py-6 text-sm">PRO Доступ</button>
+                    <button onclick="quiz.init()" class="btn-action gradient-blue text-white px-12 py-6 text-sm shadow-2xl">Начать Блиц</button>
+                    <button onclick="openModal('payment-modal')" class="btn-action bg-white text-slate-900 border-2 border-slate-100 px-12 py-6 text-sm">Купить PRO</button>
                 </div>
             </div>
 
-            <!-- СЕТКА ФУНКЦИЙ -->
             <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
-                <div onclick="openModal('academy-modal')" class="neo-card p-10 cursor-pointer group">
-                    <div class="w-14 h-14 bg-purple-50 text-purple-600 rounded-2xl flex items-center justify-center text-2xl mb-8 group-hover:scale-110 transition"><i class="fas fa-university"></i></div>
-                    <h3 class="text-2xl font-bold mb-3 uppercase italic tracking-tight">Академия</h3>
-                    <p class="text-slate-400 text-sm font-medium italic leading-relaxed">База данных лайфхаков и видео-разборов ЕНТ.</p>
+                <div onclick="academy.open()" class="neo-card p-10 cursor-pointer group">
+                    <div class="w-14 h-14 bg-purple-50 text-purple-600 rounded-2xl flex items-center justify-center text-2xl mb-8 group-hover:rotate-12 transition"><i class="fas fa-lightbulb"></i></div>
+                    <h3 class="text-2xl font-bold uppercase italic">Академия</h3>
+                    <p class="text-slate-400 text-sm italic">Интерактивные разборы сложных тем.</p>
                 </div>
-                <div class="neo-card p-10 bg-blue-50/30 border-blue-100 group">
-                    <div class="w-14 h-14 bg-blue-600 text-white rounded-2xl flex items-center justify-center text-2xl mb-8 shadow-lg shadow-blue-200 group-hover:scale-110 transition"><i class="fas fa-chart-pie"></i></div>
-                    <h3 class="text-2xl font-bold mb-3 uppercase italic text-blue-900 tracking-tight">Шанс на Грант</h3>
-                    <p class="text-blue-600/60 text-sm font-medium italic leading-relaxed" id="grant-prediction">Пройдите Блиц-тест для анализа баллов.</p>
+                <div class="neo-card p-10 bg-blue-50/50 border-blue-100">
+                    <div class="w-14 h-14 bg-blue-600 text-white rounded-2xl flex items-center justify-center text-2xl mb-8 shadow-xl"><i class="fas fa-chart-line"></i></div>
+                    <h3 class="text-2xl font-bold uppercase italic text-blue-900">AI Анализ</h3>
+                    <p class="text-blue-600/60 text-sm italic" id="hero-prediction">Войдите для прогноза гранта.</p>
                 </div>
-                <div onclick="openModal('battle-modal')" class="neo-card p-10 group">
-                    <div class="w-14 h-14 bg-orange-100 text-orange-600 rounded-2xl flex items-center justify-center text-2xl mb-8 group-hover:scale-110 transition"><i class="fas fa-fire"></i></div>
-                    <h3 class="text-2xl font-bold mb-3 uppercase italic tracking-tight">Баттл</h3>
-                    <p class="text-slate-400 text-sm font-medium italic leading-relaxed">Вызывай друзей на дуэль за очки ELO.</p>
+                <div onclick="ui.checkPaywall('battle')" class="neo-card p-10">
+                    <div class="w-14 h-14 bg-orange-100 text-orange-600 rounded-2xl flex items-center justify-center text-2xl mb-8"><i class="fas fa-shield-alt"></i></div>
+                    <h3 class="text-2xl font-bold uppercase italic">Battle</h3>
+                    <p class="text-slate-400 text-sm italic">Соревнования за рейтинг ELO.</p>
                 </div>
             </div>
 
-            <!-- ЛИДЕРБОРД -->
-            <div class="space-y-10">
+            <!-- LEADERBOARD -->
+            <div class="space-y-8 pb-20">
                 <h3 class="text-[11px] font-black text-slate-400 uppercase tracking-[0.4em] italic flex items-center">
-                    <i class="fas fa-crown text-yellow-500 mr-3"></i> Глобальный Лидерборд
+                    <i class="fas fa-crown text-yellow-500 mr-3"></i> Глобальный рейтинг
                 </h3>
-                <div class="neo-card overflow-hidden" id="leaderboard-container"></div>
+                <div class="neo-card overflow-hidden" id="leaderboard-box"></div>
             </div>
-        </div>
+        </section>
 
-        <!-- ЛИЧНЫЙ КАБИНЕТ -->
-        <div id="profile-section" class="section-content hidden animate-in fade-in duration-700 space-y-12">
+        <!-- SECTION: PROFILE -->
+        <section id="sec-profile" class="app-section hidden space-y-12">
             <div class="grid grid-cols-1 lg:grid-cols-12 gap-10">
                 <div class="lg:col-span-4 space-y-8">
-                    <div class="neo-card p-10 text-center space-y-8 relative overflow-hidden">
-                        <div class="absolute top-0 left-0 w-full h-2 gradient-blue"></div>
-                        <div class="w-32 h-32 gradient-blue text-white rounded-[40px] mx-auto flex items-center justify-center text-5xl font-black shadow-2xl" id="profile-avatar">?</div>
+                    <div class="neo-card p-10 text-center space-y-8 relative overflow-hidden border-t-8 border-blue-600">
+                        <div id="profile-status-badge" class="absolute top-4 right-4"></div>
+                        <div class="w-32 h-32 gradient-blue text-white rounded-[40px] mx-auto flex items-center justify-center text-5xl font-black" id="p-avatar">?</div>
                         <div>
-                            <h2 class="text-3xl font-black italic text-slate-900" id="profile-name-display">...</h2>
-                            <p class="text-[10px] font-black text-slate-400 uppercase tracking-widest mt-2" id="profile-email-display">...</p>
+                            <h2 class="text-3xl font-black italic" id="p-name">...</h2>
+                            <p class="text-[10px] font-bold text-slate-400 uppercase tracking-widest mt-2" id="p-email">...</p>
                         </div>
                         <div class="grid grid-cols-2 gap-4">
-                            <div class="bg-slate-50 p-6 rounded-3xl"><p class="text-[9px] font-black text-slate-400 uppercase italic mb-1 text-center">ELO</p><p class="text-3xl font-black text-blue-600 italic" id="profile-elo">1200</p></div>
-                            <div class="bg-slate-50 p-6 rounded-3xl"><p class="text-[9px] font-black text-slate-400 uppercase italic mb-1 text-center">Стрик</p><p class="text-3xl font-black text-orange-500 italic" id="profile-streak">0</p></div>
+                            <div class="bg-slate-50 p-6 rounded-3xl"><p class="text-[9px] font-black text-slate-400 mb-1 uppercase">ELO</p><p class="text-3xl font-black text-blue-600 italic" id="p-elo">0</p></div>
+                            <div class="bg-slate-50 p-6 rounded-3xl"><p class="text-[9px] font-black text-slate-400 mb-1 uppercase">Streak</p><p class="text-3xl font-black text-orange-500 italic" id="p-streak">0</p></div>
                         </div>
-                        <button onclick="logout()" class="w-full btn-action bg-slate-50 text-slate-400 py-4 text-[10px]">Выйти из системы</button>
+                        <button onclick="auth.logout()" class="w-full text-slate-300 font-black text-[10px] uppercase italic">Выйти из системы</button>
                     </div>
                 </div>
                 <div class="lg:col-span-8 space-y-8">
                     <div class="neo-card p-10">
-                        <h3 class="text-xs font-black text-slate-400 uppercase tracking-[0.3em] italic mb-8">Матрица Знаний</h3>
-                        <div class="h-80"><canvas id="progressChart"></canvas></div>
+                        <div class="flex justify-between items-center mb-8">
+                            <h3 class="text-xs font-black text-slate-900 uppercase italic">Анализ навыков</h3>
+                            <div id="pro-lock-analytics"></div>
+                        </div>
+                        <div class="h-80"><canvas id="statsChart"></canvas></div>
                     </div>
-                    <div class="neo-card p-10 border-l-8 border-blue-600">
-                        <h3 class="text-xs font-black text-slate-900 uppercase italic mb-4">Рекомендации от Altyn Logic AI:</h3>
-                        <p class="text-slate-500 italic font-medium leading-relaxed">На основе твоих тестов по Истории: обрати внимание на даты XVII века. По Математике — улучши навыки решения задач на проценты.</p>
+                    
+                    <!-- WEAK POINTS ENGINE -->
+                    <div class="neo-card p-10 border-l-8 border-red-500">
+                        <h3 class="text-xs font-black text-red-600 uppercase italic mb-6"><i class="fas fa-exclamation-triangle mr-2"></i> Работа над ошибками</h3>
+                        <div id="weak-points-list" class="space-y-3">
+                            <p class="text-slate-400 italic text-sm">Ошибок пока нет. Ты молодец!</p>
+                        </div>
                     </div>
                 </div>
             </div>
-        </div>
+        </section>
 
-        <!-- КВИЗ -->
-        <div id="quiz-container" class="section-content hidden space-y-12">
+        <!-- SECTION: QUIZ ENGINE -->
+        <section id="sec-quiz" class="app-section hidden space-y-12">
             <div class="flex justify-between items-end">
                 <div class="space-y-2">
-                    <p id="quiz-title" class="text-[11px] font-black text-blue-600 uppercase tracking-[0.3em] italic"></p>
-                    <h2 id="question-number" class="text-5xl font-black text-slate-900 italic tracking-tighter">Вопрос 01</h2>
+                    <p id="q-category" class="text-[11px] font-black text-blue-600 uppercase tracking-widest italic"></p>
+                    <h2 id="q-number" class="text-5xl font-black italic tracking-tighter">Вопрос 01</h2>
                 </div>
-                <div id="timer" class="text-3xl font-black text-slate-200 font-mono italic tabular-nums">00:00</div>
+                <div id="q-timer" class="text-3xl font-black text-slate-200 font-mono italic">00:00</div>
             </div>
             <div class="bg-white p-12 md:p-24 rounded-[72px] shadow-2xl border border-slate-50 relative overflow-hidden text-center">
-                <div class="h-2 w-full bg-slate-50 absolute top-0 left-0"><div id="progress-bar" class="h-full gradient-blue transition-all duration-700" style="width: 0%"></div></div>
-                <h2 id="question-text" class="text-3xl md:text-4xl font-bold text-slate-800 mb-20 italic tracking-tight leading-snug"></h2>
-                <div id="options-container" class="grid grid-cols-1 md:grid-cols-2 gap-5"></div>
+                <div class="h-2 w-full bg-slate-50 absolute top-0 left-0"><div id="q-progress" class="h-full gradient-blue transition-all duration-700" style="width: 0%"></div></div>
+                <h2 id="q-text" class="text-3xl md:text-4xl font-bold text-slate-800 mb-20 italic leading-snug"></h2>
+                <div id="q-options" class="grid grid-cols-1 md:grid-cols-2 gap-5"></div>
             </div>
-        </div>
+        </section>
 
-        <!-- РЕЗУЛЬТАТЫ -->
-        <div id="result-screen" class="section-content hidden text-center space-y-16 py-10 animate-in zoom-in duration-500">
-            <div class="space-y-6">
-                <h2 id="score-display" class="text-[12rem] font-black italic text-slate-900 leading-none tracking-tighter">0/10</h2>
-                <p id="result-elo" class="text-3xl font-black text-blue-600 italic uppercase"></p>
-            </div>
-            <button onclick="location.reload()" class="btn-action bg-slate-900 text-white px-20 py-7 text-sm italic shadow-2xl">В Главное Меню</button>
-            <div id="review-container" class="max-w-3xl mx-auto space-y-8 pt-20 text-left"></div>
-        </div>
+        <!-- SECTION: RESULTS -->
+        <section id="sec-results" class="app-section hidden text-center space-y-16 py-10">
+            <h2 id="res-score" class="text-[12rem] font-black italic text-slate-900 leading-none tracking-tighter">0/0</h2>
+            <div id="res-elo-gain" class="text-3xl font-black text-blue-600 uppercase italic"></div>
+            <button onclick="router.navigate('hero')" class="btn-action bg-slate-900 text-white px-20 py-7 text-sm italic shadow-2xl">Вернуться</button>
+            <div id="res-review" class="max-w-3xl mx-auto space-y-8 pt-20 text-left"></div>
+        </section>
     </main>
 
-    <!-- МОДАЛЬНЫЕ ОКНА -->
-    <div id="modal-bg" class="fixed inset-0 bg-slate-900/85 backdrop-blur-2xl z-[200] hidden flex items-center justify-center p-4">
+    <!-- MODALS -->
+    <div id="modal-bg" class="fixed inset-0 bg-slate-900/90 backdrop-blur-2xl z-[200] hidden flex items-center justify-center p-4">
         
-        <!-- МОДАЛКА: АВТОРИЗАЦИЯ -->
-        <div id="auth-modal" class="modal-content hidden bg-white w-full max-w-md rounded-[56px] p-14 space-y-8 shadow-2xl">
-            <div class="flex justify-center space-x-10 border-b border-slate-100 pb-6">
-                <button onclick="toggleAuthMode('login')" id="btn-tab-login" class="font-black text-sm uppercase italic pb-2 transition-all">Вход</button>
-                <button onclick="toggleAuthMode('register')" id="btn-tab-reg" class="font-black text-sm uppercase italic pb-2 text-slate-300 transition-all">Регистрация</button>
+        <!-- AUTH -->
+        <div id="modal-auth" class="modal-content hidden bg-white w-full max-w-md rounded-[56px] p-12 space-y-8">
+            <div class="flex justify-center space-x-10 border-b border-slate-100 pb-4">
+                <button onclick="auth.setMode('login')" id="tab-login" class="font-black text-sm uppercase italic">Вход</button>
+                <button onclick="auth.setMode('reg')" id="tab-reg" class="font-black text-sm uppercase italic text-slate-300">Регистрация</button>
             </div>
-            <div class="space-y-5">
-                <div id="reg-name-field" style="display:none">
-                    <input type="text" id="auth-name" placeholder="ТВОЕ ИМЯ" class="w-full p-6 bg-slate-50 rounded-3xl font-black italic uppercase text-xs outline-none focus:ring-4 focus:ring-blue-100">
-                </div>
-                <input type="email" id="auth-email" placeholder="E-MAIL ИЛИ ТЕЛЕФОН" class="w-full p-6 bg-slate-50 rounded-3xl font-black italic uppercase text-xs outline-none focus:ring-4 focus:ring-blue-100">
-                <input type="password" id="auth-pass" placeholder="ПАРОЛЬ" class="w-full p-6 bg-slate-50 rounded-3xl font-black italic uppercase text-xs outline-none focus:ring-4 focus:ring-blue-100">
-                <button onclick="processAuth()" class="w-full btn-action gradient-blue text-white py-6 text-xs italic tracking-widest shadow-xl mt-4">Начать</button>
+            <div class="space-y-4">
+                <input type="text" id="in-name" placeholder="ТВОЕ ИМЯ" class="w-full p-6 bg-slate-50 rounded-3xl font-black italic text-xs uppercase outline-none focus:ring-4 focus:ring-blue-100 reg-only">
+                <input type="email" id="in-email" placeholder="E-MAIL" class="w-full p-6 bg-slate-50 rounded-3xl font-black italic text-xs uppercase outline-none focus:ring-4 focus:ring-blue-100">
+                <input type="password" id="in-pass" placeholder="ПАРОЛЬ" class="w-full p-6 bg-slate-50 rounded-3xl font-black italic text-xs uppercase outline-none focus:ring-4 focus:ring-blue-100">
+                <button onclick="auth.process()" class="w-full btn-action gradient-blue text-white py-6 text-xs italic tracking-widest shadow-xl">Подтвердить</button>
             </div>
         </div>
 
-        <!-- МОДАЛКА: БЛИЦ -->
-        <div id="blitz-modal" class="modal-content hidden bg-white w-full max-w-xl rounded-[64px] p-16 space-y-12">
-            <div class="flex justify-between items-center"><h2 class="text-4xl font-black italic uppercase italic">Тренажер</h2><button onclick="closeAllModals()" class="text-slate-300"><i class="fas fa-times text-2xl"></i></button></div>
-            <div class="grid grid-cols-1 gap-5">
-                <button onclick="startQuiz('math_lit')" class="flex items-center space-x-8 p-8 bg-slate-50 rounded-[32px] hover:bg-blue-50 transition-all border-2 border-transparent hover:border-blue-100 text-left group">
-                    <div class="w-20 h-20 bg-blue-100 text-blue-600 rounded-2xl flex items-center justify-center text-3xl group-hover:rotate-12 transition"><i class="fas fa-calculator"></i></div>
-                    <div><p class="font-black italic text-slate-800 text-2xl uppercase leading-none mb-1">Мат. грамотность</p><p class="text-xs font-bold text-slate-400 uppercase italic">Проверка логики • 10 вопр.</p></div>
-                </button>
-                <button onclick="startQuiz('history')" class="flex items-center space-x-8 p-8 bg-slate-50 rounded-[32px] hover:bg-red-50 transition-all border-2 border-transparent hover:border-red-100 text-left group">
-                    <div class="w-20 h-20 bg-red-100 text-red-600 rounded-2xl flex items-center justify-center text-3xl group-hover:rotate-12 transition"><i class="fas fa-landmark"></i></div>
-                    <div><p class="font-black italic text-slate-800 text-2xl uppercase leading-none mb-1">История</p><p class="text-xs font-bold text-slate-400 uppercase italic">Казахстан • 10 вопр.</p></div>
-                </button>
+        <!-- DYNAMIC ACADEMY -->
+        <div id="modal-academy" class="modal-content hidden bg-white w-full max-w-4xl rounded-[64px] flex overflow-hidden h-[80vh]">
+            <div class="w-1/3 bg-slate-50 p-10 border-r border-slate-100 space-y-4">
+                <h2 class="text-2xl font-black italic uppercase mb-10">Темы</h2>
+                <div id="academy-menu" class="space-y-2"></div>
+            </div>
+            <div class="w-2/3 p-16 overflow-y-auto space-y-8 relative">
+                <button onclick="closeAllModals()" class="absolute top-8 right-8 text-slate-300"><i class="fas fa-times text-2xl"></i></button>
+                <div id="academy-content" class="animate-up"></div>
             </div>
         </div>
 
-        <!-- МОДАЛКА: АКАДЕМИЯ -->
-        <div id="academy-modal" class="modal-content hidden bg-white w-full max-w-3xl rounded-[64px] p-16 space-y-12 max-h-[85vh] overflow-y-auto">
-            <div class="flex justify-between items-center"><h2 class="text-4xl font-black italic uppercase italic">Academy</h2><button onclick="closeAllModals()" class="text-slate-300"><i class="fas fa-times text-2xl"></i></button></div>
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                <div class="p-8 bg-blue-50 rounded-[40px] space-y-4">
-                    <h4 class="font-black italic text-blue-800 uppercase text-xs tracking-widest flex items-center"><i class="fas fa-play-circle mr-2"></i> Видео-разбор</h4>
-                    <p class="text-slate-600 italic font-medium leading-relaxed">Как решать задачи на проценты за 10 секунд без калькулятора.</p>
-                </div>
-                <div class="p-8 bg-purple-50 rounded-[40px] space-y-4">
-                    <h4 class="font-black italic text-purple-800 uppercase text-xs tracking-widest flex items-center"><i class="fas fa-file-alt mr-2"></i> Конспект</h4>
-                    <p class="text-slate-600 italic font-medium leading-relaxed">Все даты по истории Казахстана (XVIII век) на одной странице.</p>
-                </div>
+        <!-- PAYMENT (PRO) -->
+        <div id="modal-payment" class="modal-content hidden bg-white w-full max-w-md rounded-[64px] p-16 text-center space-y-8">
+            <div class="w-20 h-20 bg-amber-100 text-amber-600 rounded-3xl flex items-center justify-center text-3xl mx-auto"><i class="fas fa-crown"></i></div>
+            <h2 class="text-4xl font-black italic uppercase">Altyn Logic PRO</h2>
+            <ul class="text-left text-sm space-y-3 font-medium italic text-slate-500">
+                <li><i class="fas fa-check text-green-500 mr-2"></i> Полная аналитика навыков</li>
+                <li><i class="fas fa-check text-green-500 mr-2"></i> Доступ к Баттл-арене</li>
+                <li><i class="fas fa-check text-green-500 mr-2"></i> Безлимитные тесты</li>
+            </ul>
+            <div class="p-10 gradient-blue text-white rounded-[40px] shadow-2xl">
+                <p class="text-6xl font-black italic">2 490 ₸</p>
+                <p class="text-[10px] font-black uppercase opacity-60">Единоразово • Kaspi</p>
             </div>
+            <button onclick="auth.upgradeToPro()" class="w-full btn-action bg-slate-900 text-white py-6 text-xs italic tracking-widest shadow-2xl">Активировать PRO</button>
         </div>
         
-        <!-- МОДАЛКА: ОПЛАТА -->
-        <div id="payment-modal" class="modal-content hidden bg-white w-full max-w-md rounded-[64px] p-16 space-y-10 text-center">
-            <h2 class="text-4xl font-black uppercase italic tracking-tighter italic">Altyn Logic Pro</h2>
-            <div class="p-12 gradient-blue text-white rounded-[48px] shadow-2xl shadow-blue-200">
-                <p class="text-7xl font-black italic tracking-tighter mb-2">2 490 ₸</p>
-                <p class="text-[10px] font-black uppercase opacity-60 italic tracking-widest italic leading-none">Единоразово • ИП Khamidullin</p>
+        <!-- SUBJECTS -->
+        <div id="subjects-modal" class="modal-content hidden bg-white w-full max-w-lg rounded-[40px] p-12 space-y-6 font-bold italic">
+            <h2 class="text-2xl font-black uppercase italic underline decoration-blue-500">ЕНТ 2026 Структура</h2>
+            <div class="space-y-4 text-slate-600">
+                <p>3 Обязательных (МатГрамотность, История Каз, ГрамЧтения)</p>
+                <p>2 Профильных (на выбор)</p>
             </div>
-            <button onclick="window.open('https://kaspi.kz', '_blank')" class="w-full btn-action bg-slate-900 text-white py-7 text-xs italic tracking-widest shadow-2xl uppercase">Купить через Kaspi</button>
+            <button onclick="closeAllModals()" class="btn-action bg-slate-900 text-white w-full py-4 text-xs italic">Понятно</button>
         </div>
     </div>
 
     <script>
-        const allQuestions = {
-            math_lit: [
-                { q: "Найдите 25% от 80% числа 200.", a: ["20", "40", "50", "60"], c: 1, hint: "80% от 200 = 160. 25% от 160 = 40." },
-                { q: "Число x увеличили на 20%, затем уменьшили на 20%. Изменение?", a: ["Не изменилось", "+4%", "-4%", "-2%"], c: 2, hint: "Формула: (n/100)²." },
-                { q: "У двора 10 голов и 28 ног (куры и кролики). Кроликов?", a: ["4", "5", "6", "3"], c: 0, hint: "4*4 + 6*2 = 28." }
-            ],
-            history: [
-                { q: "В каком году произошло Анракайское сражение?", a: ["1723", "1726", "1729", "1730"], c: 2, hint: "1729 год." }
+        /** 
+         * DATA ENGINE: Весь контент здесь. Легко вынести в внешний JSON.
+         */
+        const DATABASE = {
+            questions: {
+                math_lit: [
+                    { id: "m1", q: "Найдите 25% от 80% числа 200.", a: ["20", "40", "50", "60"], c: 1, h: "80% от 200 = 160. 25% от 160 = 40." },
+                    { id: "m2", q: "Если \(x + y = 10\) и \(x - y = 4\), то \(x\) равно?", a: ["7", "6", "8", "5"], c: 0, h: "Сложите уравнения: 2x = 14." }
+                ],
+                history: [
+                    { id: "h1", q: "В каком году образовано Казахское ханство?", a: ["1456", "1465", "1470", "1501"], c: 1, h: "Керей и Жанибек, 1465 год." }
+                ],
+                reading: [
+                    { id: "r1", q: "Основная цель текста о времени?", a: ["Показать цену часов", "Важность ресурса", "История календаря", "План на день"], c: 1, h: "Анализ главной мысли." }
+                ]
+            },
+            academy: [
+                { id: "proc", title: "Проценты", content: "<h3>Лайфхак на %</h3><p>Чтобы найти \(x\%\) от \(y\), можно просто найти \(y\%\) от \(x\). Например, 4% от 75 — это то же самое, что 75% от 4 (ответ 3). Решается мгновенно!</p>" },
+                { id: "hist", title: "Хронология", content: "<h3>Золотая Орда</h3><p>Запомни 1219 год — начало нашествия Чингисхана. Это ключевая дата для всех тестов по истории.</p>" }
             ]
         };
 
-        const STORAGE_KEY = 'altyn_logic_final_v4';
-        let state = { name: "", email: "", elo: 1200, streak: 0, lastActive: null, isLoggedIn: false };
-        let authMode = 'login', currentQ = 0, score = 0, startTime, activeSubject = [], userAnswers = [];
+        /**
+         * STATE DISPATCHER: Единый центр управления данными
+         */
+        let appState = {
+            user: {
+                name: "", email: "", elo: 1200, streak: 0, status: "FREE", // FREE или PRO
+                weakPoints: [], history: [], lastActive: null, isLoggedIn: false
+            }
+        };
 
-        function initApp() {
-            const saved = localStorage.getItem(STORAGE_KEY);
-            if (saved) {
-                state = JSON.parse(saved);
-                if(state.isLoggedIn) {
-                    showToast(`С возвращением, ${state.name}!`);
-                    checkStreak();
+        const storage = {
+            save: () => localStorage.setItem('altyn_logic_v5', JSON.stringify(appState)),
+            load: () => {
+                const data = localStorage.getItem('altyn_logic_v5');
+                if(data) appState = JSON.parse(data);
+            }
+        };
+
+        /**
+         * ROUTER: Переключение между экранами
+         */
+        const router = {
+            navigate: (sec) => {
+                document.querySelectorAll('.app-section').forEach(s => s.classList.add('hidden'));
+                document.getElementById(`sec-${sec}`).classList.remove('hidden');
+                window.scrollTo({top: 0, behavior: 'smooth'});
+                ui.update();
+            }
+        };
+
+        /**
+         * AUTH ENGINE
+         */
+        const auth = {
+            mode: 'login',
+            setMode: (m) => {
+                auth.mode = m;
+                document.getElementById('tab-login').className = (m === 'login') ? 'font-black text-blue-600 italic border-b-2 border-blue-600' : 'font-black text-slate-300 italic';
+                document.getElementById('tab-reg').className = (m === 'reg') ? 'font-black text-blue-600 italic border-b-2 border-blue-600' : 'font-black text-slate-300 italic';
+                document.querySelectorAll('.reg-only').forEach(e => e.style.display = (m === 'reg') ? 'block' : 'none');
+            },
+            process: () => {
+                const n = document.getElementById('in-name').value;
+                const e = document.getElementById('in-email').value;
+                if(!e) return ui.toast("Введите почту!");
+                
+                appState.user.email = e;
+                if(auth.mode === 'reg') appState.user.name = n || "Ученик";
+                appState.user.isLoggedIn = true;
+                appState.user.lastActive = new Date().toDateString();
+                appState.user.streak = 1;
+                
+                storage.save();
+                ui.update();
+                closeAllModals();
+                ui.toast("Добро пожаловать в Altyn Logic!");
+            },
+            logout: () => {
+                appState.user.isLoggedIn = false;
+                storage.save();
+                location.reload();
+            },
+            upgradeToPro: () => {
+                appState.user.status = "PRO";
+                storage.save();
+                ui.update();
+                closeAllModals();
+                ui.toast("Поздравляем! Теперь у тебя PRO доступ.");
+            }
+        };
+
+        /**
+         * UI ENGINE
+         */
+        const ui = {
+            update: () => {
+                const u = appState.user;
+                const area = document.getElementById('nav-user-area');
+                
+                if(u.isLoggedIn) {
+                    area.innerHTML = `
+                        <div class="flex items-center space-x-2 text-orange-500 font-bold text-xs bg-orange-50 px-3 py-1 rounded-full"><i class="fas fa-fire"></i> ${u.streak}</div>
+                        <button onclick="router.navigate('profile')" class="flex items-center space-x-3 bg-slate-900 text-white p-1 pr-5 rounded-full hover:bg-blue-600 transition">
+                            <div class="w-8 h-8 bg-white/20 rounded-full flex items-center justify-center font-bold">${u.name[0]}</div>
+                            <span class="text-[10px] font-black uppercase italic">${u.name}</span>
+                        </button>`;
+                    
+                    document.getElementById('p-name').innerText = u.name;
+                    document.getElementById('p-email').innerText = u.email;
+                    document.getElementById('p-avatar').innerText = u.name[0];
+                    document.getElementById('p-elo').innerText = u.elo;
+                    document.getElementById('p-streak').innerText = u.streak;
+                    document.getElementById('status-tag').innerHTML = u.status === 'PRO' ? '<span class="pro-badge">PRO ACCOUNT</span>' : '';
+                    document.getElementById('profile-status-badge').innerHTML = u.status === 'PRO' ? '<span class="pro-badge">PRO</span>' : '';
+                    
+                    // Paywall logic
+                    const isPro = u.status === 'PRO';
+                    document.getElementById('pro-lock-analytics').innerHTML = isPro ? '' : '<span class="text-[9px] bg-red-50 text-red-500 px-2 py-1 rounded-lg font-black"><i class="fas fa-lock mr-1"></i> Доступно в PRO</span>';
+                    
+                    // Weak Points
+                    const wpList = document.getElementById('weak-points-list');
+                    if(u.weakPoints.length > 0) {
+                        wpList.innerHTML = u.weakPoints.slice(-3).map(id => {
+                            return `<div class="p-3 bg-red-50 text-red-600 rounded-xl text-xs font-bold italic border border-red-100 flex justify-between">
+                                <span>Проблема в теме: ${id.startsWith('m') ? 'Математика' : 'История'}</span>
+                                <i class="fas fa-arrow-right"></i>
+                            </div>`;
+                        }).join('');
+                    }
+
+                    const predicted = Math.floor((u.elo - 500) / 10);
+                    document.getElementById('hero-prediction').innerHTML = `Прогноз ЕНТ: <span class="text-blue-600 font-black">${predicted > 140 ? 140 : predicted} / 140</span>`;
+                } else {
+                    area.innerHTML = `<button onclick="openModal('modal-auth')" class="bg-slate-900 text-white px-8 py-3 rounded-full text-[10px] font-black uppercase tracking-widest shadow-xl">Вход</button>`;
                 }
+                ui.renderLeaderboard();
+            },
+            toast: (msg) => {
+                const t = document.createElement('div'); t.className = 'toast animate-up'; t.innerHTML = `<i class="fas fa-info-circle"></i> ${msg}`;
+                document.getElementById('toast-container').appendChild(t);
+                setTimeout(() => t.remove(), 4000);
+            },
+            renderLeaderboard: () => {
+                const box = document.getElementById('leaderboard-box');
+                const u = appState.user;
+                const data = [{n: "Алихан Р.", e: 1480, s: 21}, {n: u.name || "Ты", e: u.elo, s: u.streak, me: true}, {n: "Диляра М.", e: 1350, s: 12}].sort((a,b) => b.e - a.e);
+                box.innerHTML = data.map((p, i) => `
+                    <div class="p-6 flex items-center justify-between border-b border-slate-50 ${p.me ? 'bg-blue-50/30' : ''}">
+                        <div class="flex items-center space-x-6">
+                            <span class="text-xl font-black text-slate-200">0${i+1}</span>
+                            <div class="w-12 h-12 ${p.me ? 'gradient-blue' : 'bg-slate-100'} text-${p.me ? 'white' : 'slate-500'} rounded-2xl flex items-center justify-center font-black">${p.n[0]}</div>
+                            <div><p class="font-bold italic">${p.n}</p><p class="text-[8px] font-black text-blue-500 uppercase tracking-widest">🔥 Streak: ${p.s}</p></div>
+                        </div>
+                        <p class="font-black italic">${p.e} ELO</p>
+                    </div>`).join('');
+            },
+            checkPaywall: (feature) => {
+                if(appState.user.status !== 'PRO') openModal('modal-payment');
+                else ui.toast("Этот раздел в разработке. Будет доступен через 3 дня!");
             }
-            updateUI();
-            renderLeaderboard();
-        }
+        };
 
-        function showToast(msg) {
-            const container = document.getElementById('toast-container');
-            const toast = document.createElement('div');
-            toast.className = 'toast';
-            toast.innerText = msg;
-            container.appendChild(toast);
-            setTimeout(() => toast.remove(), 4000);
-        }
-
-        function toggleAuthMode(mode) {
-            authMode = mode;
-            document.getElementById('btn-tab-login').className = (mode === 'login') ? 'font-black text-sm uppercase italic pb-2 text-blue-600 border-b-4 border-blue-600' : 'font-black text-sm uppercase italic pb-2 text-slate-300';
-            document.getElementById('btn-tab-reg').className = (mode === 'register') ? 'font-black text-sm uppercase italic pb-2 text-blue-600 border-b-4 border-blue-600' : 'font-black text-sm uppercase italic pb-2 text-slate-300';
-            document.getElementById('reg-name-field').style.display = (mode === 'register') ? 'block' : 'none';
-        }
-
-        function processAuth() {
-            const name = document.getElementById('auth-name').value.trim();
-            const email = document.getElementById('auth-email').value.trim();
-            if(!email) return alert("Введите E-mail");
-            
-            if(authMode === 'register') state.name = name || "Ученик";
-            state.email = email;
-            state.isLoggedIn = true;
-            state.lastActive = new Date().toDateString();
-            state.streak = state.streak || 1;
-            
-            saveState();
-            updateUI();
-            closeAllModals();
-            renderLeaderboard();
-            showToast("Вход выполнен успешно!");
-        }
-
-        function updateUI() {
-            const authContainer = document.getElementById('nav-auth-container');
-            if (state.isLoggedIn) {
-                authContainer.innerHTML = `
-                    <div class="flex items-center space-x-2 text-orange-500 font-bold text-sm bg-orange-50 px-4 py-2 rounded-full">
-                        <i class="fas fa-fire"></i> <span>${state.streak}</span>
-                    </div>
-                    <button onclick="showSection('profile-section')" class="flex items-center space-x-4 bg-slate-900 text-white p-2 pr-6 rounded-full hover:bg-blue-600 transition shadow-lg">
-                        <div class="w-10 h-10 bg-white/20 rounded-full flex items-center justify-center font-bold text-lg">${state.name ? state.name[0].toUpperCase() : 'U'}</div>
-                        <span class="text-xs font-bold uppercase tracking-widest">${state.name}</span>
-                    </button>
-                `;
-            } else {
-                authContainer.innerHTML = `
-                    <button onclick="openModal('auth-modal')" class="text-[10px] font-black uppercase text-slate-400 hover:text-blue-600 mr-4">Вход</button>
-                    <button onclick="toggleAuthMode('register'); openModal('auth-modal');" class="bg-slate-900 text-white px-8 py-3.5 rounded-full text-[10px] font-black uppercase tracking-widest hover:bg-blue-600 shadow-xl transition">Регистрация</button>
-                `;
-            }
-
-            document.getElementById('hero-elo').innerText = state.elo;
-            document.getElementById('profile-name-display').innerText = state.name;
-            document.getElementById('profile-email-display').innerText = state.email;
-            document.getElementById('profile-avatar').innerText = state.name ? state.name[0].toUpperCase() : "?";
-            document.getElementById('profile-elo').innerText = state.elo;
-            document.getElementById('profile-streak').innerText = state.streak;
-            
-            const predicted = Math.floor((state.elo - 500) / 10);
-            const scoreEnt = predicted > 140 ? 140 : (predicted < 0 ? 0 : predicted);
-            document.getElementById('grant-prediction').innerHTML = `Твой балл ЕНТ (прогноз): <span class="text-blue-600 font-black">${scoreEnt} / 140</span>`;
-        }
-
-        function renderLeaderboard() {
-            const container = document.getElementById('leaderboard-container');
-            const data = [
-                {n: "Данияр Б.", e: 1450, s: 15},
-                {n: state.isLoggedIn ? state.name : "Ты (гость)", e: state.elo, s: state.streak, me: state.isLoggedIn},
-                {n: "Айгерим К.", e: 1320, s: 8}
-            ].sort((a,b) => b.e - a.e);
-            
-            container.innerHTML = data.map((p, i) => `
-                <div class="p-8 flex items-center justify-between ${p.me ? 'bg-blue-50/50 border-l-8 border-l-blue-600' : ''} border-b border-slate-50 last:border-none">
-                    <div class="flex items-center space-x-8">
-                        <span class="text-3xl font-black text-slate-100 w-10">0${i+1}</span>
-                        <div class="w-16 h-16 ${p.me ? 'gradient-blue' : 'bg-slate-100'} text-${p.me ? 'white' : 'slate-500'} rounded-3xl flex items-center justify-center font-black shadow-lg text-xl">${p.n[0]}</div>
-                        <div><p class="font-bold text-xl italic text-slate-800 leading-none mb-1">${p.n}</p><p class="text-[9px] font-black text-blue-500 uppercase tracking-widest italic">Streak: ${p.s} 🔥</p></div>
-                    </div>
-                    <div class="text-right"><p class="text-3xl font-black italic text-slate-800">${p.e}</p><p class="text-[9px] text-slate-400 font-black uppercase italic">ELO Score</p></div>
-                </div>
-            `).join('');
-        }
-
-        function startQuiz(key) {
-            closeAllModals(); activeSubject = allQuestions[key]; showSection('quiz-container');
-            document.getElementById('quiz-title').innerText = (key === 'math_lit' ? 'Мат. грамотность' : 'История');
-            currentQ = 0; score = 0; userAnswers = []; startTime = Date.now(); showQuestion(); startTimer();
-        }
-
-        function showQuestion() {
-            const q = activeSubject[currentQ];
-            document.getElementById('question-number').innerText = `Вопрос ${String(currentQ + 1).padStart(2, '0')}`;
-            document.getElementById('question-text').innerText = q.q;
-            document.getElementById('progress-bar').style.width = `${((currentQ + 1) / activeSubject.length) * 100}%`;
-            const cont = document.getElementById('options-container'); cont.innerHTML = '';
-            q.a.forEach((opt, i) => {
-                const b = document.createElement('button');
-                b.className = "w-full p-10 text-left bg-white border-2 border-slate-50 rounded-[40px] hover:border-blue-600 hover:bg-blue-50 transition-all font-bold italic shadow-sm text-xl";
-                b.innerText = opt; b.onclick = () => handleAnswer(i); cont.appendChild(b);
-            });
-        }
-
-        function handleAnswer(idx) {
-            userAnswers.push(idx); if(idx === activeSubject[currentQ].c) score++;
-            currentQ++; if(currentQ < activeSubject.length) showQuestion(); else finishQuiz();
-        }
-
-        function finishQuiz() {
-            showSection('result-screen'); const gained = score * 25; state.elo += gained; saveState(); updateUI(); renderLeaderboard();
-            document.getElementById('score-display').innerText = `${score}/${activeSubject.length}`;
-            document.getElementById('result-elo').innerText = `ELO Score: +${gained}`;
-            const rev = document.getElementById('review-container'); rev.innerHTML = '';
-            activeSubject.forEach((q, i) => {
-                const ok = userAnswers[i] === q.c;
-                rev.innerHTML += `<div class="neo-card p-12 border-l-[16px] ${ok ? 'border-green-500' : 'border-red-500'} mb-6 font-bold italic"><p class="text-2xl text-slate-800 mb-3 leading-tight">${q.q}</p><p class="text-xs uppercase ${ok ? 'text-green-600' : 'text-red-600'} mb-6">Верный ответ: ${q.a[q.c]}</p><div class="bg-blue-50/50 p-6 rounded-3xl text-sm text-blue-900 border border-blue-100/30"><i class="fas fa-lightbulb mr-2 text-yellow-500"></i> ${q.hint}</div></div>`;
-            });
-            showToast(`Тест завершен! Получено +${gained} ELO`);
-        }
-
-        function checkStreak() {
-            const today = new Date().toDateString();
-            if (state.lastActive !== today) {
-                const yesterday = new Date(); yesterday.setDate(yesterday.getDate() - 1);
-                state.streak = (state.lastActive === yesterday.toDateString()) ? state.streak + 1 : 1;
-                state.lastActive = today;
-                saveState();
-            }
-        }
-
-        function handleQuizStartClick() {
-            if(!state.isLoggedIn) {
-                showToast("Сначала нужно войти!");
-                openModal('auth-modal');
-            } else {
+        /**
+         * QUIZ ENGINE: Адаптивная логика
+         */
+        const quiz = {
+            subject: null, currentIdx: 0, score: 0, startTime: 0, answers: [],
+            init: () => {
+                if(!appState.user.isLoggedIn) return openModal('modal-auth');
                 openModal('blitz-modal');
+            },
+            start: (sub) => {
+                closeAllModals();
+                quiz.subject = DATABASE.questions[sub];
+                quiz.currentIdx = 0; quiz.score = 0; quiz.answers = []; quiz.startTime = Date.now();
+                router.navigate('quiz');
+                document.getElementById('q-category').innerText = sub.toUpperCase();
+                quiz.render();
+                quiz.timer();
+            },
+            render: () => {
+                const q = quiz.subject[quiz.currentIdx];
+                document.getElementById('q-number').innerText = `Вопрос ${String(quiz.currentIdx+1).padStart(2,'0')}`;
+                document.getElementById('q-text').innerText = q.q;
+                document.getElementById('q-progress').style.width = `${((quiz.currentIdx+1)/quiz.subject.length)*100}%`;
+                const opts = document.getElementById('q-options'); opts.innerHTML = '';
+                q.a.forEach((opt, i) => {
+                    const btn = document.createElement('button');
+                    btn.className = "w-full p-8 text-left bg-white border-2 border-slate-50 rounded-[32px] hover:border-blue-600 transition font-bold italic text-lg shadow-sm";
+                    btn.innerText = opt; btn.onclick = () => quiz.answer(i); opts.appendChild(btn);
+                });
+                if(window.MathJax) MathJax.typeset();
+            },
+            answer: (idx) => {
+                const q = quiz.subject[quiz.currentIdx];
+                const correct = idx === q.c;
+                if(correct) quiz.score++;
+                else appState.user.weakPoints.push(q.id); // ADAPTIVE: Сохраняем ошибки
+                
+                quiz.answers.push(idx);
+                quiz.currentIdx++;
+                if(quiz.currentIdx < quiz.subject.length) quiz.render();
+                else quiz.finish();
+            },
+            finish: () => {
+                router.navigate('results');
+                const gained = quiz.score * 25;
+                appState.user.elo += gained;
+                storage.save();
+                
+                document.getElementById('res-score').innerText = `${quiz.score}/${quiz.subject.length}`;
+                document.getElementById('res-elo-gain').innerText = `Rating: +${gained} ELO`;
+                const review = document.getElementById('res-review'); review.innerHTML = '';
+                quiz.subject.forEach((q, i) => {
+                    const ok = quiz.answers[i] === q.c;
+                    review.innerHTML += `<div class="neo-card p-10 border-l-[12px] ${ok ? 'border-green-500' : 'border-red-500'} mb-4 italic font-bold">
+                        <p class="text-xl mb-2">${q.q}</p>
+                        <p class="text-xs uppercase ${ok ? 'text-green-600' : 'text-red-600'}">Ответ: ${q.a[q.c]}</p>
+                        <div class="bg-blue-50/50 p-4 rounded-2xl text-[11px] text-blue-900 mt-4">${q.h}</div>
+                    </div>`;
+                });
+            },
+            timer: () => {
+                const el = document.getElementById('q-timer');
+                const t = setInterval(() => {
+                    if(document.getElementById('sec-quiz').classList.contains('hidden')) clearInterval(t);
+                    const s = Math.floor((Date.now() - quiz.startTime)/1000);
+                    el.innerText = `${Math.floor(s/60).toString().padStart(2,'0')}:${(s%60).toString().padStart(2,'0')}`;
+                }, 1000);
             }
-        }
+        };
 
-        function saveState() { localStorage.setItem(STORAGE_KEY, JSON.stringify(state)); }
-        function showSection(id) { document.querySelectorAll('.section-content').forEach(s => s.classList.add('hidden')); document.getElementById(id).classList.remove('hidden'); if(id === 'profile-section') setTimeout(initChart, 100); window.scrollTo({top: 0, behavior: 'smooth'}); }
-        function openModal(id) { document.getElementById('modal-bg').classList.remove('hidden'); document.querySelectorAll('.modal-content').forEach(m => m.classList.add('hidden')); document.getElementById(id).classList.remove('hidden'); if(id === 'auth-modal') toggleAuthMode(authMode); }
+        /**
+         * ACADEMY ENGINE: Динамическое переключение тем
+         */
+        const academy = {
+            open: () => {
+                openModal('modal-academy');
+                const menu = document.getElementById('academy-menu');
+                menu.innerHTML = DATABASE.academy.map(t => `
+                    <button onclick="academy.load('${t.id}')" class="w-full p-4 rounded-2xl font-bold italic text-left hover:bg-white transition text-sm">
+                        ${t.title} <i class="fas fa-chevron-right float-right mt-1 opacity-20"></i>
+                    </button>`).join('');
+                academy.load(DATABASE.academy[0].id);
+            },
+            load: (id) => {
+                const item = DATABASE.academy.find(t => t.id === id);
+                document.getElementById('academy-content').innerHTML = `
+                    <div class="space-y-6">
+                        <h2 class="text-4xl font-black italic uppercase text-blue-600 underline decoration-slate-100 decoration-8 underline-offset-8 mb-10">${item.title}</h2>
+                        <div class="prose prose-slate italic font-medium text-slate-600 text-lg leading-relaxed">
+                            ${item.content}
+                        </div>
+                    </div>`;
+                if(window.MathJax) MathJax.typeset();
+            }
+        };
+
+        // Вспомогательные функции
+        function openModal(id) { 
+            document.getElementById('modal-bg').classList.remove('hidden'); 
+            document.querySelectorAll('.modal-content').forEach(m => m.classList.add('hidden')); 
+            document.getElementById(id).classList.remove('hidden'); 
+            if(id === 'modal-auth') auth.setMode('login');
+        }
         function closeAllModals() { document.getElementById('modal-bg').classList.add('hidden'); }
-        function startTimer() { const el = document.getElementById('timer'); setInterval(() => { if(!document.getElementById('quiz-container').classList.contains('hidden')){ const s = Math.floor((Date.now() - startTime) / 1000); el.innerText = `${Math.floor(s/60).toString().padStart(2,'0')}:${(s%60).toString().padStart(2,'0')}` } }, 1000); }
-        function logout() { state.isLoggedIn = false; saveState(); location.reload(); }
-        function initChart() { const ctx = document.getElementById('progressChart').getContext('2d'); if (window.myChart) window.myChart.destroy(); window.myChart = new Chart(ctx, { type: 'radar', data: { labels: ['Мат.Грам', 'История', 'Грам.Чтения', 'Проф.Мат', 'Проф.Физ'], datasets: [{ data: [85, 45, 65, 90, 75], backgroundColor: 'rgba(37, 99, 235, 0.15)', borderColor: '#2563eb', borderWidth: 5, pointRadius: 5 }] }, options: { scales: { r: { beginAtZero: true, max: 100, ticks: { display: false }, grid: { color: '#f1f5f9' }, pointLabels: { font: { weight: '800', size: 10 } } } }, plugins: { legend: { display: false } } } }); }
+        function initApp() { storage.load(); ui.update(); }
+
+        // Дополнительные модалки выбора блица
+        function startQuiz(sub) { quiz.start(sub); }
     </script>
+    
+    <!-- ДОПОЛНИТЕЛЬНЫЕ МОДАЛКИ (ВЕРНУЛИ) -->
+    <div id="modal-bg" class="fixed inset-0 bg-slate-900/90 backdrop-blur-xl z-[200] hidden flex items-center justify-center p-4"></div>
+    <div id="blitz-modal" class="modal-content hidden bg-white w-full max-w-xl rounded-[64px] p-16 space-y-12">
+        <div class="flex justify-between items-center"><h2 class="text-4xl font-black italic uppercase">Выбери предмет</h2><button onclick="closeAllModals()" class="text-slate-300"><i class="fas fa-times text-2xl"></i></button></div>
+        <div class="grid grid-cols-1 gap-5">
+            <button onclick="quiz.start('math_lit')" class="flex items-center space-x-8 p-8 bg-slate-50 rounded-[32px] hover:bg-blue-50 transition border-2 border-transparent hover:border-blue-100 text-left group">
+                <div class="w-16 h-16 bg-blue-100 text-blue-600 rounded-2xl flex items-center justify-center text-3xl group-hover:rotate-12 transition"><i class="fas fa-calculator"></i></div>
+                <div><p class="font-black italic text-slate-800 text-xl uppercase">Мат. грамотность</p></div>
+            </button>
+            <button onclick="quiz.start('history')" class="flex items-center space-x-8 p-8 bg-slate-50 rounded-[32px] hover:bg-red-50 transition border-2 border-transparent hover:border-red-100 text-left group">
+                <div class="w-16 h-16 bg-red-100 text-red-600 rounded-2xl flex items-center justify-center text-3xl group-hover:rotate-12 transition"><i class="fas fa-landmark"></i></div>
+                <div><p class="font-black italic text-slate-800 text-xl uppercase">История</p></div>
+            </button>
+        </div>
+    </div>
 </body>
 </html>
