@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Altyn Logic | Titan Core V8</title>
+    <title>Altyn Logic | Titan Perfection V8.1</title>
     
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
@@ -21,10 +21,13 @@
         .neo-card:hover { transform: translateY(-8px); box-shadow: 0 40px 80px -15px rgba(37, 99, 235, 0.1); border-color: var(--accent); }
         .btn-action { border-radius: 20px; font-weight: 800; transition: all 0.3s; text-transform: uppercase; letter-spacing: 0.05em; cursor: pointer; }
         .gradient-blue { background: linear-gradient(135deg, #2563eb 0%, #7c3aed 100%); }
-        .hidden { display: none; }
+        .hidden { display: none !important; }
         #toast-container { position: fixed; bottom: 24px; right: 24px; z-index: 1000; }
         .toast { background: #1e293b; color: white; padding: 16px 24px; border-radius: 16px; margin-top: 8px; box-shadow: 0 10px 20px rgba(0,0,0,0.2); animation: slideUp 0.3s ease-out; }
         @keyframes slideUp { from { transform: translateY(20px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
+        /* Универсальный крестик закрытия для модалок */
+        .modal-close-btn { position: absolute; top: 24px; right: 24px; font-size: 24px; color: #cbd5e1; transition: color 0.2s; background: none; border: none; cursor: pointer; }
+        .modal-close-btn:hover { color: #ef4444; }
     </style>
 </head>
 <body class="antialiased" onload="initApp()">
@@ -40,7 +43,7 @@
             
             <div class="hidden lg:flex items-center space-x-8 text-[10px] font-black uppercase tracking-widest text-slate-400">
                 <button onclick="openModal('subjects-modal')" data-i18n="nav_subjects">Предметы</button>
-                <button onclick="academy.open()" data-i18n="nav_academy">Академия</button>
+                <button onclick="openModal('academy-modal')" data-i18n="nav_academy">Академия</button>
                 <button onclick="ui.checkPaywall('battle')" class="text-orange-500" data-i18n="nav_battle"><i class="fas fa-fire mr-1"></i> Баттл</button>
                 
                 <div class="flex bg-slate-100 rounded-full p-1 ml-4">
@@ -54,7 +57,7 @@
 
     <main class="max-w-5xl mx-auto px-6 py-12">
         <section id="sec-hero" class="app-section space-y-20">
-            <div class="text-center space-y-8 py-10 animate-up">
+            <div class="text-center space-y-8 py-10">
                 <h1 class="text-6xl md:text-8xl font-extrabold tracking-tighter leading-[0.85] italic uppercase" data-i18n="hero_title">Cloud <br><span class="text-blue-600">Education.</span></h1>
                 <p class="text-slate-400 text-xl max-w-2xl mx-auto font-medium italic" data-i18n="hero_subtitle">Твой путь к гранту.</p>
                 <div class="flex flex-col sm:flex-row justify-center gap-4 pt-6">
@@ -64,15 +67,14 @@
             </div>
             
             <div class="space-y-6">
-                <h3 class="text-[10px] font-black uppercase tracking-[0.3em] text-slate-400 italic"><i class="fas fa-crown text-yellow-500 mr-2"></i> ТОП-5 УЧЕНИКОВ</h3>
-                <div id="leaderboard-container" class="grid grid-cols-1 md:grid-cols-5 gap-4">
-                    </div>
+                <h3 class="text-[10px] font-black uppercase tracking-[0.3em] text-slate-400 italic" data-i18n="leaderboard_title"><i class="fas fa-crown text-yellow-500 mr-2"></i> ТОП УЧЕНИКОВ</h3>
+                <div id="leaderboard-container" class="grid grid-cols-1 md:grid-cols-5 gap-4"></div>
             </div>
 
             <div class="grid grid-cols-1 md:grid-cols-3 gap-8 pt-10">
-                <div onclick="academy.open()" class="neo-card p-10 cursor-pointer"><h3 class="text-2xl font-bold uppercase italic" data-i18n="card_academy_title">Академия</h3><p class="text-slate-400 text-sm italic">Лайфхаки и секреты ҰБТ.</p></div>
-                <div class="neo-card p-10 bg-blue-50/50 border-blue-100"><h3 class="text-2xl font-bold uppercase italic text-blue-900" data-i18n="card_ai_title">AI Анализ</h3><p class="text-blue-600/60 text-sm italic" id="hero-prediction">Зайдите для прогноза гранта</p></div>
-                <div onclick="ui.checkPaywall('battle')" class="neo-card p-10 cursor-pointer"><h3 class="text-2xl font-bold uppercase italic" data-i18n="card_battle_title">Battle</h3><p class="text-slate-400 text-sm italic">Соревнования в реальном времени.</p></div>
+                <div onclick="openModal('academy-modal')" class="neo-card p-10 cursor-pointer"><h3 class="text-2xl font-bold uppercase italic" data-i18n="card_academy_title">Академия</h3><p class="text-slate-400 text-sm italic" data-i18n="card_academy_desc">Лайфхаки и секреты ҰБТ.</p></div>
+                <div class="neo-card p-10 bg-blue-50/50 border-blue-100"><h3 class="text-2xl font-bold uppercase italic text-blue-900" data-i18n="card_ai_title">AI Анализ</h3><p class="text-blue-600/60 text-sm italic" id="hero-prediction" data-i18n="card_ai_desc">Зайдите для прогноза</p></div>
+                <div onclick="ui.checkPaywall('battle')" class="neo-card p-10 cursor-pointer"><h3 class="text-2xl font-bold uppercase italic" data-i18n="card_battle_title">Battle</h3><p class="text-slate-400 text-sm italic" data-i18n="card_battle_desc">Соревнования.</p></div>
             </div>
         </section>
 
@@ -87,7 +89,7 @@
                             <div class="bg-slate-50 p-6 rounded-3xl"><p class="text-[9px] font-black text-slate-400 mb-1 uppercase">Streak</p><p class="text-3xl font-black text-orange-500 italic" id="p-streak">0</p></div>
                         </div>
                         <div class="space-y-3 pt-4" id="profile-actions">
-                            <button onclick="auth.logout()" class="w-full text-slate-300 font-black text-[10px] uppercase italic tracking-widest hover:text-red-500 transition">Выйти</button>
+                            <button onclick="auth.logout()" class="w-full text-slate-300 font-black text-[10px] uppercase italic tracking-widest hover:text-red-500 transition" data-i18n="btn_logout">Выйти</button>
                         </div>
                     </div>
                 </div>
@@ -95,10 +97,6 @@
                     <div class="neo-card p-10">
                         <h3 class="text-xs font-black text-slate-900 uppercase italic mb-8" data-i18n="profile_matrix">Матрица навыков</h3>
                         <div class="h-80"><canvas id="statsChart"></canvas></div>
-                    </div>
-                    <div id="weak-points-box" class="neo-card p-10 border-l-8 border-red-500 hidden">
-                        <h3 class="text-xs font-black text-red-600 uppercase italic mb-4">Твои слабые зоны</h3>
-                        <div id="weak-list" class="flex flex-wrap gap-2"></div>
                     </div>
                 </div>
             </div>
@@ -108,13 +106,21 @@
             <h2 class="text-3xl font-black italic underline decoration-blue-500">ADMIN CONTROL</h2>
             <div class="neo-card p-10 space-y-6 border-2 border-blue-50">
                 <div class="grid grid-cols-2 gap-4">
-                    <select id="adm-subject" class="p-4 bg-slate-50 rounded-2xl font-bold"><option value="math_lit">Мат. грамотность</option><option value="history">История</option></select>
-                    <select id="adm-lang" class="p-4 bg-slate-50 rounded-2xl font-bold"><option value="ru">Русский</option><option value="kk">Қазақ тілі</option></select>
+                    <select id="adm-subject" class="p-4 bg-slate-50 rounded-2xl font-bold">
+                        <option value="math_lit" data-i18n="math_lit">Мат. грамотность</option>
+                        <option value="history" data-i18n="history">История</option>
+                    </select>
+                    <select id="adm-lang" class="p-4 bg-slate-50 rounded-2xl font-bold">
+                        <option value="ru">Русский</option>
+                        <option value="kk">Қазақ тілі</option>
+                    </select>
                 </div>
                 <textarea id="adm-q-text" placeholder="Текст вопроса" class="w-full p-6 bg-slate-50 rounded-3xl outline-none" rows="3"></textarea>
                 <div class="grid grid-cols-2 gap-4">
-                    <input type="text" id="adm-opt-0" placeholder="A" class="p-4 bg-slate-50 rounded-2xl"><input type="text" id="adm-opt-1" placeholder="B" class="p-4 bg-slate-50 rounded-2xl">
-                    <input type="text" id="adm-opt-2" placeholder="C" class="p-4 bg-slate-50 rounded-2xl"><input type="text" id="adm-opt-3" placeholder="D" class="p-4 bg-slate-50 rounded-2xl">
+                    <input type="text" id="adm-opt-0" placeholder="A" class="p-4 bg-slate-50 rounded-2xl">
+                    <input type="text" id="adm-opt-1" placeholder="B" class="p-4 bg-slate-50 rounded-2xl">
+                    <input type="text" id="adm-opt-2" placeholder="C" class="p-4 bg-slate-50 rounded-2xl">
+                    <input type="text" id="adm-opt-3" placeholder="D" class="p-4 bg-slate-50 rounded-2xl">
                 </div>
                 <input type="number" id="adm-correct" placeholder="Верный индекс (0-3)" class="w-full p-4 bg-slate-50 rounded-2xl font-bold">
                 <button onclick="admin.saveQuestion()" class="w-full p-6 gradient-blue text-white rounded-3xl font-black uppercase italic shadow-xl">Сохранить</button>
@@ -122,9 +128,9 @@
         </section>
 
         <section id="sec-quiz" class="app-section hidden space-y-12 text-center">
-            <div class="flex justify-between items-end mb-10"><h2 id="q-number" class="text-5xl font-black italic">Вопрос 01</h2><div id="q-timer" class="text-3xl font-black text-slate-200 italic font-mono">00:00</div></div>
+            <div class="flex justify-between items-end mb-10"><h2 id="q-number" class="text-5xl font-black italic">№ 1</h2><div id="q-timer" class="text-3xl font-black text-slate-200 italic font-mono">00:00</div></div>
             <div class="bg-white p-16 rounded-[64px] shadow-2xl border border-slate-50 relative overflow-hidden">
-                <div class="absolute top-0 left-0 h-1 gradient-blue" id="quiz-progress" style="width: 0%"></div>
+                <div class="absolute top-0 left-0 h-2 gradient-blue transition-all duration-500" id="quiz-progress" style="width: 0%"></div>
                 <h2 id="q-text" class="text-3xl font-bold text-slate-800 mb-16 italic leading-snug"></h2>
                 <div id="q-options" class="grid grid-cols-1 md:grid-cols-2 gap-5"></div>
             </div>
@@ -139,48 +145,109 @@
     </main>
 
     <div id="modal-bg" class="fixed inset-0 bg-slate-900/90 backdrop-blur-2xl z-[200] hidden flex items-center justify-center p-4">
-        <div id="auth-modal" class="modal-content hidden bg-white w-full max-w-md rounded-[56px] p-12 space-y-8">
+        
+        <div id="auth-modal" class="modal-content relative hidden bg-white w-full max-w-md rounded-[56px] p-12 space-y-8">
+            <button onclick="closeAllModals()" class="modal-close-btn"><i class="fas fa-times"></i></button>
             <div class="flex justify-center space-x-10 border-b pb-4 mb-4">
-                <button onclick="auth.setMode('login')" id="tab-login" class="font-black italic">Вход</button>
-                <button onclick="auth.setMode('reg')" id="tab-reg" class="text-slate-300 italic">Регистрация</button>
+                <button onclick="auth.setMode('login')" id="tab-login" class="font-black italic" data-i18n="login_text">Вход</button>
+                <button onclick="auth.setMode('reg')" id="tab-reg" class="text-slate-300 italic" data-i18n="reg_text">Регистрация</button>
             </div>
             <div class="space-y-4">
-                <div id="reg-name-field" style="display:none"><input type="text" id="in-name" placeholder="ТВОЕ ИМЯ" class="w-full p-6 bg-slate-50 rounded-3xl font-black text-xs outline-none"></div>
+                <div id="reg-name-field" style="display:none"><input type="text" id="in-name" data-i18n-ph="ph_name" class="w-full p-6 bg-slate-50 rounded-3xl font-black text-xs outline-none"></div>
                 <input type="email" id="in-email" placeholder="E-MAIL" class="w-full p-6 bg-slate-50 rounded-3xl font-black text-xs outline-none">
-                <input type="password" id="in-pass" placeholder="ПАРОЛЬ" class="w-full p-6 bg-slate-50 rounded-3xl font-black text-xs outline-none">
-                <button id="auth-submit-btn" onclick="auth.process()" class="w-full btn-action gradient-blue text-white py-6 italic shadow-xl">Подтвердить</button>
+                <input type="password" id="in-pass" data-i18n-ph="ph_pass" class="w-full p-6 bg-slate-50 rounded-3xl font-black text-xs outline-none">
+                <button id="auth-submit-btn" onclick="auth.process()" class="w-full btn-action gradient-blue text-white py-6 italic shadow-xl">OK</button>
             </div>
         </div>
-        <div id="blitz-modal" class="modal-content hidden bg-white w-full max-w-xl rounded-[64px] p-16 space-y-8">
-            <div class="flex justify-between items-center"><h2 class="text-4xl font-black italic" data-i18n="blitz_title">Выбери предмет</h2><button onclick="closeAllModals()" class="text-slate-300"><i class="fas fa-times"></i></button></div>
+
+        <div id="blitz-modal" class="modal-content relative hidden bg-white w-full max-w-xl rounded-[64px] p-16 space-y-8">
+            <button onclick="closeAllModals()" class="modal-close-btn"><i class="fas fa-times"></i></button>
+            <h2 class="text-4xl font-black italic" data-i18n="blitz_title">Выбери предмет</h2>
             <div class="grid grid-cols-1 gap-4" id="blitz-options"></div>
         </div>
-        <div id="academy-modal" class="modal-content hidden bg-white w-full max-w-4xl rounded-[64px] overflow-hidden h-[80vh] flex flex-col p-16">
-            <h2 class="text-5xl font-black italic uppercase text-blue-600 mb-6">Academy V1</h2>
-            <div class="space-y-6 overflow-y-auto pr-4">
-                <div class="p-8 bg-blue-50 rounded-[32px]"><h4 class="font-black italic text-xl mb-2">Мат. грамотность: % Проценты</h4><p>Лайфхак: х% от у = у% от х. Это поможет считать 14% от 50 в уме (это 50% от 14 = 7).</p></div>
-                <div class="p-8 bg-purple-50 rounded-[32px]"><h4 class="font-black italic text-xl mb-2">История: Золотая Орда</h4><p>1219-1224 — годы нашествия Чингисхана на Среднюю Азию и Казахстан. Запомни даты!</p></div>
-            </div>
+
+        <div id="academy-modal" class="modal-content relative hidden bg-white w-full max-w-3xl rounded-[64px] p-16 space-y-8 text-center">
+            <button onclick="closeAllModals()" class="modal-close-btn"><i class="fas fa-times"></i></button>
+            <h2 class="text-4xl font-black italic text-blue-600 uppercase" data-i18n="card_academy_title">Академия</h2>
+            <p class="text-slate-500 italic" data-i18n="academy_text">Материалы для подготовки к ЕНТ 2026. Лайфхаки будут доступны в PRO версии.</p>
+            <button onclick="closeAllModals()" class="w-full btn-action bg-slate-900 text-white py-4 text-sm" data-i18n="btn_back">Закрыть</button>
         </div>
-        <div id="subjects-modal" class="modal-content hidden bg-white w-full max-w-lg rounded-[40px] p-12 text-center space-y-6">
-            <h2 class="text-2xl font-black italic">ҰБТ 2026: Структура</h2>
-            <p class="text-slate-500 italic text-left">1. Мат. сауаттылық (15 сұрақ)<br>2. Қазақстан тарихы (20 сұрақ)<br>3. Оқу сауаттылығы (15 сұрақ)<br>+ 2 Профильдік пән.</p>
-            <button onclick="closeAllModals()" class="w-full btn-action bg-slate-900 text-white py-4">Понятно</button>
+
+        <div id="subjects-modal" class="modal-content relative hidden bg-white w-full max-w-lg rounded-[40px] p-12 text-center space-y-6">
+            <button onclick="closeAllModals()" class="modal-close-btn"><i class="fas fa-times"></i></button>
+            <h2 class="text-2xl font-black italic" data-i18n="nav_subjects">Предметы</h2>
+            <p class="text-slate-500 italic text-left" data-i18n="subjects_text">ЕНТ 2026: Математическая грамотность, История Казахстана, Грамотность чтения + 2 профильных предмета.</p>
+            <button onclick="closeAllModals()" class="w-full btn-action bg-slate-900 text-white py-4" data-i18n="btn_back">Понятно</button>
         </div>
-        <div id="payment-modal" class="modal-content hidden bg-white w-full max-w-md rounded-[56px] p-16 text-center space-y-6">
+
+        <div id="payment-modal" class="modal-content relative hidden bg-white w-full max-w-md rounded-[56px] p-16 text-center space-y-6">
+            <button onclick="closeAllModals()" class="modal-close-btn"><i class="fas fa-times"></i></button>
             <h2 class="text-3xl font-black italic">PRO Доступ</h2>
             <p class="text-slate-400">Kaspi: +7 707 ... (Алибек Х.)</p>
-            <p class="text-[10px] text-slate-300">После оплаты скинь скрин на WhatsApp.</p>
-            <button onclick="closeAllModals()" class="w-full btn-action bg-slate-900 text-white py-4">ОК</button>
+            <button onclick="closeAllModals()" class="w-full btn-action bg-slate-900 text-white py-4" data-i18n="btn_back">ОК</button>
         </div>
     </div>
 
     <script>
+        // АДМИНСКИЕ ПОЧТЫ
         const ADMIN_EMAILS = ['khamidullinalibek90@gmail.com', 'alibek90@mail.ru'];
 
+        // СТРОГИЙ СЛОВАРЬ ПЕРЕВОДОВ (Никакого смешивания)
         const i18n = {
-            ru: { nav_subjects: "Предметы", nav_academy: "Академия", nav_battle: "Баттл", hero_title: "Cloud <br><span class='text-blue-600'>Education.</span>", hero_subtitle: "Твой путь к гранту.", btn_start: "Начать Блиц", btn_pro: "PRO Аналитика", card_academy_title: "Академия", card_ai_title: "AI Анализ", card_battle_title: "Battle", profile_matrix: "Матрица навыков", adm_btn: "Управление контентом", blitz_title: "Выбери предмет", math_lit: "Мат. грамотность", history: "История Казахстана", btn_back: "Вернуться", login_text: "Вход" },
-            kk: { nav_subjects: "Пәндер", nav_academy: "Академия", nav_battle: "Баттл", hero_title: "Cloud <br><span class='text-blue-600'>Education.</span>", hero_subtitle: "Сенің грантқа жолың.", btn_start: "Блиц бастау", btn_pro: "PRO Аналитика", card_academy_title: "Академия", card_ai_title: "AI Талдау", card_battle_title: "Battle", profile_matrix: "Дағдылар матрицасы", adm_btn: "Контентті басқару", blitz_title: "Пәнді таңда", math_lit: "Мат. сауаттылық", history: "Қазақстан тарихы", btn_back: "Артқа қайту", login_text: "Кіру" }
+            ru: { 
+                nav_subjects: "Предметы", nav_academy: "Академия", nav_battle: "Баттл", 
+                hero_title: "Cloud <br><span class='text-blue-600'>Education.</span>", hero_subtitle: "Твой путь к гранту.", 
+                btn_start: "Начать Блиц", btn_pro: "PRO Аналитика", btn_logout: "Выйти", btn_back: "Вернуться",
+                card_academy_title: "Академия", card_academy_desc: "Лайфхаки и секреты.", 
+                card_ai_title: "AI Анализ", card_ai_desc: "Зайдите для прогноза",
+                card_battle_title: "Battle", card_battle_desc: "ELO соревнования.", 
+                profile_matrix: "Матрица навыков", adm_btn: "Управление контентом", leaderboard_title: "ТОП УЧЕНИКОВ",
+                blitz_title: "Выбери предмет", math_lit: "Мат. грамотность", history: "История Казахстана", 
+                login_text: "Вход", reg_text: "Регистрация", ph_name: "ИМЯ", ph_pass: "ПАРОЛЬ",
+                subjects_text: "ЕНТ 2026: Математическая грамотность, История Казахстана, Грамотность чтения + 2 профильных предмета.",
+                academy_text: "Материалы для подготовки к ЕНТ 2026. Лайфхаки будут доступны после тестов.",
+                hacks_title: "ЛАЙФХАКИ ПО ОШИБКАМ:"
+            },
+            kk: { 
+                nav_subjects: "Пәндер", nav_academy: "Академия", nav_battle: "Баттл", 
+                hero_title: "Cloud <br><span class='text-blue-600'>Education.</span>", hero_subtitle: "Сенің грантқа жолың.", 
+                btn_start: "Блиц бастау", btn_pro: "PRO Аналитика", btn_logout: "Шығу", btn_back: "Артқа қайту",
+                card_academy_title: "Академия", card_academy_desc: "Лайфхактар және құпиялар.", 
+                card_ai_title: "AI Талдау", card_ai_desc: "Болжам үшін кіріңіз",
+                card_battle_title: "Battle", card_battle_desc: "ELO сайыстары.", 
+                profile_matrix: "Дағдылар матрицасы", adm_btn: "Контентті басқару", leaderboard_title: "ҮЗДІК ОҚУШЫЛАР",
+                blitz_title: "Пәнді таңда", math_lit: "Мат. сауаттылық", history: "Қазақстан тарихы", 
+                login_text: "Кіру", reg_text: "Тіркелу", ph_name: "АТЫҢЫЗ", ph_pass: "ҚҰПИЯ СӨЗ",
+                subjects_text: "ҰБТ 2026: Математикалық сауаттылық, Қазақстан тарихы, Оқу сауаттылығы + 2 бейіндік пән.",
+                academy_text: "ҰБТ 2026 дайындық материалдары. Лайфхактар тесттен кейін қолжетімді болады.",
+                hacks_title: "ҚАТЕЛЕР БОЙЫНША ЛАЙФХАКТАР:"
+            }
+        };
+
+        // ЗАПАСНОЙ БАНК ВОПРОСОВ (Если questions.js пуст)
+        const FALLBACK_QUESTIONS = {
+            math_lit: {
+                ru: [
+                    { q: "Найдите 25% от 80% числа 200.", a: ["20", "40", "50", "60"], c: 1, h: "Сначала 80% от 200 = 160. Затем 25% (четверть) от 160 = 40." },
+                    { q: "Если x + y = 10 и x - y = 4, то x равно?", a: ["7", "6", "8", "5"], c: 0, h: "Сложите два уравнения: (x+y) + (x-y) = 14 -> 2x = 14 -> x = 7." },
+                    { q: "Площадь квадрата 64. Каков периметр?", a: ["16", "24", "32", "64"], c: 2, h: "Сторона квадрата = √64 = 8. Периметр = 8 * 4 = 32." }
+                ],
+                kk: [
+                    { q: "200 санының 80%-ның 25%-ын табыңыз.", a: ["20", "40", "50", "60"], c: 1, h: "Алдымен 200-дің 80% = 160. Сосын 160-тың 25% (ширегі) = 40." },
+                    { q: "Егер x + y = 10 және x - y = 4 болса, x неге тең?", a: ["7", "6", "8", "5"], c: 0, h: "Теңдеулерді қосыңыз: 2x = 14 -> x = 7." },
+                    { q: "Шаршының ауданы 64. Периметрі қандай?", a: ["16", "24", "32", "64"], c: 2, h: "Қабырғасы = √64 = 8. Периметрі = 8 * 4 = 32." }
+                ]
+            },
+            history: {
+                ru: [
+                    { q: "В каком году образовано Казахское ханство?", a: ["1456", "1465", "1470", "1501"], c: 1, h: "Основатели Керей и Жанибек откочевали в Могулистан в 1465 году." },
+                    { q: "Кто был автором кюя 'Сарыарка'?", a: ["Курмангазы", "Даулеткерей", "Таттимбет", "Дина"], c: 0, h: "Курмангазы Сагырбайулы — великий кюйши." }
+                ],
+                kk: [
+                    { q: "Қазақ хандығы қай жылы құрылды?", a: ["1456", "1465", "1470", "1501"], c: 1, h: "Керей мен Жәнібек 1465 жылы құрды." },
+                    { q: "'Сарыарқа' күйінің авторы кім?", a: ["Құрманғазы", "Дәулеткерей", "Тәттімбет", "Дина"], c: 0, h: "Құрманғазы Сағырбайұлы." }
+                ]
+            }
         };
 
         const SUPABASE_URL = 'https://ixjowqkwcgkksatgkmqd.supabase.co';
@@ -194,10 +261,7 @@
         const db = {
             syncUp: async () => {
                 if(!appState.user.id) return;
-                await sbClient.from('profiles').upsert({
-                    id: appState.user.id, email: appState.user.email, name: appState.user.name,
-                    elo: appState.user.elo, streak: appState.user.streak, weak_points: appState.user.weakPoints
-                });
+                await sbClient.from('profiles').upsert({ id: appState.user.id, email: appState.user.email, name: appState.user.name, elo: appState.user.elo, streak: appState.user.streak, weak_points: appState.user.weakPoints });
             },
             syncDown: async (userId) => {
                 const { data } = await sbClient.from('profiles').select('*').eq('id', userId).single();
@@ -211,43 +275,34 @@
             updateTranslations: () => {
                 const d = i18n[appState.lang];
                 document.querySelectorAll('[data-i18n]').forEach(el => { const k = el.getAttribute('data-i18n'); if (d[k]) el.innerHTML = d[k]; });
+                document.querySelectorAll('[data-i18n-ph]').forEach(el => { const k = el.getAttribute('data-i18n-ph'); if (d[k]) el.placeholder = d[k]; });
                 document.getElementById('lang-ru').className = appState.lang === 'ru' ? 'px-3 py-1 rounded-full bg-white shadow-sm text-blue-600 font-bold' : 'px-3 py-1 rounded-full text-slate-400';
                 document.getElementById('lang-kk').className = appState.lang === 'kk' ? 'px-3 py-1 rounded-full bg-white shadow-sm text-blue-600 font-bold' : 'px-3 py-1 rounded-full text-slate-400';
             },
             update: async () => {
                 const u = appState.user; const area = document.getElementById('nav-user-area');
                 if(u.isLoggedIn) {
-                    area.innerHTML = `<button onclick="router.navigate('profile')" class="bg-slate-900 text-white px-6 py-2 rounded-full text-xs font-black uppercase italic">${u.name}</button>`;
-                    document.getElementById('p-name').innerText = u.name;
-                    document.getElementById('p-avatar').innerText = u.name[0].toUpperCase();
-                    document.getElementById('p-elo').innerText = u.elo;
-                    document.getElementById('p-streak').innerText = u.streak;
+                    area.innerHTML = `<button onclick="router.navigate('profile')" class="bg-slate-900 text-white px-6 py-2 rounded-full text-xs font-black uppercase italic shadow-md hover:bg-blue-600 transition">${u.name}</button>`;
+                    document.getElementById('p-name').innerText = u.name; document.getElementById('p-avatar').innerText = u.name[0].toUpperCase();
+                    document.getElementById('p-elo').innerText = u.elo; document.getElementById('p-streak').innerText = u.streak;
                     
                     const actions = document.getElementById('profile-actions');
                     if(ADMIN_EMAILS.includes(u.email) && !document.getElementById('btn-admin-access')) {
                         const btn = document.createElement('button'); btn.id = 'btn-admin-access';
-                        btn.className = "w-full p-4 bg-blue-50 text-blue-600 rounded-2xl font-black text-[10px] uppercase mb-2";
-                        btn.innerText = i18n[appState.lang].adm_btn; btn.onclick = () => router.navigate('admin');
-                        actions.prepend(btn);
+                        btn.className = "w-full p-4 bg-blue-50 text-blue-600 rounded-2xl font-black text-[10px] uppercase mb-2 hover:bg-blue-100 transition";
+                        btn.innerText = i18n[appState.lang].adm_btn; btn.onclick = () => router.navigate('admin'); actions.prepend(btn);
                     }
-                    const pred = Math.floor((u.elo - 500) / 10);
-                    document.getElementById('hero-prediction').innerHTML = `Болжам: <span class="text-blue-600 font-black">${pred > 140 ? 140 : (pred < 0 ? 0 : pred)}/140</span>`;
-                } else { area.innerHTML = `<button onclick="openModal('auth-modal')" class="bg-slate-900 text-white px-8 py-3 rounded-full text-xs font-black uppercase">${i18n[appState.lang].login_text}</button>`; }
+                    const pred = Math.floor((u.elo - 500) / 10); document.getElementById('hero-prediction').innerHTML = `Болжам: <span class="text-blue-600 font-black">${pred > 140 ? 140 : (pred < 0 ? 0 : pred)}/140</span>`;
+                } else { 
+                    area.innerHTML = `<button onclick="openModal('auth-modal')" class="bg-slate-900 text-white px-8 py-3 rounded-full text-xs font-black uppercase shadow-xl hover:bg-blue-600 transition">${i18n[appState.lang].login_text}</button>`; 
+                }
                 ui.renderLeaderboard();
             },
             toast: (msg) => { const t = document.createElement('div'); t.className = 'toast'; t.innerHTML = msg; document.getElementById('toast-container').appendChild(t); setTimeout(() => t.remove(), 4000); },
             renderLeaderboard: async () => {
                 const container = document.getElementById('leaderboard-container');
                 const { data } = await sbClient.from('profiles').select('name, elo').order('elo', {ascending: false}).limit(5);
-                if(data) {
-                    container.innerHTML = data.map((p, i) => `
-                        <div class="neo-card p-6 flex flex-col items-center justify-center space-y-2">
-                            <span class="text-[10px] font-black text-slate-300">0${i+1}</span>
-                            <span class="font-bold italic text-sm text-center">${p.name}</span>
-                            <span class="text-blue-600 font-black italic">${p.elo}</span>
-                        </div>
-                    `).join('');
-                }
+                if(data) { container.innerHTML = data.map((p, i) => `<div class="neo-card p-6 flex flex-col items-center justify-center space-y-2"><span class="text-[10px] font-black text-slate-300">0${i+1}</span><span class="font-bold italic text-sm text-center">${p.name}</span><span class="text-blue-600 font-black italic">${p.elo}</span></div>`).join(''); }
             },
             checkPaywall: (f) => { openModal('payment-modal'); }
         };
@@ -256,36 +311,37 @@
             mode: 'login',
             setMode: (m) => {
                 auth.mode = m;
-                document.getElementById('tab-login').className = m === 'login' ? 'font-black text-blue-600 border-b-2 border-blue-600 italic' : 'text-slate-300 italic';
-                document.getElementById('tab-reg').className = m === 'reg' ? 'font-black text-blue-600 border-b-2 border-blue-600 italic' : 'text-slate-300 italic';
+                document.getElementById('tab-login').className = m === 'login' ? 'font-black text-blue-600 border-b-2 border-blue-600 italic' : 'text-slate-300 italic hover:text-slate-500';
+                document.getElementById('tab-reg').className = m === 'reg' ? 'font-black text-blue-600 border-b-2 border-blue-600 italic' : 'text-slate-300 italic hover:text-slate-500';
                 document.getElementById('reg-name-field').style.display = m === 'reg' ? 'block' : 'none';
             },
             process: async () => {
                 const btn = document.getElementById('auth-submit-btn'); btn.innerText = "...";
                 const e = document.getElementById('in-email').value; const p = document.getElementById('in-pass').value; const n = document.getElementById('in-name').value;
-                
+                if (!e || !p) { ui.toast("Введите данные!"); btn.innerText = "OK"; return; }
                 try {
                     let res;
                     if (auth.mode === 'reg') {
                         res = await sbClient.auth.signUp({ email: e, password: p });
-                        if(res.data.user) {
-                            appState.user = { id: res.data.user.id, email: e, name: n || e.split('@')[0], isLoggedIn: true, elo: 1200, streak: 0, weakPoints: [] };
-                            await db.syncUp();
-                        }
-                    } else {
-                        res = await sbClient.auth.signInWithPassword({ email: e, password: p });
-                    }
+                        if(res.data.user) { appState.user = { id: res.data.user.id, email: e, name: n || e.split('@')[0], isLoggedIn: true, elo: 1200, streak: 0, weakPoints: [] }; await db.syncUp(); }
+                    } else { res = await sbClient.auth.signInWithPassword({ email: e, password: p }); }
                     if(res.error) throw res.error;
-                    
-                    // МГНОВЕННЫЙ ПЕРЕХОД ПОСЛЕ ЛОГИНА
                     await db.syncDown(res.data.user.id);
-                    closeAllModals();
-                    ui.toast("С возвращением!");
-                    router.navigate('hero');
+                    closeAllModals(); ui.toast("Успешно!"); router.navigate('hero');
                 } catch(err) { ui.toast(err.message); }
-                btn.innerText = "Подтвердить";
+                btn.innerText = "OK";
             },
             logout: async () => { await sbClient.auth.signOut(); location.reload(); }
+        };
+
+        const admin = {
+            saveQuestion: async () => {
+                const qText = document.getElementById('adm-q-text').value;
+                if (!qText) return ui.toast("Введите текст вопроса!");
+                const q = { subject: document.getElementById('adm-subject').value, lang: document.getElementById('adm-lang').value, question_text: qText, options: [document.getElementById('adm-opt-0').value, document.getElementById('adm-opt-1').value, document.getElementById('adm-opt-2').value, document.getElementById('adm-opt-3').value], correct_idx: parseInt(document.getElementById('adm-correct').value) || 0 };
+                const { error } = await sbClient.from('questions').insert([q]);
+                if (error) ui.toast("Ошибка: " + error.message); else { ui.toast("Сохранено!"); document.getElementById('adm-q-text').value = ''; }
+            }
         };
 
         const quiz = {
@@ -301,10 +357,13 @@
             },
             start: async (sub) => {
                 closeAllModals();
-                let localQ = (typeof QUESTIONS_DATA !== 'undefined' && QUESTIONS_DATA[sub]) ? QUESTIONS_DATA[sub][appState.lang] : [];
+                // НАДЕЖНАЯ ЗАГРУЗКА ВОПРОСОВ (Локал + Фоллбэк + Облако)
+                let localQ = (typeof QUESTIONS_DATA !== 'undefined' && QUESTIONS_DATA[sub] && QUESTIONS_DATA[sub][appState.lang]) ? QUESTIONS_DATA[sub][appState.lang] : FALLBACK_QUESTIONS[sub][appState.lang];
                 const { data: cloudQ } = await sbClient.from('questions').select('*').eq('subject', sub).eq('lang', appState.lang);
+                
                 quiz.subject = [...localQ, ...(cloudQ || [])];
-                if(quiz.subject.length === 0) return alert("Пока нет вопросов!");
+                if(quiz.subject.length === 0) { ui.toast("В этой категории пока нет вопросов!"); return; }
+                
                 quiz.currentIdx = 0; quiz.score = 0; quiz.mistakes = []; quiz.startTime = Date.now();
                 router.navigate('quiz'); quiz.render();
             },
@@ -321,35 +380,31 @@
                 const correct = q.correct_idx !== undefined ? q.correct_idx : q.c;
                 if(idx === correct) quiz.score++;
                 else {
-                    quiz.mistakes.push({ q: q.question_text || q.q, h: q.hint || q.h || "Будь внимательнее!" });
-                    appState.user.weakPoints.push(q.id || "custom");
+                    quiz.mistakes.push({ q: q.question_text || q.q, h: q.hint || q.h || "Повтори эту тему." });
+                    appState.user.weakPoints.push(q.id || (q.subject || "test") + "_" + Date.now()); 
                 }
                 quiz.currentIdx++; if(quiz.currentIdx < quiz.subject.length) quiz.render(); else quiz.finish();
             },
             finish: async () => { 
                 router.navigate('results'); 
-                const gainedELO = quiz.score * 25;
-                appState.user.elo += gainedELO;
-                await db.syncUp();
+                const gainedELO = quiz.score * 25; appState.user.elo += gainedELO; await db.syncUp();
+                
                 document.getElementById('res-score').innerText = `${quiz.score}/${quiz.subject.length}`; 
                 document.getElementById('res-elo-gain').innerText = `+${gainedELO} ELO`;
                 const hacks = document.getElementById('res-hacks');
-                hacks.innerHTML = quiz.mistakes.length > 0 ? `<h4 class="text-red-500 font-black italic mb-4">ЛАЙФХАКИ ПО ОШИБКАМ:</h4>` + quiz.mistakes.map(m => `<div class="p-6 bg-red-50 rounded-2xl mb-2 font-bold italic text-sm text-red-700">📌 ${m.q}<br><span class="text-slate-500 font-medium">Лайфхак: ${m.h}</span></div>`).join('') : '<p class="text-green-500 font-black italic text-center">ИДЕАЛЬНО! ОШИБОК НЕТ. 👑</p>';
+                hacks.innerHTML = quiz.mistakes.length > 0 ? `<h4 class="text-red-500 font-black italic mb-4">${i18n[appState.lang].hacks_title}</h4>` + quiz.mistakes.map(m => `<div class="p-6 bg-red-50 rounded-2xl mb-2 font-bold italic text-sm text-red-700">📌 ${m.q}<br><span class="text-slate-500 font-medium">${m.h}</span></div>`).join('') : '<p class="text-green-500 font-black italic text-center text-xl">ИДЕАЛЬНО! ОШИБОК НЕТ. 👑</p>';
             }
         };
 
-        const academy = { open: () => { openModal('academy-modal'); } };
-
         function initChart() {
             const ctx = document.getElementById('statsChart').getContext('2d');
-            // Реальный расчет графика
             const w = appState.user.weakPoints;
-            const data = [100 - (w.filter(i => i.startsWith('m')).length*10), 100 - (w.filter(i => i.startsWith('h')).length*10), 80, 90, 70];
+            const data = [100 - (w.filter(i => i.includes('m') || i.includes('math')).length*10), 100 - (w.filter(i => i.includes('h')).length*10), 80, 90, 70];
             if (window.myChart) window.myChart.destroy();
-            window.myChart = new Chart(ctx, { type: 'radar', data: { labels: appState.lang === 'ru' ? ['Мат', 'История', 'Оқу', 'Проф', 'Гео'] : ['Мат', 'Тарих', 'Оқу', 'Проф', 'Гео'], datasets: [{ data: data, backgroundColor: 'rgba(37, 99, 235, 0.15)', borderColor: '#2563eb', borderWidth: 4 }] }, options: { scales: { r: { beginAtZero: true, max: 100, ticks: { display: false } } }, plugins: { legend: { display: false } } } });
+            window.myChart = new Chart(ctx, { type: 'radar', data: { labels: appState.lang === 'ru' ? ['Мат', 'История', 'Оқу', 'Проф', 'Гео'] : ['Мат', 'Тарих', 'Оқу', 'Проф', 'Гео'], datasets: [{ data: data.map(v => v<20?20:v), backgroundColor: 'rgba(37, 99, 235, 0.15)', borderColor: '#2563eb', borderWidth: 4 }] }, options: { scales: { r: { beginAtZero: true, max: 100, ticks: { display: false } } }, plugins: { legend: { display: false } } } });
         }
 
-        function openModal(id) { document.getElementById('modal-bg').classList.remove('hidden'); document.querySelectorAll('.modal-content').forEach(m => m.classList.add('hidden')); document.getElementById(id).classList.remove('hidden'); }
+        function openModal(id) { document.getElementById('modal-bg').classList.remove('hidden'); document.querySelectorAll('.modal-content').forEach(m => m.classList.add('hidden')); document.getElementById(id).classList.remove('hidden'); if(id === 'auth-modal') auth.setMode('login'); }
         function closeAllModals() { document.getElementById('modal-bg').classList.add('hidden'); }
         async function initApp() { 
             ui.updateTranslations(); 
