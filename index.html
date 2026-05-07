@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Altyn Logic | Titan Hybrid Edition</title>
+    <title>Altyn Logic | Titan Pro-Sync</title>
     
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
@@ -11,7 +11,6 @@
     <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     
-    <!-- ПОДКЛЮЧАЕМ ЛОКАЛЬНЫЙ БАНК ВОПРОСОВ -->
     <script src="questions.js"></script>
     
     <style>
@@ -33,7 +32,6 @@
 
     <div id="toast-container"></div>
 
-    <!-- NAVBAR -->
     <nav class="glass sticky top-0 z-[100]">
         <div class="max-w-6xl mx-auto px-6 h-20 flex items-center justify-between">
             <div class="flex items-center space-x-3 cursor-pointer" onclick="router.navigate('hero')">
@@ -56,7 +54,6 @@
     </nav>
 
     <main class="max-w-5xl mx-auto px-6 py-12">
-        <!-- HERO -->
         <section id="sec-hero" class="app-section space-y-20">
             <div class="text-center space-y-8 py-10 animate-up">
                 <h1 class="text-6xl md:text-8xl font-extrabold tracking-tighter leading-[0.85] italic uppercase" data-i18n="hero_title">Cloud <br><span class="text-blue-600">Education.</span></h1>
@@ -73,7 +70,6 @@
             </div>
         </section>
 
-        <!-- PROFILE -->
         <section id="sec-profile" class="app-section hidden space-y-12">
             <div class="grid grid-cols-1 lg:grid-cols-12 gap-10">
                 <div class="lg:col-span-4 space-y-6">
@@ -98,7 +94,6 @@
             </div>
         </section>
 
-        <!-- ADMIN PANEL -->
         <section id="sec-admin" class="app-section hidden space-y-8">
             <h2 class="text-3xl font-black italic underline decoration-blue-500">ADMIN CONTROL</h2>
             <div class="neo-card p-10 space-y-6 border-2 border-blue-50">
@@ -116,20 +111,18 @@
             </div>
         </section>
 
-        <!-- QUIZ -->
         <section id="sec-quiz" class="app-section hidden space-y-12 text-center">
             <div class="flex justify-between items-end mb-10"><h2 id="q-number" class="text-5xl font-black italic">Вопрос 01</h2><div id="q-timer" class="text-3xl font-black text-slate-200 italic font-mono">00:00</div></div>
             <div class="bg-white p-16 rounded-[64px] shadow-2xl border border-slate-50"><h2 id="q-text" class="text-3xl font-bold text-slate-800 mb-16 italic"></h2><div id="q-options" class="grid grid-cols-1 md:grid-cols-2 gap-5"></div></div>
         </section>
 
-        <!-- RESULTS -->
         <section id="sec-results" class="app-section hidden text-center space-y-10">
             <h2 id="res-score" class="text-9xl font-black italic">0/0</h2>
+            <p id="res-elo-gain" class="text-2xl font-black text-blue-600 italic"></p>
             <button onclick="router.navigate('hero')" class="btn-action bg-slate-900 text-white px-20 py-6" data-i18n="btn_back">Вернуться</button>
         </section>
     </main>
 
-    <!-- MODALS -->
     <div id="modal-bg" class="fixed inset-0 bg-slate-900/90 backdrop-blur-2xl z-[200] hidden flex items-center justify-center p-4">
         <div id="auth-modal" class="modal-content hidden bg-white w-full max-w-md rounded-[56px] p-12 space-y-8">
             <div class="flex justify-center space-x-10 border-b pb-4 mb-4">
@@ -147,7 +140,10 @@
             <h2 class="text-4xl font-black italic" data-i18n="blitz_title">Выбери предмет</h2>
             <div class="grid grid-cols-1 gap-4" id="blitz-options"></div>
         </div>
-        <!-- PRO & SUBJECTS -->
+        <div id="academy-modal" class="modal-content hidden bg-white w-full max-w-4xl rounded-[64px] flex overflow-hidden h-[80vh]">
+            <div class="w-1/3 bg-slate-50 p-10 border-r space-y-4"><div id="academy-menu" class="space-y-2"></div></div>
+            <div class="w-2/3 p-16 overflow-y-auto relative"><button onclick="closeAllModals()" class="absolute top-8 right-8 text-slate-300"><i class="fas fa-times text-2xl"></i></button><div id="academy-content"></div></div>
+        </div>
         <div id="payment-modal" class="modal-content hidden bg-white w-full max-w-md rounded-[56px] p-16 text-center space-y-6">
             <h2 class="text-3xl font-black italic">PRO Доступ</h2>
             <p class="text-slate-400">Kaspi: +7 707 ... (Алибек Х.)</p>
@@ -161,6 +157,7 @@
     </div>
 
     <script>
+        // АДМИНСКИЕ ПОЧТЫ
         const ADMIN_EMAILS = ['khamidullinalibek90@gmail.com', 'alibek90@mail.ru'];
 
         const i18n = {
@@ -172,9 +169,24 @@
         const SUPABASE_KEY = 'sb_publishable_JGImt2KS6mStnbnAcJcEPg_8qbal1zc';
         const sbClient = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
-        let appState = { lang: localStorage.getItem('lang') || 'ru', user: { id: null, email: "", name: "Гость", elo: 1200, streak: 0, isLoggedIn: false } };
+        let appState = { lang: localStorage.getItem('lang') || 'ru', user: { id: null, email: "", name: "Гость", elo: 1200, streak: 0, weakPoints: [], isLoggedIn: false } };
 
         const router = { navigate: (sec) => { document.querySelectorAll('.app-section').forEach(s => s.classList.add('hidden')); document.getElementById(`sec-${sec}`).classList.remove('hidden'); if(sec === 'profile') setTimeout(initChart, 100); } };
+
+        // --- DATABASE SYNC ENGINE ---
+        const db = {
+            syncUp: async () => {
+                if(!appState.user.id) return;
+                await sbClient.from('profiles').upsert({
+                    id: appState.user.id, email: appState.user.email, name: appState.user.name,
+                    elo: appState.user.elo, streak: appState.user.streak, weak_points: appState.user.weakPoints
+                });
+            },
+            syncDown: async (userId) => {
+                const { data } = await sbClient.from('profiles').select('*').eq('id', userId).single();
+                if(data) { appState.user = { ...appState.user, ...data, isLoggedIn: true }; ui.update(); }
+            }
+        };
 
         const ui = {
             setLang: (l) => { appState.lang = l; localStorage.setItem('lang', l); ui.updateTranslations(); ui.update(); },
@@ -192,6 +204,7 @@
                     document.getElementById('p-avatar').innerText = u.name[0].toUpperCase();
                     document.getElementById('p-elo').innerText = u.elo;
                     document.getElementById('p-streak').innerText = u.streak;
+                    
                     const actions = document.getElementById('profile-actions');
                     if(ADMIN_EMAILS.includes(u.email) && !document.getElementById('btn-admin-access')) {
                         const btn = document.createElement('button'); btn.id = 'btn-admin-access';
@@ -199,8 +212,16 @@
                         btn.innerText = i18n[appState.lang].adm_btn; btn.onclick = () => router.navigate('admin');
                         actions.prepend(btn);
                     }
-                } else { area.innerHTML = `<button onclick="openModal('auth-modal')" class="bg-slate-900 text-white px-8 py-3 rounded-full text-xs font-black uppercase shadow-xl">${i18n[appState.lang].login_text}</button>`; }
-            }
+                } else { 
+                    // СТРОГО "ВХОД" ДЛЯ НЕАВТОРИЗОВАННЫХ ПОЛЬЗОВАТЕЛЕЙ
+                    area.innerHTML = `<button onclick="openModal('auth-modal')" class="bg-slate-900 text-white px-8 py-3 rounded-full text-xs font-black uppercase shadow-xl">${i18n[appState.lang].login_text}</button>`; 
+                }
+            },
+            toast: (msg) => {
+                const t = document.createElement('div'); t.className = 'toast'; t.innerHTML = msg;
+                document.getElementById('toast-container').appendChild(t); setTimeout(() => t.remove(), 4000);
+            },
+            checkPaywall: (f) => { openModal('payment-modal'); }
         };
 
         const auth = {
@@ -215,8 +236,9 @@
                 const e = document.getElementById('in-email').value; const p = document.getElementById('in-pass').value; const n = document.getElementById('in-name').value;
                 let res = auth.mode === 'reg' ? await sbClient.auth.signUp({ email: e, password: p }) : await sbClient.auth.signInWithPassword({ email: e, password: p });
                 if(res.error) return alert(res.error.message);
-                appState.user = { id: res.data.user.id, email: res.data.user.email, name: n || e.split('@')[0], isLoggedIn: true, elo: 1200, streak: 0 };
-                ui.update(); closeAllModals();
+                appState.user = { id: res.data.user.id, email: res.data.user.email, name: n || e.split('@')[0], isLoggedIn: true, elo: appState.user.elo, streak: appState.user.streak, weakPoints: [] };
+                await db.syncUp(); // Сохраняем нового юзера в БД сразу
+                ui.update(); closeAllModals(); ui.toast("Успешная авторизация!");
             },
             logout: async () => { await sbClient.auth.signOut(); location.reload(); }
         };
@@ -225,7 +247,7 @@
             saveQuestion: async () => {
                 const q = { subject: document.getElementById('adm-subject').value, lang: document.getElementById('adm-lang').value, question_text: document.getElementById('adm-q-text').value, options: [document.getElementById('adm-opt-0').value, document.getElementById('adm-opt-1').value, document.getElementById('adm-opt-2').value, document.getElementById('adm-opt-3').value], correct_idx: parseInt(document.getElementById('adm-correct').value) };
                 const { error } = await sbClient.from('questions').insert([q]);
-                if (error) alert(error.message); else { alert("Saved to Cloud!"); document.getElementById('adm-q-text').value = ''; }
+                if (error) alert(error.message); else { ui.toast("Вопрос добавлен в облако!"); document.getElementById('adm-q-text').value = ''; }
             }
         };
 
@@ -242,12 +264,8 @@
             },
             start: async (sub) => {
                 closeAllModals();
-                // 1. ПОЛУЧАЕМ ВОПРОСЫ ИЗ ФАЙЛА questions.js
                 let localQ = (typeof QUESTIONS_DATA !== 'undefined' && QUESTIONS_DATA[sub]) ? QUESTIONS_DATA[sub][appState.lang] : [];
-                // 2. ПОЛУЧАЕМ ВОПРОСЫ ИЗ ОБЛАКА
                 const { data: cloudQ } = await sbClient.from('questions').select('*').eq('subject', sub).eq('lang', appState.lang);
-                
-                // 3. ГИБРИДНОЕ ОБЪЕДИНЕНИЕ
                 quiz.subject = [...localQ, ...(cloudQ || [])];
                 
                 if(quiz.subject.length === 0) return alert("Пока нет вопросов!");
@@ -263,25 +281,57 @@
             answer: (idx) => {
                 const correct = quiz.subject[quiz.currentIdx].correct_idx !== undefined ? quiz.subject[quiz.currentIdx].correct_idx : quiz.subject[quiz.currentIdx].c;
                 if(idx === correct) quiz.score++;
+                else appState.user.weakPoints.push(quiz.subject[quiz.currentIdx].id || "custom"); // Трекинг ошибок
+                
                 quiz.currentIdx++; if(quiz.currentIdx < quiz.subject.length) quiz.render(); else quiz.finish();
             },
-            finish: () => { router.navigate('results'); document.getElementById('res-score').innerText = `${quiz.score}/${quiz.subject.length}`; }
+            finish: async () => { 
+                router.navigate('results'); 
+                const gainedELO = quiz.score * 25;
+                appState.user.elo += gainedELO;
+                await db.syncUp(); // Сохраняем обновленный ELO в БД
+                
+                document.getElementById('res-score').innerText = `${quiz.score}/${quiz.subject.length}`; 
+                document.getElementById('res-elo-gain').innerText = `+${gainedELO} ELO`;
+            }
         };
 
         const academy = {
-            open: () => { openModal('subjects-modal'); },
-            load: () => {}
+            open: () => { 
+                openModal('academy-modal'); 
+                const menu = document.getElementById('academy-menu');
+                menu.innerHTML = `<button onclick="academy.load('ент')" class="w-full p-4 rounded-2xl font-bold italic text-left bg-blue-50">ҰБТ 2026</button>`;
+                academy.load('ент');
+            },
+            load: (id) => { document.getElementById('academy-content').innerHTML = `<h2 class="text-4xl font-black italic uppercase text-blue-600 mb-8">ҰБТ 2026</h2><p class="text-lg text-slate-600">Здесь собраны главные секреты подготовки.</p>`; }
         };
 
         function initChart() {
             const ctx = document.getElementById('statsChart').getContext('2d');
             if (window.myChart) window.myChart.destroy();
-            window.myChart = new Chart(ctx, { type: 'radar', data: { labels: appState.lang === 'ru' ? ['Мат', 'История', 'Оқу', 'Проф', 'Гео'] : ['Мат', 'Тарих', 'Оқу', 'Проф', 'Гео'], datasets: [{ data: [85, 45, 65, 90, 75], backgroundColor: 'rgba(37, 99, 235, 0.15)', borderColor: '#2563eb', borderWidth: 4 }] }, options: { scales: { r: { beginAtZero: true, max: 100, ticks: { display: false } } }, plugins: { legend: { display: false } } } });
+            window.myChart = new Chart(ctx, { type: 'radar', data: { labels: appState.lang === 'ru' ? ['Мат', 'История', 'Чтение', 'Физ', 'Гео'] : ['Мат', 'Тарих', 'Оқу', 'Физ', 'Гео'], datasets: [{ data: [85, 45, 65, 90, 75], backgroundColor: 'rgba(37, 99, 235, 0.15)', borderColor: '#2563eb', borderWidth: 4 }] }, options: { scales: { r: { beginAtZero: true, max: 100, ticks: { display: false } } }, plugins: { legend: { display: false } } } });
         }
 
         function openModal(id) { document.getElementById('modal-bg').classList.remove('hidden'); document.querySelectorAll('.modal-content').forEach(m => m.classList.add('hidden')); document.getElementById(id).classList.remove('hidden'); }
         function closeAllModals() { document.getElementById('modal-bg').classList.add('hidden'); }
-        async function initApp() { ui.updateTranslations(); const { data: { session } } = await sbClient.auth.getSession(); if(session) { appState.user.id = session.user.id; appState.user.email = session.user.email; appState.user.isLoggedIn = true; ui.update(); } }
+        
+        async function initApp() { 
+            ui.updateTranslations(); 
+            // Слушатель авторизации: обновляет UI при входе/выходе без перезагрузки
+            sbClient.auth.onAuthStateChange(async (event, session) => {
+                if(session) {
+                    appState.user.id = session.user.id;
+                    appState.user.email = session.user.email;
+                    await db.syncDown(session.user.id);
+                } else {
+                    appState.user.isLoggedIn = false;
+                    ui.update();
+                }
+            });
+            const { data: { session } } = await sbClient.auth.getSession(); 
+            if(session) { await db.syncDown(session.user.id); } 
+            else { ui.update(); }
+        }
     </script>
 </body>
 </html>
