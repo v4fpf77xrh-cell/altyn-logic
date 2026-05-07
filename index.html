@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Altyn Logic | Titan Pro-Sync</title>
+    <title>Altyn Logic | Titan Stable Auth</title>
     
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
@@ -107,7 +107,7 @@
                     <input type="text" id="adm-opt-2" placeholder="C" class="p-4 bg-slate-50 rounded-2xl"><input type="text" id="adm-opt-3" placeholder="D" class="p-4 bg-slate-50 rounded-2xl">
                 </div>
                 <input type="number" id="adm-correct" placeholder="Верный индекс (0-3)" class="w-full p-4 bg-slate-50 rounded-2xl font-bold">
-                <button onclick="admin.saveQuestion()" class="w-full p-6 gradient-blue text-white rounded-3xl font-black uppercase italic shadow-xl">Сохранить в облако</button>
+                <button onclick="admin.saveQuestion()" class="w-full p-6 gradient-blue text-white rounded-3xl font-black uppercase italic shadow-xl hover:scale-105 transition">Сохранить в облако</button>
             </div>
         </section>
 
@@ -130,14 +130,14 @@
                 <button onclick="auth.setMode('reg')" id="tab-reg" class="text-slate-300 italic">Регистрация</button>
             </div>
             <div class="space-y-4">
-                <div id="reg-name-field" style="display:none"><input type="text" id="in-name" placeholder="ТВОЕ ИМЯ" class="w-full p-6 bg-slate-50 rounded-3xl font-black text-xs"></div>
-                <input type="email" id="in-email" placeholder="E-MAIL" class="w-full p-6 bg-slate-50 rounded-3xl font-black text-xs">
-                <input type="password" id="in-pass" placeholder="ПАРОЛЬ" class="w-full p-6 bg-slate-50 rounded-3xl font-black text-xs">
-                <button onclick="auth.process()" class="w-full btn-action gradient-blue text-white py-6 italic shadow-xl">Подтвердить</button>
+                <div id="reg-name-field" style="display:none"><input type="text" id="in-name" placeholder="ТВОЕ ИМЯ" class="w-full p-6 bg-slate-50 rounded-3xl font-black text-xs outline-none"></div>
+                <input type="email" id="in-email" placeholder="E-MAIL" class="w-full p-6 bg-slate-50 rounded-3xl font-black text-xs outline-none">
+                <input type="password" id="in-pass" placeholder="ПАРОЛЬ" class="w-full p-6 bg-slate-50 rounded-3xl font-black text-xs outline-none">
+                <button onclick="auth.process()" class="w-full btn-action gradient-blue text-white py-6 italic shadow-xl hover:scale-[1.02] transition">Подтвердить</button>
             </div>
         </div>
         <div id="blitz-modal" class="modal-content hidden bg-white w-full max-w-xl rounded-[64px] p-16 space-y-8">
-            <h2 class="text-4xl font-black italic" data-i18n="blitz_title">Выбери предмет</h2>
+            <div class="flex justify-between items-center"><h2 class="text-4xl font-black italic" data-i18n="blitz_title">Выбери предмет</h2><button onclick="closeAllModals()" class="text-slate-300 hover:text-red-500 text-2xl"><i class="fas fa-times"></i></button></div>
             <div class="grid grid-cols-1 gap-4" id="blitz-options"></div>
         </div>
         <div id="academy-modal" class="modal-content hidden bg-white w-full max-w-4xl rounded-[64px] flex overflow-hidden h-[80vh]">
@@ -184,7 +184,13 @@
             },
             syncDown: async (userId) => {
                 const { data } = await sbClient.from('profiles').select('*').eq('id', userId).single();
-                if(data) { appState.user = { ...appState.user, ...data, isLoggedIn: true }; ui.update(); }
+                if(data) { 
+                    appState.user = { ...appState.user, ...data, isLoggedIn: true }; 
+                } else {
+                    // Если профиль есть в Auth, но еще нет в таблице profiles - создаем его
+                    await db.syncUp();
+                }
+                ui.update();
             }
         };
 
@@ -199,7 +205,7 @@
             update: () => {
                 const u = appState.user; const area = document.getElementById('nav-user-area');
                 if(u.isLoggedIn) {
-                    area.innerHTML = `<button onclick="router.navigate('profile')" class="bg-slate-900 text-white px-6 py-2 rounded-full text-xs font-black uppercase italic shadow-md">${u.name}</button>`;
+                    area.innerHTML = `<button onclick="router.navigate('profile')" class="bg-slate-900 text-white px-6 py-2 rounded-full text-xs font-black uppercase italic shadow-md hover:bg-blue-600 transition">${u.name}</button>`;
                     document.getElementById('p-name').innerText = u.name;
                     document.getElementById('p-avatar').innerText = u.name[0].toUpperCase();
                     document.getElementById('p-elo').innerText = u.elo;
@@ -213,8 +219,7 @@
                         actions.prepend(btn);
                     }
                 } else { 
-                    // СТРОГО "ВХОД" ДЛЯ НЕАВТОРИЗОВАННЫХ ПОЛЬЗОВАТЕЛЕЙ
-                    area.innerHTML = `<button onclick="openModal('auth-modal')" class="bg-slate-900 text-white px-8 py-3 rounded-full text-xs font-black uppercase shadow-xl">${i18n[appState.lang].login_text}</button>`; 
+                    area.innerHTML = `<button onclick="openModal('auth-modal')" class="bg-slate-900 text-white px-8 py-3 rounded-full text-xs font-black uppercase shadow-xl hover:bg-blue-600 transition">${i18n[appState.lang].login_text}</button>`; 
                 }
             },
             toast: (msg) => {
@@ -228,26 +233,61 @@
             mode: 'login',
             setMode: (m) => {
                 auth.mode = m;
-                document.getElementById('tab-login').className = m === 'login' ? 'font-black text-blue-600 border-b-2 border-blue-600 italic' : 'text-slate-300 italic';
-                document.getElementById('tab-reg').className = m === 'reg' ? 'font-black text-blue-600 border-b-2 border-blue-600 italic' : 'text-slate-300 italic';
+                document.getElementById('tab-login').className = m === 'login' ? 'font-black text-blue-600 border-b-2 border-blue-600 italic' : 'text-slate-300 italic hover:text-slate-500';
+                document.getElementById('tab-reg').className = m === 'reg' ? 'font-black text-blue-600 border-b-2 border-blue-600 italic' : 'text-slate-300 italic hover:text-slate-500';
                 document.getElementById('reg-name-field').style.display = m === 'reg' ? 'block' : 'none';
             },
             process: async () => {
-                const e = document.getElementById('in-email').value; const p = document.getElementById('in-pass').value; const n = document.getElementById('in-name').value;
-                let res = auth.mode === 'reg' ? await sbClient.auth.signUp({ email: e, password: p }) : await sbClient.auth.signInWithPassword({ email: e, password: p });
-                if(res.error) return alert(res.error.message);
-                appState.user = { id: res.data.user.id, email: res.data.user.email, name: n || e.split('@')[0], isLoggedIn: true, elo: appState.user.elo, streak: appState.user.streak, weakPoints: [] };
-                await db.syncUp(); // Сохраняем нового юзера в БД сразу
-                ui.update(); closeAllModals(); ui.toast("Успешная авторизация!");
+                const e = document.getElementById('in-email').value; 
+                const p = document.getElementById('in-pass').value; 
+                const n = document.getElementById('in-name').value;
+
+                if (!e || !p) {
+                    ui.toast("Пожалуйста, введите Email и пароль.");
+                    return;
+                }
+
+                if (auth.mode === 'reg') {
+                    // ЛОГИКА РЕГИСТРАЦИИ
+                    const { data, error } = await sbClient.auth.signUp({ email: e, password: p });
+                    if (error) { ui.toast("Ошибка: " + error.message); return; }
+                    
+                    appState.user = { id: data.user.id, email: data.user.email, name: n || e.split('@')[0], isLoggedIn: true, elo: 1200, streak: 0, weakPoints: [] };
+                    await db.syncUp(); // Создаем новый профиль
+                    ui.toast("Успешная регистрация!");
+                } else {
+                    // ЛОГИКА ВХОДА (ИСПРАВЛЕНО)
+                    const { data, error } = await sbClient.auth.signInWithPassword({ email: e, password: p });
+                    if (error) { ui.toast("Ошибка входа: " + error.message); return; }
+                    
+                    appState.user.id = data.user.id;
+                    appState.user.email = data.user.email;
+                    appState.user.isLoggedIn = true;
+                    await db.syncDown(data.user.id); // Загружаем существующий профиль!
+                    ui.toast("С возвращением!");
+                }
+                
+                ui.update(); 
+                closeAllModals(); 
             },
             logout: async () => { await sbClient.auth.signOut(); location.reload(); }
         };
 
         const admin = {
             saveQuestion: async () => {
-                const q = { subject: document.getElementById('adm-subject').value, lang: document.getElementById('adm-lang').value, question_text: document.getElementById('adm-q-text').value, options: [document.getElementById('adm-opt-0').value, document.getElementById('adm-opt-1').value, document.getElementById('adm-opt-2').value, document.getElementById('adm-opt-3').value], correct_idx: parseInt(document.getElementById('adm-correct').value) };
+                const qText = document.getElementById('adm-q-text').value;
+                if (!qText) return ui.toast("Введите текст вопроса!");
+                
+                const q = { 
+                    subject: document.getElementById('adm-subject').value, 
+                    lang: document.getElementById('adm-lang').value, 
+                    question_text: qText, 
+                    options: [document.getElementById('adm-opt-0').value, document.getElementById('adm-opt-1').value, document.getElementById('adm-opt-2').value, document.getElementById('adm-opt-3').value], 
+                    correct_idx: parseInt(document.getElementById('adm-correct').value) || 0 
+                };
                 const { error } = await sbClient.from('questions').insert([q]);
-                if (error) alert(error.message); else { ui.toast("Вопрос добавлен в облако!"); document.getElementById('adm-q-text').value = ''; }
+                if (error) ui.toast("Ошибка БД: " + error.message); 
+                else { ui.toast("Вопрос добавлен в облако!"); document.getElementById('adm-q-text').value = ''; }
             }
         };
 
@@ -264,11 +304,15 @@
             },
             start: async (sub) => {
                 closeAllModals();
+                // 1. Локальные вопросы из questions.js
                 let localQ = (typeof QUESTIONS_DATA !== 'undefined' && QUESTIONS_DATA[sub]) ? QUESTIONS_DATA[sub][appState.lang] : [];
+                // 2. Облачные вопросы из Supabase
                 const { data: cloudQ } = await sbClient.from('questions').select('*').eq('subject', sub).eq('lang', appState.lang);
+                
+                // 3. Слияние (Гибрид)
                 quiz.subject = [...localQ, ...(cloudQ || [])];
                 
-                if(quiz.subject.length === 0) return alert("Пока нет вопросов!");
+                if(quiz.subject.length === 0) { ui.toast("В этой категории пока нет вопросов!"); return; }
                 quiz.currentIdx = 0; quiz.score = 0; router.navigate('quiz'); quiz.render();
             },
             render: () => {
@@ -289,7 +333,7 @@
                 router.navigate('results'); 
                 const gainedELO = quiz.score * 25;
                 appState.user.elo += gainedELO;
-                await db.syncUp(); // Сохраняем обновленный ELO в БД
+                await db.syncUp(); // Автоматическое сохранение ELO в базу!
                 
                 document.getElementById('res-score').innerText = `${quiz.score}/${quiz.subject.length}`; 
                 document.getElementById('res-elo-gain').innerText = `+${gainedELO} ELO`;
@@ -300,7 +344,7 @@
             open: () => { 
                 openModal('academy-modal'); 
                 const menu = document.getElementById('academy-menu');
-                menu.innerHTML = `<button onclick="academy.load('ент')" class="w-full p-4 rounded-2xl font-bold italic text-left bg-blue-50">ҰБТ 2026</button>`;
+                menu.innerHTML = `<button onclick="academy.load('ент')" class="w-full p-4 rounded-2xl font-bold italic text-left bg-blue-50 hover:bg-blue-100 transition">ҰБТ 2026</button>`;
                 academy.load('ент');
             },
             load: (id) => { document.getElementById('academy-content').innerHTML = `<h2 class="text-4xl font-black italic uppercase text-blue-600 mb-8">ҰБТ 2026</h2><p class="text-lg text-slate-600">Здесь собраны главные секреты подготовки.</p>`; }
@@ -312,25 +356,27 @@
             window.myChart = new Chart(ctx, { type: 'radar', data: { labels: appState.lang === 'ru' ? ['Мат', 'История', 'Чтение', 'Физ', 'Гео'] : ['Мат', 'Тарих', 'Оқу', 'Физ', 'Гео'], datasets: [{ data: [85, 45, 65, 90, 75], backgroundColor: 'rgba(37, 99, 235, 0.15)', borderColor: '#2563eb', borderWidth: 4 }] }, options: { scales: { r: { beginAtZero: true, max: 100, ticks: { display: false } } }, plugins: { legend: { display: false } } } });
         }
 
-        function openModal(id) { document.getElementById('modal-bg').classList.remove('hidden'); document.querySelectorAll('.modal-content').forEach(m => m.classList.add('hidden')); document.getElementById(id).classList.remove('hidden'); }
+        function openModal(id) { document.getElementById('modal-bg').classList.remove('hidden'); document.querySelectorAll('.modal-content').forEach(m => m.classList.add('hidden')); document.getElementById(id).classList.remove('hidden'); if(id === 'auth-modal') auth.setMode('login'); }
         function closeAllModals() { document.getElementById('modal-bg').classList.add('hidden'); }
         
         async function initApp() { 
             ui.updateTranslations(); 
-            // Слушатель авторизации: обновляет UI при входе/выходе без перезагрузки
-            sbClient.auth.onAuthStateChange(async (event, session) => {
-                if(session) {
-                    appState.user.id = session.user.id;
-                    appState.user.email = session.user.email;
-                    await db.syncDown(session.user.id);
-                } else {
+            const { data: { session } } = await sbClient.auth.getSession(); 
+            if(session) { 
+                appState.user.id = session.user.id; 
+                appState.user.email = session.user.email; 
+                await db.syncDown(session.user.id); 
+            } else { 
+                ui.update(); 
+            }
+            
+            // Слушатель только для выхода, чтобы не дублировать запросы при входе
+            sbClient.auth.onAuthStateChange((event, session) => {
+                if (event === 'SIGNED_OUT') {
                     appState.user.isLoggedIn = false;
                     ui.update();
                 }
             });
-            const { data: { session } } = await sbClient.auth.getSession(); 
-            if(session) { await db.syncDown(session.user.id); } 
-            else { ui.update(); }
         }
     </script>
 </body>
