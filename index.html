@@ -5,13 +5,11 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Altyn Logic — ENT Preparation Platform</title>
 
-  <!-- ── External Libraries ───────────────────────────────────────────── -->
   <script src="https://cdn.tailwindcss.com"></script>
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <script src="https://cdn.jsdelivr.net/npm/chart.js@4"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/js/all.min.js" crossorigin="anonymous"></script>
   <script>
-    // MathJax config before loading
     window.MathJax = {
       tex: { inlineMath: [['$', '$'], ['\\(', '\\)']] },
       svg: { fontCache: 'global' },
@@ -19,1653 +17,456 @@
     };
   </script>
   <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-svg.js"></script>
-  <!-- questions.js loaded AFTER so LOCAL_QUESTIONS is available -->
   <script src="questions.js"></script>
 
   <style>
-    /* ── Design Tokens ─────────────────────────────────────────────────── */
     :root {
-      --gold:    #F5C542;
-      --gold-lt: #FFE08A;
-      --indigo:  #4F46E5;
-      --cyan:    #06B6D4;
-      --bg:      #0B0F1A;
-      --surface: rgba(255,255,255,0.04);
-      --border:  rgba(255,255,255,0.10);
-      --text:    #E8ECFA;
-      --muted:   #6B7280;
-      --danger:  #EF4444;
-      --success: #10B981;
+      --gold: #F5C542; --gold-lt: #FFE08A; --indigo: #4F46E5; --cyan: #06B6D4;
+      --bg: #0B0F1A; --surface: rgba(255,255,255,0.04); --border: rgba(255,255,255,0.10);
+      --text: #E8ECFA; --muted: #6B7280; --danger: #EF4444; --success: #10B981;
     }
-
-    /* ── Base ──────────────────────────────────────────────────────────── */
     * { box-sizing: border-box; }
-    html { scroll-behavior: smooth; }
     body {
-      background: var(--bg);
-      color: var(--text);
-      font-family: 'Segoe UI', system-ui, sans-serif;
-      min-height: 100vh;
-      overflow-x: hidden;
+      background: var(--bg); color: var(--text); font-family: 'Segoe UI', system-ui, sans-serif;
+      min-height: 100vh; overflow-x: hidden;
     }
-
-    /* Starfield background */
     body::before {
-      content: '';
-      position: fixed; inset: 0; z-index: 0;
-      background:
-        radial-gradient(ellipse 80% 50% at 20% 10%, rgba(79,70,229,.18) 0%, transparent 60%),
-        radial-gradient(ellipse 60% 40% at 80% 80%, rgba(6,182,212,.12) 0%, transparent 60%),
-        radial-gradient(ellipse 40% 40% at 60% 30%, rgba(245,197,66,.07) 0%, transparent 60%);
+      content: ''; position: fixed; inset: 0; z-index: 0;
+      background: radial-gradient(ellipse 80% 50% at 20% 10%, rgba(79,70,229,.18) 0%, transparent 60%),
+                  radial-gradient(ellipse 60% 40% at 80% 80%, rgba(6,182,212,.12) 0%, transparent 60%);
       pointer-events: none;
     }
     body > * { position: relative; z-index: 1; }
-
-    /* ── Glassmorphism Card ─────────────────────────────────────────────── */
-    .glass {
-      background: var(--surface);
-      backdrop-filter: blur(18px) saturate(160%);
-      -webkit-backdrop-filter: blur(18px) saturate(160%);
-      border: 1px solid var(--border);
-      border-radius: 16px;
-    }
-    .glass-strong {
-      background: rgba(255,255,255,0.08);
-      backdrop-filter: blur(28px) saturate(180%);
-      -webkit-backdrop-filter: blur(28px) saturate(180%);
-      border: 1px solid rgba(255,255,255,0.15);
-      border-radius: 20px;
-    }
-
-    /* ── Gold gradient text ────────────────────────────────────────────── */
-    .text-gold-grad {
-      background: linear-gradient(135deg, var(--gold), var(--gold-lt));
-      -webkit-background-clip: text;
-      -webkit-text-fill-color: transparent;
-      background-clip: text;
-    }
-
-    /* ── Buttons ───────────────────────────────────────────────────────── */
-    .btn-gold {
-      background: linear-gradient(135deg, #D4A017, var(--gold));
-      color: #1a1200;
-      font-weight: 700;
-      border-radius: 12px;
-      padding: .65rem 1.4rem;
-      cursor: pointer;
-      transition: transform .15s, box-shadow .15s;
-      border: none;
-      font-size: .95rem;
-    }
+    .glass { background: var(--surface); backdrop-filter: blur(18px); border: 1px solid var(--border); border-radius: 16px; }
+    .glass-strong { background: rgba(255,255,255,0.08); backdrop-filter: blur(28px); border: 1px solid rgba(255,255,255,0.15); border-radius: 20px; }
+    .text-gold-grad { background: linear-gradient(135deg, var(--gold), var(--gold-lt)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+    .btn-gold { background: linear-gradient(135deg, #D4A017, var(--gold)); color: #1a1200; font-weight: 700; border-radius: 12px; padding: .65rem 1.4rem; cursor: pointer; transition: all .15s; border: none; }
     .btn-gold:hover { transform: translateY(-2px); box-shadow: 0 8px 24px rgba(245,197,66,.35); }
-    .btn-gold:active { transform: translateY(0); }
-
-    .btn-outline {
-      background: transparent;
-      color: var(--gold);
-      border: 1.5px solid var(--gold);
-      border-radius: 12px;
-      padding: .6rem 1.3rem;
-      cursor: pointer;
-      font-weight: 600;
-      font-size: .95rem;
-      transition: background .2s, color .2s;
-    }
+    .btn-outline { background: transparent; color: var(--gold); border: 1.5px solid var(--gold); border-radius: 12px; padding: .6rem 1.3rem; cursor: pointer; font-weight: 600; transition: all .2s; }
     .btn-outline:hover { background: var(--gold); color: #1a1200; }
-
-    .btn-ghost {
-      background: transparent;
-      color: var(--text);
-      border: 1px solid var(--border);
-      border-radius: 10px;
-      padding: .55rem 1.1rem;
-      cursor: pointer;
-      font-size: .9rem;
-      transition: background .2s, border-color .2s;
-    }
-    .btn-ghost:hover { background: rgba(255,255,255,.06); border-color: rgba(255,255,255,.25); }
-
-    /* ── Modals ────────────────────────────────────────────────────────── */
-    .modal-backdrop {
-      position: fixed; inset: 0; z-index: 1000;
-      background: rgba(0,0,0,.65);
-      backdrop-filter: blur(6px);
-      display: flex; align-items: center; justify-content: center;
-      padding: 1rem;
-      opacity: 0; pointer-events: none;
-      transition: opacity .25s;
-    }
-    .modal-backdrop.active { opacity: 1; pointer-events: all; }
-    .modal-box {
-      width: 100%; max-width: 520px; max-height: 90vh;
-      overflow-y: auto;
-      animation: slideUp .3s ease;
-      position: relative;
-    }
-    @keyframes slideUp {
-      from { transform: translateY(30px); opacity: 0; }
-      to   { transform: translateY(0);    opacity: 1; }
-    }
-    .modal-close {
-      position: absolute; top: 14px; right: 14px;
-      background: rgba(255,255,255,.08);
-      border: 1px solid var(--border);
-      color: var(--text);
-      width: 34px; height: 34px;
-      border-radius: 50%;
-      cursor: pointer;
-      display: flex; align-items: center; justify-content: center;
-      font-size: 1.1rem;
-      transition: background .2s, transform .15s;
-      z-index: 10;
-    }
-    .modal-close:hover { background: rgba(255,255,255,.16); transform: rotate(90deg); }
-
-    /* ── Inputs ────────────────────────────────────────────────────────── */
-    .inp {
-      background: rgba(255,255,255,.05);
-      border: 1px solid var(--border);
-      border-radius: 10px;
-      color: var(--text);
-      padding: .7rem 1rem;
-      width: 100%;
-      font-size: .95rem;
-      outline: none;
-      transition: border-color .2s, box-shadow .2s;
-    }
-    .inp:focus { border-color: var(--gold); box-shadow: 0 0 0 3px rgba(245,197,66,.15); }
-    .inp::placeholder { color: var(--muted); }
-
-    /* ── Navigation ────────────────────────────────────────────────────── */
-    nav {
-      background: rgba(11,15,26,.85);
-      backdrop-filter: blur(20px);
-      border-bottom: 1px solid var(--border);
-      position: sticky; top: 0; z-index: 100;
-    }
-    .nav-link {
-      color: var(--muted);
-      font-size: .9rem;
-      font-weight: 500;
-      padding: .4rem .7rem;
-      border-radius: 8px;
-      cursor: pointer;
-      transition: color .2s, background .2s;
-      border: none; background: none;
-    }
+    .btn-ghost { background: transparent; color: var(--text); border: 1px solid var(--border); border-radius: 10px; padding: .55rem 1.1rem; cursor: pointer; transition: all .2s; }
+    .modal-backdrop { position: fixed; inset: 0; z-index: 1000; background: rgba(0,0,0,.65); backdrop-filter: blur(6px); display: none; align-items: center; justify-content: center; padding: 1rem; }
+    .modal-backdrop.active { display: flex; }
+    .modal-box { width: 100%; max-width: 520px; max-height: 90vh; overflow-y: auto; position: relative; background: #161B2E; border: 1px solid var(--border); border-radius: 24px; padding: 2rem; }
+    .modal-close { position: absolute; top: 14px; right: 14px; background: rgba(255,255,255,.08); color: var(--text); width: 34px; height: 34px; border-radius: 50%; cursor: pointer; display: flex; align-items: center; justify-content: center; border: none; }
+    .inp { background: rgba(255,255,255,.05); border: 1px solid var(--border); border-radius: 10px; color: var(--text); padding: .7rem 1rem; width: 100%; outline: none; }
+    .inp:focus { border-color: var(--gold); }
+    .nav-link { color: var(--muted); font-size: .9rem; font-weight: 500; padding: .4rem .7rem; border-radius: 8px; cursor: pointer; transition: all .2s; border: none; background: none; }
     .nav-link:hover, .nav-link.active { color: var(--gold); background: rgba(245,197,66,.08); }
-
-    /* ── Quiz Options ──────────────────────────────────────────────────── */
-    .option-btn {
-      width: 100%;
-      background: rgba(255,255,255,.04);
-      border: 1.5px solid var(--border);
-      border-radius: 12px;
-      color: var(--text);
-      padding: .85rem 1.2rem;
-      text-align: left;
-      cursor: pointer;
-      font-size: .95rem;
-      transition: border-color .2s, background .2s, transform .1s;
-    }
-    .option-btn:hover:not(:disabled) { border-color: var(--gold); background: rgba(245,197,66,.06); transform: translateX(4px); }
-    .option-btn.correct  { border-color: var(--success); background: rgba(16,185,129,.12); }
-    .option-btn.wrong    { border-color: var(--danger);  background: rgba(239,68,68,.12); }
-    .option-btn:disabled { cursor: default; transform: none; }
-
-    /* ── Progress bar ──────────────────────────────────────────────────── */
-    .progress-bar {
-      height: 6px;
-      background: rgba(255,255,255,.08);
-      border-radius: 99px;
-      overflow: hidden;
-    }
-    .progress-fill {
-      height: 100%;
-      background: linear-gradient(90deg, var(--indigo), var(--gold));
-      border-radius: 99px;
-      transition: width .4s ease;
-    }
-
-    /* ── ELO badge ─────────────────────────────────────────────────────── */
-    .elo-badge {
-      background: linear-gradient(135deg, #1a1200, #2d2000);
-      border: 1px solid var(--gold);
-      border-radius: 20px;
-      padding: .25rem .75rem;
-      font-size: .8rem;
-      color: var(--gold);
-      font-weight: 700;
-    }
-
-    /* ── Streak flame ──────────────────────────────────────────────────── */
-    .streak-badge {
-      background: linear-gradient(135deg, rgba(239,68,68,.2), rgba(249,115,22,.2));
-      border: 1px solid rgba(249,115,22,.4);
-      border-radius: 20px;
-      padding: .25rem .65rem;
-      font-size: .8rem;
-      color: #FB923C;
-      font-weight: 700;
-    }
-
-    /* ── Leaderboard row ───────────────────────────────────────────────── */
-    .lb-row {
-      display: flex; align-items: center; gap: .85rem;
-      padding: .75rem 1rem;
-      border-radius: 12px;
-      transition: background .2s;
-    }
-    .lb-row:hover { background: rgba(255,255,255,.04); }
-
-    /* ── Subject card ──────────────────────────────────────────────────── */
-    .subj-card {
-      border-radius: 14px;
-      padding: 1.2rem 1rem;
-      cursor: pointer;
-      border: 1.5px solid var(--border);
-      transition: transform .2s, border-color .2s, box-shadow .2s;
-      background: rgba(255,255,255,.04);
-      text-align: center;
-    }
-    .subj-card:hover { transform: translateY(-4px); border-color: var(--gold); box-shadow: 0 8px 30px rgba(245,197,66,.12); }
-
-    /* ── Toast ─────────────────────────────────────────────────────────── */
-    #toast {
-      position: fixed; bottom: 1.5rem; left: 50%; transform: translateX(-50%) translateY(80px);
-      background: rgba(30,30,50,.95);
-      border: 1px solid var(--border);
-      border-radius: 14px;
-      padding: .75rem 1.4rem;
-      font-size: .9rem;
-      z-index: 2000;
-      transition: transform .3s ease;
-      pointer-events: none;
-      white-space: nowrap;
-    }
+    .option-btn { width: 100%; background: rgba(255,255,255,.04); border: 1.5px solid var(--border); border-radius: 12px; color: var(--text); padding: .85rem 1.2rem; text-align: left; cursor: pointer; transition: all .2s; margin-bottom: 0.75rem; }
+    .option-btn:hover:not(:disabled) { border-color: var(--gold); transform: translateX(4px); }
+    .option-btn.correct { border-color: var(--success); background: rgba(16,185,129,.12); }
+    .option-btn.wrong { border-color: var(--danger); background: rgba(239,68,68,.12); }
+    .progress-bar { height: 6px; background: rgba(255,255,255,.08); border-radius: 99px; overflow: hidden; }
+    .progress-fill { height: 100%; background: linear-gradient(90deg, var(--indigo), var(--gold)); transition: width .4s ease; }
+    .elo-badge { background: linear-gradient(135deg, #1a1200, #2d2000); border: 1px solid var(--gold); border-radius: 20px; padding: .25rem .75rem; font-size: .8rem; color: var(--gold); font-weight: 700; }
+    .subj-card { border-radius: 14px; padding: 1.2rem 1rem; cursor: pointer; border: 1.5px solid var(--border); transition: all .2s; background: rgba(255,255,255,.04); text-align: center; }
+    .subj-card:hover { transform: translateY(-4px); border-color: var(--gold); }
+    #toast { position: fixed; bottom: 1.5rem; left: 50%; transform: translateX(-50%) translateY(80px); background: #1E293B; border: 1px solid var(--border); border-radius: 14px; padding: .75rem 1.4rem; z-index: 2000; transition: transform .3s ease; color: white; }
     #toast.show { transform: translateX(-50%) translateY(0); }
-    #toast.success { border-color: var(--success); color: var(--success); }
-    #toast.error   { border-color: var(--danger);  color: var(--danger);  }
-    #toast.info    { border-color: var(--cyan);    color: var(--cyan);    }
-
-    /* ── Scrollbar ─────────────────────────────────────────────────────── */
-    ::-webkit-scrollbar { width: 5px; }
-    ::-webkit-scrollbar-track { background: transparent; }
-    ::-webkit-scrollbar-thumb { background: rgba(255,255,255,.12); border-radius: 99px; }
-
-    /* ── Spinner ───────────────────────────────────────────────────────── */
-    .spinner {
-      width: 40px; height: 40px;
-      border: 3px solid rgba(245,197,66,.2);
-      border-top-color: var(--gold);
-      border-radius: 50%;
-      animation: spin .7s linear infinite;
-    }
+    .spinner { width: 40px; height: 40px; border: 3px solid rgba(245,197,66,.2); border-top-color: var(--gold); border-radius: 50%; animation: spin .7s linear infinite; }
     @keyframes spin { to { transform: rotate(360deg); } }
-
-    /* ── Animations ────────────────────────────────────────────────────── */
-    .fade-in { animation: fadeIn .4s ease both; }
-    @keyframes fadeIn { from { opacity: 0; transform: translateY(12px); } to { opacity: 1; transform: none; } }
-
-    /* ── Responsive ────────────────────────────────────────────────────── */
-    @media (max-width: 640px) {
-      .modal-box { max-height: 95vh; }
-      .nav-desktop { display: none !important; }
-      .nav-mobile-btn { display: flex !important; }
-    }
-    @media (min-width: 641px) {
-      .nav-mobile-btn { display: none !important; }
-      #mobile-menu { display: none !important; }
-    }
   </style>
 </head>
 <body>
 
-<!-- ════════════════════════════════════════════════════════════════════════
-     NAVIGATION
-════════════════════════════════════════════════════════════════════════ -->
+<div id="toast"></div>
+
 <nav class="px-4 py-3">
   <div class="max-w-6xl mx-auto flex items-center justify-between gap-4">
-    <!-- Logo -->
     <div class="flex items-center gap-2 cursor-pointer" onclick="showSection('home')">
-      <div class="w-9 h-9 rounded-xl flex items-center justify-center"
-           style="background:linear-gradient(135deg,#D4A017,#F5C542)">
+      <div class="w-9 h-9 rounded-xl flex items-center justify-center" style="background:linear-gradient(135deg,#D4A017,#F5C542)">
         <i class="fas fa-star text-sm" style="color:#1a1200"></i>
       </div>
       <span class="font-extrabold text-lg tracking-tight text-gold-grad">Altyn Logic</span>
     </div>
-
-    <!-- Desktop nav links -->
-    <div class="nav-desktop flex items-center gap-1">
-      <button class="nav-link active" id="nav-home" onclick="showSection('home')" data-i18n="nav_home">Главная</button>
+    <div class="hidden lg:flex items-center gap-1">
+      <button class="nav-link" id="nav-home" onclick="showSection('home')" data-i18n="nav_home">Главная</button>
       <button class="nav-link" id="nav-quiz" onclick="showSection('quiz')" data-i18n="nav_quiz">Тест</button>
       <button class="nav-link" id="nav-stats" onclick="showSection('stats')" data-i18n="nav_stats">Статистика</button>
       <button class="nav-link" id="nav-leaderboard" onclick="showSection('leaderboard')" data-i18n="nav_lb">Рейтинг</button>
       <button class="nav-link" id="nav-admin" onclick="showSection('admin')" style="display:none" data-i18n="nav_admin">Admin</button>
     </div>
-
-    <!-- Right controls -->
     <div class="flex items-center gap-2">
-      <!-- Language toggle -->
       <button class="btn-ghost text-xs font-bold px-3 py-1" onclick="toggleLang()" id="lang-toggle">KK</button>
-      <!-- Auth / Profile -->
       <div id="auth-area"></div>
-      <!-- Mobile hamburger -->
-      <button class="nav-mobile-btn btn-ghost px-2 py-1" onclick="toggleMobileMenu()">
-        <i class="fas fa-bars"></i>
-      </button>
     </div>
-  </div>
-
-  <!-- Mobile menu -->
-  <div id="mobile-menu" class="max-w-6xl mx-auto mt-2 pb-2 flex flex-col gap-1">
-    <button class="nav-link text-left" onclick="showSection('home');toggleMobileMenu()" data-i18n="nav_home">Главная</button>
-    <button class="nav-link text-left" onclick="showSection('quiz');toggleMobileMenu()" data-i18n="nav_quiz">Тест</button>
-    <button class="nav-link text-left" onclick="showSection('stats');toggleMobileMenu()" data-i18n="nav_stats">Статистика</button>
-    <button class="nav-link text-left" onclick="showSection('leaderboard');toggleMobileMenu()" data-i18n="nav_lb">Рейтинг</button>
-    <button class="nav-link text-left" id="mob-nav-admin" onclick="showSection('admin');toggleMobileMenu()" style="display:none" data-i18n="nav_admin">Admin</button>
   </div>
 </nav>
 
-<!-- ════════════════════════════════════════════════════════════════════════
-     MAIN CONTENT SECTIONS
-════════════════════════════════════════════════════════════════════════ -->
 <main class="max-w-6xl mx-auto px-4 py-6">
 
-  <!-- ── HOME SECTION ─────────────────────────────────────────────────── -->
-  <section id="sec-home" class="fade-in">
-    <!-- Hero -->
+  <section id="sec-home">
     <div class="glass-strong p-8 mb-6 text-center">
-      <div class="inline-flex items-center gap-2 mb-4 px-4 py-1.5 rounded-full"
-           style="background:rgba(245,197,66,.1);border:1px solid rgba(245,197,66,.25)">
-        <i class="fas fa-bolt text-xs" style="color:var(--gold)"></i>
-        <span class="text-xs font-semibold" style="color:var(--gold-lt)" data-i18n="hero_badge">ENT Дайындық Платформасы</span>
-      </div>
-      <h1 class="text-4xl sm:text-5xl font-black mb-3 leading-tight">
-        <span class="text-gold-grad">Altyn Logic</span>
-      </h1>
-      <p class="text-lg mb-6 max-w-xl mx-auto" style="color:var(--muted)" data-i18n="hero_sub">
-        Интерактивные тесты, аналитика прогресса и рейтинг лучших учеников
-      </p>
+      <h1 class="text-4xl sm:text-5xl font-black mb-3 text-gold-grad">Altyn Logic</h1>
+      <p class="text-lg mb-6 max-w-xl mx-auto" style="color:var(--muted)" data-i18n="hero_sub">Интерактивные тесты и аналитика ҰБТ 2026</p>
       <div class="flex flex-wrap gap-3 justify-center">
-        <button class="btn-gold" onclick="openSubjectsModal()" data-i18n="hero_start">
-          <i class="fas fa-play mr-2"></i>Начать тест
-        </button>
-        <button class="btn-outline" onclick="openModal('modal-academy')" data-i18n="hero_academy">
-          <i class="fas fa-graduation-cap mr-2"></i>Академия
-        </button>
+        <button class="btn-gold" onclick="openSubjectsModal()" data-i18n="hero_start">Начать тест</button>
+        <button class="btn-outline" onclick="openModal('modal-academy')" data-i18n="hero_academy">Академия</button>
       </div>
     </div>
-
-    <!-- Stats strip -->
     <div class="grid grid-cols-2 sm:grid-cols-4 gap-4 mb-6">
       <div class="glass p-4 text-center">
-        <div class="text-2xl font-black text-gold-grad" id="stat-questions">11</div>
+        <div class="text-2xl font-black text-gold-grad" id="stat-questions">0</div>
         <div class="text-xs mt-1" style="color:var(--muted)" data-i18n="stat_q">Вопросов</div>
       </div>
       <div class="glass p-4 text-center">
-        <div class="text-2xl font-black" style="color:var(--cyan)" id="stat-subjects">8</div>
-        <div class="text-xs mt-1" style="color:var(--muted)" data-i18n="stat_s">Предметов</div>
-      </div>
-      <div class="glass p-4 text-center">
-        <div class="text-2xl font-black" style="color:var(--success)" id="stat-elo">—</div>
-        <div class="text-xs mt-1" style="color:var(--muted)" data-i18n="stat_elo">Ваш ELO</div>
-      </div>
-      <div class="glass p-4 text-center">
-        <div class="text-2xl font-black" style="color:#FB923C" id="stat-streak">—</div>
-        <div class="text-xs mt-1" style="color:var(--muted)" data-i18n="stat_streak">🔥 Серия</div>
+        <div class="text-2xl font-black" style="color:var(--success)" id="stat-elo">800</div>
+        <div class="text-xs mt-1" style="color:var(--muted)" data-i18n="stat_elo">ELO</div>
       </div>
     </div>
-
-    <!-- Subject quick access -->
     <div class="glass p-5 mb-6">
       <h2 class="font-bold text-lg mb-4" data-i18n="subjects_title">Предметы</h2>
       <div class="grid grid-cols-2 sm:grid-cols-4 gap-3" id="subject-grid"></div>
     </div>
-
-    <!-- Tips -->
-    <div class="glass p-5">
-      <h2 class="font-bold text-lg mb-3" data-i18n="tips_title">💡 Советы</h2>
-      <ul class="space-y-2 text-sm" style="color:var(--muted)">
-        <li data-i18n="tip1">• Каждая ошибка отображается в радар-чарте навыков</li>
-        <li data-i18n="tip2">• За серию правильных ответов начисляется бонусный ELO</li>
-        <li data-i18n="tip3">• Lifehack-подсказки появляются только для вопросов, на которые вы ошиблись</li>
-      </ul>
-    </div>
   </section>
 
-  <!-- ── QUIZ SECTION ──────────────────────────────────────────────────── -->
-  <section id="sec-quiz" class="fade-in" style="display:none">
+  <section id="sec-quiz" style="display:none">
     <div class="max-w-2xl mx-auto">
-      <!-- Quiz header -->
       <div class="glass p-5 mb-4">
-        <div class="flex items-center justify-between mb-3">
-          <div>
-            <span class="text-xs font-semibold uppercase tracking-widest" style="color:var(--gold)" id="q-subject-label">—</span>
-            <div class="flex items-center gap-2 mt-0.5">
-              <span class="text-sm" style="color:var(--muted)" data-i18n="quiz_q">Вопрос</span>
-              <span class="font-bold" id="q-index">1</span>
-              <span style="color:var(--muted)">/</span>
-              <span id="q-total">10</span>
-            </div>
-          </div>
-          <div class="flex items-center gap-2">
-            <div class="elo-badge" id="q-elo">ELO: —</div>
-            <button class="btn-ghost px-3 py-1 text-sm" onclick="openSubjectsModal()" data-i18n="quiz_change">Сменить</button>
-          </div>
+        <div class="flex justify-between mb-3">
+          <span class="text-xs font-bold text-gold-grad" id="q-subject-label">ПРЕДМЕТ</span>
+          <span class="text-xs" id="q-counter">1 / 10</span>
         </div>
-        <div class="progress-bar">
-          <div class="progress-fill" id="q-progress" style="width:0%"></div>
-        </div>
+        <div class="progress-bar"><div class="progress-fill" id="q-progress" style="width:0%"></div></div>
       </div>
-
-      <!-- Question card -->
       <div class="glass-strong p-6 mb-4" id="q-card">
-        <div id="q-loading" class="flex justify-center py-8"><div class="spinner"></div></div>
-        <div id="q-content" style="display:none">
-          <div class="text-lg font-semibold leading-relaxed mb-6" id="q-text"></div>
-          <div class="space-y-3" id="q-options"></div>
-        </div>
+        <div id="q-text" class="text-xl font-bold mb-8"></div>
+        <div id="q-options"></div>
       </div>
-
-      <!-- Explanation / Lifehack (shown after answer) -->
       <div id="q-feedback" class="glass p-5 mb-4" style="display:none">
-        <div id="q-explanation" class="text-sm mb-3 leading-relaxed"></div>
-        <div id="q-lifehack" class="text-sm p-3 rounded-xl leading-relaxed"
-             style="background:rgba(245,197,66,.08);border:1px solid rgba(245,197,66,.2);display:none"></div>
-        <button class="btn-gold mt-4 w-full" id="q-next-btn" onclick="nextQuestion()" data-i18n="quiz_next">
-          Следующий вопрос <i class="fas fa-arrow-right ml-2"></i>
-        </button>
+        <div id="q-explanation" class="text-sm mb-3"></div>
+        <div id="q-lifehack" class="text-sm p-3 rounded-xl bg-yellow-500/10 border border-yellow-500/20 text-yellow-200"></div>
+        <button class="btn-gold mt-4 w-full" onclick="nextQuestion()" data-i18n="quiz_next">Далее</button>
       </div>
     </div>
   </section>
 
-  <!-- ── STATS SECTION ─────────────────────────────────────────────────── -->
-  <section id="sec-stats" class="fade-in" style="display:none">
+  <section id="sec-leaderboard" style="display:none">
+    <div class="max-w-2xl mx-auto">
+      <h2 class="text-2xl font-black mb-6" data-i18n="lb_title">Рейтинг</h2>
+      <div class="glass p-5" id="lb-list"></div>
+    </div>
+  </section>
+
+  <section id="sec-stats" style="display:none">
     <div class="max-w-4xl mx-auto">
-      <h2 class="text-2xl font-black mb-6" data-i18n="stats_title">Статистика и навыки</h2>
+      <h2 class="text-2xl font-black mb-6" data-i18n="stats_title">Статистика</h2>
       <div class="grid sm:grid-cols-2 gap-6">
-        <!-- Radar chart -->
+        <div class="glass p-5" style="height:350px"><canvas id="radar-chart"></canvas></div>
         <div class="glass p-5">
-          <h3 class="font-bold mb-4" data-i18n="radar_title">Радар навыков</h3>
-          <div class="relative" style="height:280px">
-            <canvas id="radar-chart"></canvas>
-          </div>
-        </div>
-        <!-- Personal stats -->
-        <div class="glass p-5 flex flex-col gap-4">
-          <h3 class="font-bold" data-i18n="personal_stats">Личные показатели</h3>
-          <div id="personal-stats-content">
-            <p class="text-sm" style="color:var(--muted)" data-i18n="login_for_stats">Войдите, чтобы увидеть личную статистику</p>
-          </div>
-          <!-- Session stats always visible -->
-          <div class="mt-auto pt-4 border-t" style="border-color:var(--border)">
-            <h4 class="text-sm font-semibold mb-3" style="color:var(--muted)" data-i18n="session_stats">Текущая сессия</h4>
-            <div class="grid grid-cols-2 gap-3 text-center">
-              <div class="glass p-3 rounded-xl">
-                <div class="text-xl font-black" style="color:var(--success)" id="sess-correct">0</div>
-                <div class="text-xs" style="color:var(--muted)" data-i18n="sess_correct">Верно</div>
-              </div>
-              <div class="glass p-3 rounded-xl">
-                <div class="text-xl font-black" style="color:var(--danger)" id="sess-wrong">0</div>
-                <div class="text-xs" style="color:var(--muted)" data-i18n="sess_wrong">Ошибки</div>
-              </div>
-              <div class="glass p-3 rounded-xl col-span-2">
-                <div class="text-xl font-black text-gold-grad" id="sess-pct">—</div>
-                <div class="text-xs" style="color:var(--muted)" data-i18n="sess_acc">Точность</div>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-
-      <!-- Weak points -->
-      <div class="glass p-5 mt-6">
-        <h3 class="font-bold mb-3" data-i18n="weakpoints_title">Слабые стороны</h3>
-        <div id="weak-points-list" class="flex flex-wrap gap-2"></div>
-      </div>
-    </div>
-  </section>
-
-  <!-- ── LEADERBOARD SECTION ───────────────────────────────────────────── -->
-  <section id="sec-leaderboard" class="fade-in" style="display:none">
-    <div class="max-w-2xl mx-auto">
-      <h2 class="text-2xl font-black mb-6" data-i18n="lb_title">🏆 Рейтинг</h2>
-      <div class="glass p-5">
-        <div id="lb-loading" class="flex justify-center py-8"><div class="spinner"></div></div>
-        <div id="lb-list" style="display:none"></div>
-      </div>
-    </div>
-  </section>
-
-  <!-- ── ADMIN SECTION ─────────────────────────────────────────────────── -->
-  <section id="sec-admin" class="fade-in" style="display:none">
-    <div class="max-w-2xl mx-auto">
-      <div class="glass-strong p-6">
-        <h2 class="text-2xl font-black mb-1" data-i18n="admin_title">⚙️ Панель администратора</h2>
-        <p class="text-sm mb-6" style="color:var(--muted)" data-i18n="admin_sub">Добавление вопросов в базу данных</p>
-        <div class="space-y-4">
-          <div>
-            <label class="text-xs font-semibold mb-1 block" style="color:var(--muted)" data-i18n="admin_id">ID вопроса (напр: math_010)</label>
-            <input class="inp" id="adm-id" placeholder="math_010">
-          </div>
-          <div>
-            <label class="text-xs font-semibold mb-1 block" style="color:var(--muted)" data-i18n="admin_subj">Предмет</label>
-            <select class="inp" id="adm-subject">
-              <option value="math">Математика / Математика</option>
-              <option value="history">История КЗ / Қазақстан тарихы</option>
-              <option value="physics">Физика / Физика</option>
-              <option value="chemistry">Химия / Химия</option>
-              <option value="biology">Биология / Биология</option>
-              <option value="kazakh">Казахский / Қазақ тілі</option>
-              <option value="geography">География / География</option>
-              <option value="russian">Русский / Орыс тілі</option>
-            </select>
-          </div>
-          <div>
-            <label class="text-xs font-semibold mb-1 block" style="color:var(--muted)">Вопрос (RU)</label>
-            <textarea class="inp" id="adm-text-ru" rows="2" placeholder="Текст вопроса на русском..."></textarea>
-          </div>
-          <div>
-            <label class="text-xs font-semibold mb-1 block" style="color:var(--muted)">Сұрақ (KK)</label>
-            <textarea class="inp" id="adm-text-kk" rows="2" placeholder="Сұрақ мәтіні қазақша..."></textarea>
-          </div>
-          <div>
-            <label class="text-xs font-semibold mb-1 block" style="color:var(--muted)">Варианты (RU) — через | (4 варианта)</label>
-            <input class="inp" id="adm-opts-ru" placeholder="A|B|C|D">
-          </div>
-          <div>
-            <label class="text-xs font-semibold mb-1 block" style="color:var(--muted)">Нұсқалар (KK) — | арқылы</label>
-            <input class="inp" id="adm-opts-kk" placeholder="A|B|C|D">
-          </div>
-          <div>
-            <label class="text-xs font-semibold mb-1 block" style="color:var(--muted)" data-i18n="admin_correct">Правильный ответ (0-3)</label>
-            <input class="inp" id="adm-correct" type="number" min="0" max="3" placeholder="0">
-          </div>
-          <div>
-            <label class="text-xs font-semibold mb-1 block" style="color:var(--muted)">Объяснение (RU)</label>
-            <textarea class="inp" id="adm-exp-ru" rows="2" placeholder="Объяснение..."></textarea>
-          </div>
-          <div>
-            <label class="text-xs font-semibold mb-1 block" style="color:var(--muted)">Түсіндірме (KK)</label>
-            <textarea class="inp" id="adm-exp-kk" rows="2"></textarea>
-          </div>
-          <div>
-            <label class="text-xs font-semibold mb-1 block" style="color:var(--muted)">Lifehack (RU)</label>
-            <input class="inp" id="adm-lh-ru" placeholder="💡 Совет...">
-          </div>
-          <div>
-            <label class="text-xs font-semibold mb-1 block" style="color:var(--muted)">Lifehack (KK)</label>
-            <input class="inp" id="adm-lh-kk">
-          </div>
-          <button class="btn-gold w-full" onclick="adminAddQuestion()" data-i18n="admin_submit">
-            <i class="fas fa-plus mr-2"></i>Добавить вопрос в Supabase
-          </button>
+           <h3 class="font-bold mb-4" data-i18n="personal_stats">Показатели</h3>
+           <div id="personal-stats-content" class="space-y-4"></div>
         </div>
       </div>
     </div>
   </section>
 
+  <section id="sec-admin" style="display:none">
+    <div class="max-w-2xl mx-auto glass p-8">
+      <h2 class="text-2xl font-black mb-6">Admin Panel</h2>
+      <div class="space-y-4">
+        <input class="inp" id="adm-id" placeholder="ID (math_01)">
+        <select class="inp" id="adm-subject">
+          <option value="math">Математика</option>
+          <option value="history">История</option>
+        </select>
+        <textarea class="inp" id="adm-text-ru" placeholder="Вопрос RU"></textarea>
+        <textarea class="inp" id="adm-text-kk" placeholder="Сұрақ KK"></textarea>
+        <input class="inp" id="adm-opts-ru" placeholder="A|B|C|D (RU)">
+        <input class="inp" id="adm-opts-kk" placeholder="A|B|C|D (KK)">
+        <input class="inp" id="adm-correct" type="number" placeholder="Индекс верного (0-3)">
+        <button class="btn-gold w-full" onclick="adminAddQuestion()">Добавить в облако</button>
+      </div>
+    </div>
+  </section>
 </main>
 
-<!-- ════════════════════════════════════════════════════════════════════════
-     MODALS
-════════════════════════════════════════════════════════════════════════ -->
-
-<!-- Auth Modal -->
 <div class="modal-backdrop" id="modal-auth">
-  <div class="modal-box glass-strong p-6">
+  <div class="modal-box text-center">
     <button class="modal-close" onclick="closeModal('modal-auth')"><i class="fas fa-times"></i></button>
-    <div class="text-center mb-5">
-      <div class="text-2xl font-black mb-1 text-gold-grad" data-i18n="auth_title">Добро пожаловать</div>
-      <p class="text-sm" style="color:var(--muted)" data-i18n="auth_sub">Войдите или создайте аккаунт</p>
+    <h2 class="text-2xl font-black mb-6 text-gold-grad" data-i18n="auth_title">Вход</h2>
+    <div class="space-y-4">
+      <input class="inp" id="login-email" type="email" placeholder="Email">
+      <input class="inp" id="login-password" type="password" placeholder="Пароль">
+      <button class="btn-gold w-full" onclick="handleLogin()">Войти</button>
+      <button class="btn-ghost w-full" onclick="handleRegister()">Зарегистрироваться</button>
     </div>
-    <!-- Tabs -->
-    <div class="flex mb-5 p-1 rounded-xl" style="background:rgba(255,255,255,.05)">
-      <button class="flex-1 py-2 rounded-lg text-sm font-semibold transition-all" id="tab-login"
-              onclick="switchAuthTab('login')" style="background:rgba(245,197,66,.15);color:var(--gold)" data-i18n="auth_login">Вход</button>
-      <button class="flex-1 py-2 rounded-lg text-sm font-semibold transition-all" id="tab-register"
-              onclick="switchAuthTab('register')" style="color:var(--muted)" data-i18n="auth_reg">Регистрация</button>
-    </div>
-    <!-- Login form -->
-    <div id="auth-login-form" class="space-y-3">
-      <input class="inp" id="login-email" type="email" placeholder="Email" data-ph-ru="Email" data-ph-kk="Email">
-      <input class="inp" id="login-password" type="password" data-ph-ru="Пароль" data-ph-kk="Құпия сөз" placeholder="Пароль">
-      <button class="btn-gold w-full" onclick="handleLogin()" data-i18n="auth_login_btn">Войти</button>
-    </div>
-    <!-- Register form -->
-    <div id="auth-register-form" class="space-y-3" style="display:none">
-      <input class="inp" id="reg-name" type="text" data-ph-ru="Ваше имя" data-ph-kk="Атыңыз" placeholder="Ваше имя">
-      <input class="inp" id="reg-email" type="email" placeholder="Email">
-      <input class="inp" id="reg-password" type="password" data-ph-ru="Пароль (мин. 6 символов)" data-ph-kk="Құпия сөз (мин. 6 таңба)" placeholder="Пароль">
-      <button class="btn-gold w-full" onclick="handleRegister()" data-i18n="auth_reg_btn">Создать аккаунт</button>
-    </div>
-    <div id="auth-error" class="mt-3 text-sm text-center" style="color:var(--danger);display:none"></div>
   </div>
 </div>
 
-<!-- Subjects Modal -->
 <div class="modal-backdrop" id="modal-subjects">
-  <div class="modal-box glass-strong p-6">
+  <div class="modal-box">
     <button class="modal-close" onclick="closeModal('modal-subjects')"><i class="fas fa-times"></i></button>
-    <h2 class="text-xl font-black mb-1" data-i18n="subj_title">Выберите предмет</h2>
-    <p class="text-sm mb-5" style="color:var(--muted)" data-i18n="subj_sub">Или начните смешанный тест</p>
-    <button class="btn-gold w-full mb-4" onclick="startQuiz('all')">
-      <i class="fas fa-shuffle mr-2"></i><span data-i18n="subj_mix">Смешанный тест (все предметы)</span>
-    </button>
+    <h2 class="text-xl font-black mb-6" data-i18n="subj_title">Выберите предмет</h2>
     <div class="grid grid-cols-2 gap-3" id="modal-subject-grid"></div>
   </div>
 </div>
 
-<!-- Academy Modal -->
 <div class="modal-backdrop" id="modal-academy">
-  <div class="modal-box glass-strong p-6">
+  <div class="modal-box text-center">
     <button class="modal-close" onclick="closeModal('modal-academy')"><i class="fas fa-times"></i></button>
-    <h2 class="text-xl font-black mb-1" data-i18n="acad_title">🎓 Академия Altyn</h2>
-    <p class="text-sm mb-5" style="color:var(--muted)" data-i18n="acad_sub">Теоретические материалы и курсы</p>
-    <div class="space-y-3">
-      <div class="glass p-4 rounded-xl flex items-center gap-3 cursor-pointer hover:border-yellow-500 border border-transparent transition-all"
-           onclick="openModal('modal-pro')">
-        <div class="w-10 h-10 rounded-xl flex items-center justify-center" style="background:rgba(245,197,66,.15)">
-          <i class="fas fa-lock" style="color:var(--gold)"></i>
-        </div>
-        <div>
-          <div class="font-semibold text-sm" data-i18n="acad_course1">Интенсивный курс математики</div>
-          <div class="text-xs" style="color:var(--muted)">PRO</div>
-        </div>
-      </div>
-      <div class="glass p-4 rounded-xl flex items-center gap-3 cursor-pointer hover:border-yellow-500 border border-transparent transition-all"
-           onclick="openModal('modal-pro')">
-        <div class="w-10 h-10 rounded-xl flex items-center justify-center" style="background:rgba(79,70,229,.15)">
-          <i class="fas fa-lock" style="color:var(--indigo)"></i>
-        </div>
-        <div>
-          <div class="font-semibold text-sm" data-i18n="acad_course2">История Казахстана — полный курс</div>
-          <div class="text-xs" style="color:var(--muted)">PRO</div>
-        </div>
-      </div>
-      <div class="glass p-4 rounded-xl flex items-center gap-3 cursor-pointer" style="opacity:.6">
-        <div class="w-10 h-10 rounded-xl flex items-center justify-center" style="background:rgba(16,185,129,.15)">
-          <i class="fas fa-book-open" style="color:var(--success)"></i>
-        </div>
-        <div>
-          <div class="font-semibold text-sm" data-i18n="acad_course3">Базовый словарный запас (KK)</div>
-          <div class="text-xs" style="color:var(--success)" data-i18n="acad_free">Бесплатно</div>
-        </div>
-      </div>
-    </div>
+    <h2 class="text-2xl font-black mb-4">Академия</h2>
+    <p class="text-muted mb-6">Курсы и материалы появятся в PRO версии.</p>
+    <button class="btn-gold w-full" onclick="closeModal('modal-academy')">Понятно</button>
   </div>
 </div>
 
-<!-- PRO Modal -->
-<div class="modal-backdrop" id="modal-pro">
-  <div class="modal-box glass-strong p-6 text-center">
-    <button class="modal-close" onclick="closeModal('modal-pro')"><i class="fas fa-times"></i></button>
-    <div class="w-16 h-16 rounded-2xl flex items-center justify-center mx-auto mb-4"
-         style="background:linear-gradient(135deg,#D4A017,#F5C542)">
-      <i class="fas fa-crown text-2xl" style="color:#1a1200"></i>
-    </div>
-    <h2 class="text-2xl font-black mb-1 text-gold-grad">Altyn PRO</h2>
-    <p class="text-sm mb-6" style="color:var(--muted)" data-i18n="pro_sub">Откройте полный доступ к платформе</p>
-    <ul class="text-sm text-left space-y-2 mb-6">
-      <li class="flex items-center gap-2"><i class="fas fa-check" style="color:var(--success)"></i> <span data-i18n="pro_f1">Неограниченные тесты по всем предметам</span></li>
-      <li class="flex items-center gap-2"><i class="fas fa-check" style="color:var(--success)"></i> <span data-i18n="pro_f2">Видеокурсы и теоретические материалы</span></li>
-      <li class="flex items-center gap-2"><i class="fas fa-check" style="color:var(--success)"></i> <span data-i18n="pro_f3">Персональный план подготовки</span></li>
-      <li class="flex items-center gap-2"><i class="fas fa-check" style="color:var(--success)"></i> <span data-i18n="pro_f4">Расширенная аналитика и экспорт</span></li>
-    </ul>
-    <button class="btn-gold w-full mb-3" onclick="showToast('pro_coming','info')">
-      <i class="fas fa-star mr-2"></i><span data-i18n="pro_btn">Получить PRO — скоро</span>
-    </button>
-    <button class="btn-ghost w-full" onclick="closeModal('modal-pro')" data-i18n="pro_later">Позже</button>
-  </div>
-</div>
-
-<!-- Quiz Results Modal -->
 <div class="modal-backdrop" id="modal-results">
-  <div class="modal-box glass-strong p-6" style="max-width:600px">
-    <button class="modal-close" onclick="closeModal('modal-results')"><i class="fas fa-times"></i></button>
-    <div class="text-center mb-5">
-      <div class="text-5xl mb-2" id="res-emoji">🎉</div>
-      <h2 class="text-2xl font-black mb-1" id="res-title" data-i18n="res_title">Тест завершён!</h2>
-      <div class="text-4xl font-black text-gold-grad my-3" id="res-score">0/10</div>
-    </div>
-    <!-- ELO delta -->
-    <div class="flex gap-3 mb-5">
-      <div class="glass flex-1 p-3 rounded-xl text-center">
-        <div class="text-lg font-black" id="res-elo-delta" style="color:var(--gold)">+0</div>
-        <div class="text-xs" style="color:var(--muted)">ELO</div>
-      </div>
-      <div class="glass flex-1 p-3 rounded-xl text-center">
-        <div class="text-lg font-black" style="color:var(--success)" id="res-correct">0</div>
-        <div class="text-xs" style="color:var(--muted)" data-i18n="sess_correct">Верно</div>
-      </div>
-      <div class="glass flex-1 p-3 rounded-xl text-center">
-        <div class="text-lg font-black" style="color:var(--danger)" id="res-wrong">0</div>
-        <div class="text-xs" style="color:var(--muted)" data-i18n="sess_wrong">Ошибки</div>
-      </div>
-    </div>
-    <!-- Lifehacks for wrong answers -->
-    <div id="res-lifehacks" class="space-y-3 mb-5"></div>
-    <!-- Action buttons -->
-    <div class="flex gap-3">
-      <button class="btn-gold flex-1" onclick="closeModal('modal-results');openSubjectsModal()" data-i18n="res_again">
-        <i class="fas fa-redo mr-2"></i>Ещё раз
-      </button>
-      <button class="btn-ghost flex-1" onclick="closeModal('modal-results');showSection('stats')" data-i18n="res_stats">
-        <i class="fas fa-chart-radar mr-2"></i>Статистика
-      </button>
-    </div>
+  <div class="modal-box text-center">
+    <h2 class="text-4xl font-black mb-2">🎉</h2>
+    <h2 class="text-2xl font-black mb-2" data-i18n="res_title">Результат</h2>
+    <div class="text-5xl font-black text-gold-grad mb-6" id="res-score">0/10</div>
+    <div id="res-hacks" class="text-left mb-6 space-y-2"></div>
+    <button class="btn-gold w-full" onclick="closeModal('modal-results'); showSection('home')">На главную</button>
   </div>
 </div>
 
-<!-- Toast -->
-<div id="toast"></div>
-
-<!-- ════════════════════════════════════════════════════════════════════════
-     JAVASCRIPT APPLICATION
-════════════════════════════════════════════════════════════════════════ -->
 <script>
 // ═══════════════════════════════════════════════════════════════════════════
-// 1. CONSTANTS & CONFIGURATION
+// СИСТЕМА УПРАВЛЕНИЯ ALTYN LOGIC (Titan Stable 8.2.1)
 // ═══════════════════════════════════════════════════════════════════════════
+
 const SUPABASE_URL = 'https://ixjowqkwcgkksatgkmqd.supabase.co';
 const SUPABASE_KEY = 'sb_publishable_JGImt2KS6mStnbnAcJcEPg_8qbal1zc';
 const ADMIN_EMAILS = ['khamidullinalibek90@gmail.com', 'alibek90@mail.ru'];
-const QUIZ_LENGTH  = 10; // questions per session
-const ELO_WIN      = 15;
-const ELO_LOSS     = 8;
 
-// ───────────────────────────────────────────────────────────────────────────
-// 2. I18N — full translation table
-// ───────────────────────────────────────────────────────────────────────────
 const I18N = {
   ru: {
-    nav_home:'Главная', nav_quiz:'Тест', nav_stats:'Статистика',
-    nav_lb:'Рейтинг', nav_admin:'Admin',
-    hero_badge:'Платформа подготовки к ЕНТ',
-    hero_sub:'Интерактивные тесты, аналитика прогресса и рейтинг лучших учеников',
-    hero_start:'Начать тест', hero_academy:'Академия',
-    stat_q:'Вопросов', stat_s:'Предметов', stat_elo:'Ваш ELO', stat_streak:'🔥 Серия',
-    subjects_title:'Предметы',
-    tips_title:'💡 Советы',
-    tip1:'• Каждая ошибка отображается в радар-чарте навыков',
-    tip2:'• За серию правильных ответов начисляется бонусный ELO',
-    tip3:'• Lifehack-подсказки появляются только для вопросов, на которые вы ошиблись',
-    quiz_q:'Вопрос', quiz_change:'Сменить', quiz_next:'Следующий вопрос',
-    stats_title:'Статистика и навыки', radar_title:'Радар навыков',
-    personal_stats:'Личные показатели',
-    login_for_stats:'Войдите, чтобы увидеть личную статистику',
-    session_stats:'Текущая сессия',
-    sess_correct:'Верно', sess_wrong:'Ошибки', sess_acc:'Точность',
-    weakpoints_title:'Слабые стороны',
-    lb_title:'🏆 Рейтинг',
-    admin_title:'⚙️ Панель администратора',
-    admin_sub:'Добавление вопросов в базу данных',
-    admin_id:'ID вопроса (напр: math_010)',
-    admin_subj:'Предмет',
-    admin_correct:'Правильный ответ (0–3)',
-    admin_submit:'Добавить вопрос в Supabase',
-    auth_title:'Добро пожаловать',
-    auth_sub:'Войдите или создайте аккаунт',
-    auth_login:'Вход', auth_reg:'Регистрация',
-    auth_login_btn:'Войти', auth_reg_btn:'Создать аккаунт',
-    subj_title:'Выберите предмет',
-    subj_sub:'Или начните смешанный тест',
-    subj_mix:'Смешанный тест (все предметы)',
-    acad_title:'🎓 Академия Altyn',
-    acad_sub:'Теоретические материалы и курсы',
-    acad_course1:'Интенсивный курс математики',
-    acad_course2:'История Казахстана — полный курс',
-    acad_course3:'Базовый словарный запас (KK)',
-    acad_free:'Бесплатно',
-    pro_sub:'Откройте полный доступ к платформе',
-    pro_f1:'Неограниченные тесты по всем предметам',
-    pro_f2:'Видеокурсы и теоретические материалы',
-    pro_f3:'Персональный план подготовки',
-    pro_f4:'Расширенная аналитика и экспорт',
-    pro_btn:'Получить PRO — скоро', pro_later:'Позже',
-    res_title:'Тест завершён!', res_again:'Ещё раз', res_stats:'Статистика',
-    pro_coming:'PRO версия скоро будет доступна!',
-    q_correct:'✅ Правильно!', q_wrong:'❌ Неверно',
-    lh_header:'💡 Подсказка для этого вопроса:',
-    lb_empty:'Пока нет данных в рейтинге',
-    logout_ok:'Вы вышли из системы',
-    saved_ok:'Прогресс сохранён',
-    q_added:'Вопрос добавлен в базу данных!',
-    err_fill:'Заполните все поля',
-    err_login:'Ошибка входа. Проверьте данные.',
-    err_reg:'Ошибка регистрации.',
+    nav_home:'Главная', nav_quiz:'Тест', nav_stats:'Статистика', nav_lb:'Рейтинг', nav_admin:'Админ',
+    hero_sub:'Интерактивные тесты и аналитика ҰБТ 2026', hero_start:'Начать тест', hero_academy:'Академия',
+    stat_q:'Вопросов', stat_elo:'ELO', subjects_title:'Предметы', quiz_next:'Далее',
+    stats_title:'Аналитика навыков', personal_stats:'Показатели', lb_title:'Топ учеников',
+    auth_title:'Авторизация', login_text:'Вход', subj_title:'Выберите предмет', res_title:'Тест завершен'
   },
   kk: {
-    nav_home:'Басты бет', nav_quiz:'Тест', nav_stats:'Статистика',
-    nav_lb:'Рейтинг', nav_admin:'Әкімші',
-    hero_badge:'ҰБТ-ға дайындық платформасы',
-    hero_sub:'Интерактивті тесттер, прогресс аналитикасы және үздік оқушылардың рейтингі',
-    hero_start:'Тест бастау', hero_academy:'Академия',
-    stat_q:'Сұрақтар', stat_s:'Пәндер', stat_elo:'Сіздің ELO', stat_streak:'🔥 Жолақ',
-    subjects_title:'Пәндер',
-    tips_title:'💡 Кеңестер',
-    tip1:'• Әр қате навык радар-диаграммасында көрсетіледі',
-    tip2:'• Қатарынан дұрыс жауаптар үшін бонустық ELO есептеледі',
-    tip3:'• Lifehack-кеңестер тек қателескен сұрақтарыңыз үшін шығады',
-    quiz_q:'Сұрақ', quiz_change:'Ауыстыру', quiz_next:'Келесі сұрақ',
-    stats_title:'Статистика және дағдылар', radar_title:'Дағды радары',
-    personal_stats:'Жеке көрсеткіштер',
-    login_for_stats:'Жеке статистиканы көру үшін кіріңіз',
-    session_stats:'Ағымдағы сессия',
-    sess_correct:'Дұрыс', sess_wrong:'Қателер', sess_acc:'Дәлдік',
-    weakpoints_title:'Әлсіз жақтар',
-    lb_title:'🏆 Рейтинг',
-    admin_title:'⚙️ Әкімші тақтасы',
-    admin_sub:'Дерекқорға сұрақтар қосу',
-    admin_id:'Сұрақ ID (мыс: math_010)',
-    admin_subj:'Пән',
-    admin_correct:'Дұрыс жауап (0–3)',
-    admin_submit:'Supabase-ке сұрақ қосу',
-    auth_title:'Қош келдіңіз',
-    auth_sub:'Кіріңіз немесе аккаунт жасаңыз',
-    auth_login:'Кіру', auth_reg:'Тіркелу',
-    auth_login_btn:'Кіру', auth_reg_btn:'Аккаунт жасау',
-    subj_title:'Пән таңдаңыз',
-    subj_sub:'Немесе аралас тест бастаңыз',
-    subj_mix:'Аралас тест (барлық пәндер)',
-    acad_title:'🎓 Altyn Академиясы',
-    acad_sub:'Теориялық материалдар мен курстар',
-    acad_course1:'Математиканың қарқынды курсы',
-    acad_course2:'Қазақстан тарихы — толық курс',
-    acad_course3:'Негізгі сөздік қор (KK)',
-    acad_free:'Тегін',
-    pro_sub:'Платформаға толық қолжетімділікті ашыңыз',
-    pro_f1:'Барлық пәндер бойынша шексіз тесттер',
-    pro_f2:'Бейнекурстар мен теориялық материалдар',
-    pro_f3:'Жеке дайындық жоспары',
-    pro_f4:'Кеңейтілген аналитика және экспорт',
-    pro_btn:'PRO алу — жақында', pro_later:'Кейінірек',
-    res_title:'Тест аяқталды!', res_again:'Қайта', res_stats:'Статистика',
-    pro_coming:'PRO нұсқасы жақында қол жетімді болады!',
-    q_correct:'✅ Дұрыс!', q_wrong:'❌ Қате',
-    lh_header:'💡 Бұл сұрақ үшін кеңес:',
-    lb_empty:'Рейтингте әзірше деректер жоқ',
-    logout_ok:'Жүйеден шықтыңыз',
-    saved_ok:'Прогресс сақталды',
-    q_added:'Сұрақ дерекқорға қосылды!',
-    err_fill:'Барлық өрістерді толтырыңыз',
-    err_login:'Кіру қатесі. Деректеріңізді тексеріңіз.',
-    err_reg:'Тіркелу қатесі.',
+    nav_home:'Басты бет', nav_quiz:'Тест', nav_stats:'Статистика', nav_lb:'Рейтинг', nav_admin:'Админ',
+    hero_sub:'ҰБТ 2026 интерактивті тесттері мен аналитикасы', hero_start:'Тестті бастау', hero_academy:'Академия',
+    stat_q:'Сұрақтар', stat_elo:'ELO', subjects_title:'Пәндер', quiz_next:'Келесі',
+    stats_title:'Дағдылар аналитикасы', personal_stats:'Көрсеткіштер', lb_title:'Үздік оқушылар',
+    auth_title:'Авторизация', login_text:'Кіру', subj_title:'Пәнді таңдаңыз', res_title:'Тест аяқталды'
   }
 };
 
-// ───────────────────────────────────────────────────────────────────────────
-// 3. SUBJECTS REGISTRY
-// ───────────────────────────────────────────────────────────────────────────
 const SUBJECTS = {
-  math:        { icon:'fas fa-calculator', color:'#6366F1', ru:'Математика',         kk:'Математика'           },
-  history:     { icon:'fas fa-landmark',   color:'#F59E0B', ru:'История Казахстана', kk:'Қазақстан тарихы'     },
-  physics:     { icon:'fas fa-atom',       color:'#06B6D4', ru:'Физика',             kk:'Физика'               },
-  chemistry:   { icon:'fas fa-flask',      color:'#10B981', ru:'Химия',             kk:'Химия'               },
-  biology:     { icon:'fas fa-dna',        color:'#84CC16', ru:'Биология',           kk:'Биология'             },
-  kazakh:      { icon:'fas fa-language',   color:'#EC4899', ru:'Казахский язык',     kk:'Қазақ тілі'           },
-  geography:   { icon:'fas fa-globe',      color:'#3B82F6', ru:'География',          kk:'География'            },
-  russian:     { icon:'fas fa-pen',        color:'#8B5CF6', ru:'Русский язык',       kk:'Орыс тілі'            },
-  world_history:{ icon:'fas fa-scroll',   color:'#D97706', ru:'Всемирная история',  kk:'Дүниежүзілік тарих'   },
+  math: { icon:'fas fa-calculator', color:'#6366F1', ru:'Математика', kk:'Математика' },
+  history: { icon:'fas fa-landmark', color:'#F59E0B', ru:'История Казахстана', kk:'Қазақстан тарихы' },
+  physics: { icon:'fas fa-atom', color:'#06B6D4', ru:'Физика', kk:'Физика' },
+  kazakh: { icon:'fas fa-language', color:'#EC4899', ru:'Казахский язык', kk:'Қазақ тілі' }
 };
 
-// ═══════════════════════════════════════════════════════════════════════════
-// 4. GLOBAL STATE
-// ═══════════════════════════════════════════════════════════════════════════
 const appState = {
-  lang: 'ru',
-  user: null,           // Supabase user object
-  profile: null,        // profiles table row
-  questions: [],        // merged question pool
-  session: {
-    questions: [],      // current quiz questions
-    index: 0,
-    correct: 0,
-    wrong: 0,
-    answered: false,
-    wrongQuestions: [], // full question objects answered wrong
-    subject: 'all',
-  },
-  skills: {             // radar chart data (0-100 each)
-    math: 70, history: 70, physics: 70,
-    chemistry: 70, biology: 70, kazakh: 70,
-    geography: 70, russian: 70,
-  },
-  radarChart: null,
+  lang: localStorage.getItem('lang') || 'ru',
+  user: null, profile: { elo: 800, streak: 0 },
+  questions: [],
+  session: { questions: [], index: 0, correct: 0, wrongQuestions: [], subject: 'all' },
+  skills: { math: 70, history: 70, physics: 70, kazakh: 70 }
 };
 
-// ═══════════════════════════════════════════════════════════════════════════
-// 5. SUPABASE CLIENT
-// ═══════════════════════════════════════════════════════════════════════════
-let supabase;
-try {
-  supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
-} catch(e) {
-  console.warn('Supabase init failed:', e);
-}
+let supabase = null;
 
-// ═══════════════════════════════════════════════════════════════════════════
-// 6. INIT
-// ═══════════════════════════════════════════════════════════════════════════
 async function init() {
-  renderSubjectGrids();
-  await loadQuestions();
-  await checkAuth();
   updateI18N();
+  renderSubjectGrids();
+  try {
+    if (window.supabase) supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+  } catch(e) {}
+  await loadQuestions();
+  if (supabase) checkAuth();
   updateAuthArea();
-  showSection('home');
 }
 
-// ═══════════════════════════════════════════════════════════════════════════
-// 7. QUESTION LOADING (Hybrid Engine)
-// ═══════════════════════════════════════════════════════════════════════════
 async function loadQuestions() {
-  // Start with local fallback
-  let local = [];
-  if (typeof LOCAL_QUESTIONS !== 'undefined' && Array.isArray(LOCAL_QUESTIONS)) {
-    local = LOCAL_QUESTIONS;
-  }
-
-  let remote = [];
+  let combined = (typeof LOCAL_QUESTIONS !== 'undefined') ? [...LOCAL_QUESTIONS] : [];
   if (supabase) {
     try {
-      const { data, error } = await supabase.from('questions').select('*');
-      if (!error && data && data.length > 0) remote = data;
-    } catch(e) { console.warn('Remote questions fetch failed:', e); }
+      const { data } = await supabase.from('questions').select('*');
+      if (data) {
+        const map = new Map();
+        combined.forEach(q => map.set(q.id, q));
+        data.forEach(q => map.set(q.id, q));
+        combined = [...map.values()];
+      }
+    } catch(e) {}
   }
-
-  // Merge: remote overrides local by ID
-  const map = new Map();
-  local.forEach(q => map.set(q.id, q));
-  remote.forEach(q => map.set(q.id, q));
-  appState.questions = [...map.values()];
-
-  document.getElementById('stat-questions').textContent = appState.questions.length || local.length;
+  appState.questions = combined;
+  document.getElementById('stat-questions').textContent = combined.length;
 }
 
-// ═══════════════════════════════════════════════════════════════════════════
-// 8. AUTH
-// ═══════════════════════════════════════════════════════════════════════════
-async function checkAuth() {
-  if (!supabase) return;
-  try {
-    const { data: { session } } = await supabase.auth.getSession();
+function checkAuth() {
+  supabase.auth.onAuthStateChange(async (event, session) => {
     if (session?.user) {
       appState.user = session.user;
-      await loadProfile();
-    }
-  } catch(e) {}
-
-  supabase.auth.onAuthStateChange(async (event, session) => {
-    if (event === 'SIGNED_IN' && session?.user) {
-      appState.user = session.user;
-      await loadProfile();
+      const { data } = await supabase.from('profiles').select('*').eq('id', session.user.id).single();
+      if (data) {
+        appState.profile = data;
+        if (data.skills) appState.skills = data.skills;
+      }
       updateAuthArea();
       updateAdminVisibility();
-      updateI18N();
       closeModal('modal-auth');
-      showToast('saved_ok', 'success');
-    } else if (event === 'SIGNED_OUT') {
-      appState.user = null;
-      appState.profile = null;
-      updateAuthArea();
-      updateAdminVisibility();
-      updateStatsBadges();
     }
   });
 }
 
 async function handleLogin() {
-  const email = document.getElementById('login-email').value.trim();
-  const pass  = document.getElementById('login-password').value;
-  if (!email || !pass) { showAuthError('err_fill'); return; }
-  hideAuthError();
-  const { error } = await supabase.auth.signInWithPassword({ email, password: pass });
-  if (error) showAuthError('err_login');
+  const e = document.getElementById('login-email').value;
+  const p = document.getElementById('login-password').value;
+  const { error } = await supabase.auth.signInWithPassword({ email: e, password: p });
+  if (error) alert("Ошибка входа");
 }
 
 async function handleRegister() {
-  const name  = document.getElementById('reg-name').value.trim();
-  const email = document.getElementById('reg-email').value.trim();
-  const pass  = document.getElementById('reg-password').value;
-  if (!name || !email || !pass) { showAuthError('err_fill'); return; }
-  hideAuthError();
-  const { data, error } = await supabase.auth.signUp({ email, password: pass });
-  if (error) { showAuthError('err_reg'); return; }
-  // Save display name to profile
-  if (data?.user) {
-    await upsertProfile({ id: data.user.id, display_name: name, elo: 800, streak: 0, weak_points: [] });
+  const e = document.getElementById('login-email').value;
+  const p = document.getElementById('login-password').value;
+  const { data, error } = await supabase.auth.signUp({ email: e, password: p });
+  if (error) alert("Ошибка регистрации");
+  else if (data.user) {
+     await supabase.from('profiles').upsert({ id: data.user.id, email: e, elo: 800 });
+     alert("Регистрация успешна! Теперь войдите.");
   }
 }
 
-async function handleLogout() {
-  await supabase.auth.signOut();
-  showToast('logout_ok', 'info');
-  showSection('home');
-}
-
-function showAuthError(key) {
-  const el = document.getElementById('auth-error');
-  el.textContent = t(key);
-  el.style.display = 'block';
-}
-function hideAuthError() {
-  document.getElementById('auth-error').style.display = 'none';
-}
-
-function switchAuthTab(tab) {
-  const isLogin = tab === 'login';
-  document.getElementById('auth-login-form').style.display    = isLogin ? 'block' : 'none';
-  document.getElementById('auth-register-form').style.display = isLogin ? 'none'  : 'block';
-  document.getElementById('tab-login').style.cssText    = isLogin
-    ? 'background:rgba(245,197,66,.15);color:var(--gold)'
-    : 'background:transparent;color:var(--muted)';
-  document.getElementById('tab-register').style.cssText = isLogin
-    ? 'background:transparent;color:var(--muted)'
-    : 'background:rgba(245,197,66,.15);color:var(--gold)';
-  hideAuthError();
-}
-
-// ═══════════════════════════════════════════════════════════════════════════
-// 9. PROFILE (Supabase profiles table)
-// ═══════════════════════════════════════════════════════════════════════════
-async function loadProfile() {
-  if (!supabase || !appState.user) return;
-  try {
-    const { data } = await supabase.from('profiles').select('*').eq('id', appState.user.id).single();
-    if (data) {
-      appState.profile = data;
-      if (data.skills) Object.assign(appState.skills, data.skills);
-    }
-    updateStatsBadges();
-    updateAdminVisibility();
-  } catch(e) { console.warn('Profile load error:', e); }
-}
-
-async function upsertProfile(updates) {
-  if (!supabase) return;
-  try {
-    await supabase.from('profiles').upsert({ ...updates }, { onConflict: 'id' });
-    if (appState.user) await loadProfile();
-  } catch(e) { console.warn('Upsert error:', e); }
-}
-
-async function saveProgress() {
-  if (!appState.user || !supabase) return;
-  const p = appState.profile || {};
-  const elo  = p.elo || 800;
-  const streak = p.streak || 0;
-
-  // Compute ELO delta for session
-  const delta = (appState.session.correct * ELO_WIN) - (appState.session.wrong * ELO_LOSS);
-  const newElo = Math.max(0, elo + delta);
-
-  // Weak points: subjects where skill < 50
-  const weakPoints = Object.entries(appState.skills)
-    .filter(([,v]) => v < 50).map(([k]) => k);
-
-  await upsertProfile({
-    id: appState.user.id,
-    elo: newElo,
-    streak: streak,
-    weak_points: weakPoints,
-    skills: appState.skills,
+function showSection(name) {
+  ['home', 'quiz', 'stats', 'leaderboard', 'admin'].forEach(s => {
+    const el = document.getElementById('sec-' + s);
+    if (el) el.style.display = (s === name) ? 'block' : 'none';
+    const navEl = document.getElementById('nav-' + s);
+    if (navEl) navEl.classList.toggle('active', s === name);
   });
-
-  return delta;
+  if (name === 'leaderboard') loadLeaderboard();
+  if (name === 'stats') { setTimeout(renderRadarChart, 100); updatePersonalStats(); }
 }
 
-// ═══════════════════════════════════════════════════════════════════════════
-// 10. QUIZ ENGINE
-// ═══════════════════════════════════════════════════════════════════════════
-function startQuiz(subject) {
+function startQuiz(sub) {
   closeModal('modal-subjects');
-  appState.session.subject = subject;
-  appState.session.index   = 0;
-  appState.session.correct = 0;
-  appState.session.wrong   = 0;
-  appState.session.answered = false;
-  appState.session.wrongQuestions = [];
-
-  // Filter + shuffle
-  let pool = subject === 'all'
-    ? [...appState.questions]
-    : appState.questions.filter(q => q.subject === subject);
-
-  if (pool.length === 0) {
-    // Graceful fallback
-    showToast('No questions for this subject yet', 'error');
-    return;
-  }
-
-  pool = shuffle(pool).slice(0, Math.min(QUIZ_LENGTH, pool.length));
-  appState.session.questions = pool;
-
+  let pool = sub === 'all' ? appState.questions : appState.questions.filter(q => q.subject === sub);
+  if (!pool.length) return alert("Вопросов нет");
+  appState.session = { questions: pool.sort(() => 0.5 - Math.random()).slice(0, 10), index: 0, correct: 0, wrongQuestions: [], subject: sub };
   showSection('quiz');
   renderQuestion();
 }
 
 function renderQuestion() {
-  const { questions, index } = appState.session;
-  const q = questions[index];
-  if (!q) { endQuiz(); return; }
-
+  const q = appState.session.questions[appState.session.index];
   const lang = appState.lang;
-  const text = q[`text_${lang}`] || q.text_ru || '';
-  const opts = q[`options_${lang}`] || q.options_ru || [];
-
-  document.getElementById('q-loading').style.display = 'none';
-  document.getElementById('q-content').style.display = 'block';
-  document.getElementById('q-feedback').style.display = 'none';
-
-  // Update header
-  document.getElementById('q-index').textContent  = index + 1;
-  document.getElementById('q-total').textContent  = questions.length;
-  document.getElementById('q-elo').textContent    = 'ELO: ' + ((appState.profile?.elo) || '—');
-  const subj = SUBJECTS[q.subject];
-  document.getElementById('q-subject-label').textContent = subj
-    ? subj[lang] || subj.ru : q.subject;
-
-  const pct = (index / questions.length) * 100;
-  document.getElementById('q-progress').style.width = pct + '%';
-
-  // Question text
-  document.getElementById('q-text').innerHTML = text;
-
-  // Options
-  const container = document.getElementById('q-options');
-  container.innerHTML = '';
-  opts.forEach((opt, i) => {
+  document.getElementById('q-subject-label').textContent = SUBJECTS[q.subject]?.[lang] || q.subject;
+  document.getElementById('q-counter').textContent = `${appState.session.index + 1} / ${appState.session.questions.length}`;
+  document.getElementById('q-progress').style.width = `${((appState.session.index + 1) / appState.session.questions.length) * 100}%`;
+  document.getElementById('q-text').innerHTML = q[`text_${lang}`] || q.text_ru;
+  
+  const opts = document.getElementById('q-options');
+  opts.innerHTML = '';
+  const arr = q[`options_${lang}`] || q.options_ru;
+  arr.forEach((o, i) => {
     const btn = document.createElement('button');
     btn.className = 'option-btn';
-    btn.innerHTML = `<span class="font-bold mr-2" style="color:var(--gold)">${['A','B','C','D'][i]}.</span>${opt}`;
-    btn.onclick = () => answerQuestion(i, q);
-    container.appendChild(btn);
+    btn.innerHTML = `<span class="text-gold font-bold mr-2">${['A','B','C','D'][i]}.</span> ${o}`;
+    btn.onclick = () => {
+      if (appState.session.answered) return;
+      appState.session.answered = true;
+      const btns = opts.querySelectorAll('.option-btn');
+      if (i === q.correct) {
+        btn.classList.add('correct'); appState.session.correct++;
+      } else {
+        btn.classList.add('wrong'); btns[q.correct].classList.add('correct');
+        appState.session.wrongQuestions.push(q);
+      }
+      document.getElementById('q-feedback').style.display = 'block';
+      document.getElementById('q-explanation').innerHTML = q[`explanation_${lang}`] || q.explanation_ru;
+      document.getElementById('q-lifehack').innerHTML = q[`lifehack_${lang}`] || q.lifehack_ru || "Просто повтори тему";
+    };
+    opts.appendChild(btn);
   });
-
   appState.session.answered = false;
-
-  // Re-render MathJax
-  if (window.MathJax && MathJax.typesetPromise) {
-    MathJax.typesetPromise([document.getElementById('q-card')]).catch(()=>{});
-  }
-}
-
-function answerQuestion(chosen, q) {
-  if (appState.session.answered) return;
-  appState.session.answered = true;
-
-  const correct = q.correct;
-  const isRight = chosen === correct;
-  const lang    = appState.lang;
-
-  // Colour options
-  const btns = document.querySelectorAll('#q-options .option-btn');
-  btns.forEach((b, i) => {
-    b.disabled = true;
-    if (i === correct) b.classList.add('correct');
-    else if (i === chosen && !isRight) b.classList.add('wrong');
-  });
-
-  // Update session counts
-  if (isRight) {
-    appState.session.correct++;
-  } else {
-    appState.session.wrong++;
-    appState.session.wrongQuestions.push(q);
-    // Decrease skill
-    const sk = q.subject in appState.skills ? q.subject : 'math';
-    appState.skills[sk] = Math.max(0, (appState.skills[sk] || 70) - 5);
-  }
-
-  // Show feedback
-  const fb = document.getElementById('q-feedback');
-  fb.style.display = 'block';
-
-  const expEl = document.getElementById('q-explanation');
-  expEl.innerHTML = `<span style="color:${isRight?'var(--success)':'var(--danger)'}; font-weight:700">${t(isRight?'q_correct':'q_wrong')}</span><br>${q[`explanation_${lang}`] || q.explanation_ru || ''}`;
-
-  const lhEl = document.getElementById('q-lifehack');
-  if (!isRight) {
-    const lh = q[`lifehack_${lang}`] || q.lifehack_ru || '';
-    if (lh) {
-      lhEl.innerHTML = `<span style="color:var(--gold);font-weight:600">${t('lh_header')}</span><br>${lh}`;
-      lhEl.style.display = 'block';
-    }
-  } else {
-    lhEl.style.display = 'none';
-  }
-
-  // Update next button for last question
-  const isLast = appState.session.index >= appState.session.questions.length - 1;
-  const nextBtn = document.getElementById('q-next-btn');
-  if (isLast) {
-    nextBtn.innerHTML = `<i class="fas fa-flag-checkered mr-2"></i>${lang==='ru'?'Завершить тест':'Тестті аяқтау'}`;
-  } else {
-    nextBtn.innerHTML = `${t('quiz_next')} <i class="fas fa-arrow-right ml-2"></i>`;
-  }
-
-  // MathJax re-render
-  if (window.MathJax && MathJax.typesetPromise) {
-    MathJax.typesetPromise([fb]).catch(()=>{});
-  }
-
-  updateSessionStats();
+  document.getElementById('q-feedback').style.display = 'none';
+  if (window.MathJax) MathJax.typeset();
 }
 
 function nextQuestion() {
   appState.session.index++;
-  if (appState.session.index >= appState.session.questions.length) {
-    endQuiz();
-  } else {
-    renderQuestion();
-  }
+  if (appState.session.index < appState.session.questions.length) renderQuestion();
+  else finishQuiz();
 }
 
-async function endQuiz() {
-  const { correct, wrong, wrongQuestions } = appState.session;
-  const total = correct + wrong;
-  const delta = await saveProgress() || 0;
-
-  // Build results modal
-  const pct = total > 0 ? Math.round((correct/total)*100) : 0;
-  document.getElementById('res-emoji').textContent = pct >= 80 ? '🏆' : pct >= 50 ? '👍' : '📚';
-  document.getElementById('res-score').textContent = `${correct}/${total}`;
-  document.getElementById('res-correct').textContent = correct;
-  document.getElementById('res-wrong').textContent   = wrong;
-  document.getElementById('res-elo-delta').textContent = (delta >= 0 ? '+' : '') + Math.round(delta);
-  document.getElementById('res-elo-delta').style.color = delta >= 0 ? 'var(--gold)' : 'var(--danger)';
-
-  // Lifehacks for wrong answers
-  const lhContainer = document.getElementById('res-lifehacks');
-  lhContainer.innerHTML = '';
-  if (wrongQuestions.length > 0) {
-    const lang = appState.lang;
-    const header = document.createElement('h4');
-    header.className = 'font-semibold text-sm mb-2';
-    header.style.color = 'var(--gold)';
-    header.textContent = t('lh_header').replace('💡 ', '💡 Подсказки: ');
-    lhContainer.appendChild(header);
-    wrongQuestions.forEach(q => {
-      const lh = q[`lifehack_${lang}`] || q.lifehack_ru || '';
-      if (!lh) return;
-      const div = document.createElement('div');
-      div.className = 'text-xs p-3 rounded-xl mb-2';
-      div.style.cssText = 'background:rgba(239,68,68,.08);border:1px solid rgba(239,68,68,.2)';
-      const subj = SUBJECTS[q.subject];
-      div.innerHTML = `<span style="color:var(--muted);font-weight:600">${subj?subj[lang]||subj.ru:q.subject}: </span>${lh}`;
-      lhContainer.appendChild(div);
-    });
+async function finishQuiz() {
+  const eloGain = appState.session.correct * 10;
+  appState.profile.elo += eloGain;
+  if (supabase && appState.user) {
+    await supabase.from('profiles').upsert({ id: appState.user.id, elo: appState.profile.elo });
   }
-
+  document.getElementById('res-score').textContent = `${appState.session.correct} / ${appState.session.questions.length}`;
+  const hacks = document.getElementById('res-hacks');
+  hacks.innerHTML = appState.session.wrongQuestions.map(q => `<div class="p-3 bg-red-500/10 border border-red-500/20 rounded-xl text-xs"><span class="text-red-400 font-bold">Совет:</span> ${q[`lifehack_${appState.lang}`] || q.lifehack_ru}</div>`).join('');
   openModal('modal-results');
-  updateSessionStats();
-  renderRadarChart();
 }
 
-// ═══════════════════════════════════════════════════════════════════════════
-// 11. LEADERBOARD
-// ═══════════════════════════════════════════════════════════════════════════
 async function loadLeaderboard() {
-  const loading = document.getElementById('lb-loading');
-  const list    = document.getElementById('lb-list');
-  loading.style.display = 'flex';
-  list.style.display = 'none';
-
-  let rows = [];
-  if (supabase) {
-    try {
-      const { data } = await supabase
-        .from('profiles')
-        .select('display_name, elo, streak')
-        .order('elo', { ascending: false })
-        .limit(5);
-      if (data) rows = data;
-    } catch(e) {}
+  const lb = document.getElementById('lb-list');
+  lb.innerHTML = '<div class="spinner mx-auto"></div>';
+  const { data } = await supabase.from('profiles').select('email, elo').order('elo', {ascending:false}).limit(5);
+  if (data) {
+    lb.innerHTML = data.map((u, i) => `<div class="flex justify-between items-center p-3 border-b border-white/5"><span>${i+1}. ${u.email.split('@')[0]}</span><span class="elo-badge">${u.elo}</span></div>`).join('');
   }
-
-  loading.style.display = 'none';
-  list.style.display    = 'block';
-
-  if (rows.length === 0) {
-    list.innerHTML = `<p class="text-center text-sm py-4" style="color:var(--muted)">${t('lb_empty')}</p>`;
-    return;
-  }
-
-  const medals = ['🥇','🥈','🥉','4️⃣','5️⃣'];
-  list.innerHTML = rows.map((r, i) => `
-    <div class="lb-row">
-      <span class="text-xl w-8 text-center">${medals[i]||''}</span>
-      <div class="flex-1">
-        <div class="font-semibold text-sm">${r.display_name || 'Аноним'}</div>
-        ${r.streak ? `<div class="text-xs" style="color:#FB923C">🔥 ${r.streak}</div>` : ''}
-      </div>
-      <div class="elo-badge">${r.elo} ELO</div>
-    </div>
-  `).join('');
 }
 
-// ═══════════════════════════════════════════════════════════════════════════
-// 12. RADAR CHART
-// ═══════════════════════════════════════════════════════════════════════════
 function renderRadarChart() {
-  const lang = appState.lang;
-  const labels = [
-    SUBJECTS.math[lang],     SUBJECTS.history[lang],
-    SUBJECTS.physics[lang],  SUBJECTS.chemistry[lang],
-    SUBJECTS.biology[lang],  SUBJECTS.kazakh[lang],
-    SUBJECTS.geography[lang],SUBJECTS.russian[lang],
-  ];
-  const data = [
-    appState.skills.math,     appState.skills.history,
-    appState.skills.physics,  appState.skills.chemistry,
-    appState.skills.biology,  appState.skills.kazakh,
-    appState.skills.geography,appState.skills.russian,
-  ];
-
   const ctx = document.getElementById('radar-chart');
-  if (!ctx) return;
-
   if (appState.radarChart) appState.radarChart.destroy();
-
   appState.radarChart = new Chart(ctx, {
     type: 'radar',
     data: {
-      labels,
-      datasets: [{
-        label: lang === 'ru' ? 'Уровень навыков' : 'Дағды деңгейі',
-        data,
-        backgroundColor: 'rgba(245,197,66,.15)',
-        borderColor: '#F5C542',
-        pointBackgroundColor: '#F5C542',
-        pointBorderColor: '#fff',
-        pointHoverBackgroundColor: '#fff',
-        pointHoverBorderColor: '#F5C542',
-        borderWidth: 2,
-      }]
+      labels: ['Мат', 'Ист', 'Физ', 'Каз'],
+      datasets: [{ data: Object.values(appState.skills), backgroundColor: 'rgba(245,197,66,0.1)', borderColor: '#F5C542', borderWidth: 2 }]
     },
-    options: {
-      responsive: true, maintainAspectRatio: false,
-      scales: {
-        r: {
-          min: 0, max: 100,
-          ticks: { stepSize: 25, color: '#6B7280', font: { size: 10 }, backdropColor: 'transparent' },
-          grid: { color: 'rgba(255,255,255,.08)' },
-          angleLines: { color: 'rgba(255,255,255,.08)' },
-          pointLabels: { color: '#E8ECFA', font: { size: 11, weight: '600' } },
-        }
-      },
-      plugins: {
-        legend: { display: false },
-        tooltip: { backgroundColor: 'rgba(11,15,26,.9)', borderColor: '#F5C542', borderWidth: 1 }
-      }
-    }
+    options: { scales: { r: { min:0, max:100, grid:{color:'rgba(255,255,255,0.05)'}, ticks:{display:false} } }, plugins:{legend:{display:false}} }
   });
-}
-
-// ═══════════════════════════════════════════════════════════════════════════
-// 13. ADMIN PANEL
-// ═══════════════════════════════════════════════════════════════════════════
-async function adminAddQuestion() {
-  const id      = document.getElementById('adm-id').value.trim();
-  const subject = document.getElementById('adm-subject').value;
-  const textRu  = document.getElementById('adm-text-ru').value.trim();
-  const textKk  = document.getElementById('adm-text-kk').value.trim();
-  const optsRu  = document.getElementById('adm-opts-ru').value.trim().split('|').map(s=>s.trim());
-  const optsKk  = document.getElementById('adm-opts-kk').value.trim().split('|').map(s=>s.trim());
-  const correct = parseInt(document.getElementById('adm-correct').value);
-  const expRu   = document.getElementById('adm-exp-ru').value.trim();
-  const expKk   = document.getElementById('adm-exp-kk').value.trim();
-  const lhRu    = document.getElementById('adm-lh-ru').value.trim();
-  const lhKk    = document.getElementById('adm-lh-kk').value.trim();
-
-  if (!id || !textRu || !textKk || optsRu.length < 2 || isNaN(correct)) {
-    showToast('err_fill', 'error'); return;
-  }
-
-  const payload = {
-    id, subject,
-    text_ru: textRu, text_kk: textKk,
-    options_ru: optsRu, options_kk: optsKk,
-    correct,
-    explanation_ru: expRu, explanation_kk: expKk,
-    lifehack_ru: lhRu, lifehack_kk: lhKk,
-  };
-
-  const { error } = await supabase.from('questions').upsert(payload);
-  if (error) { showToast('Error: '+error.message, 'error'); return; }
-
-  // Reload questions
-  await loadQuestions();
-  showToast('q_added', 'success');
-}
-
-function updateAdminVisibility() {
-  const email = appState.user?.email || '';
-  const show  = ADMIN_EMAILS.includes(email);
-  ['nav-admin','mob-nav-admin'].forEach(id => {
-    const el = document.getElementById(id);
-    if (el) el.style.display = show ? 'inline-flex' : 'none';
-  });
-}
-
-// ═══════════════════════════════════════════════════════════════════════════
-// 14. UI HELPERS
-// ═══════════════════════════════════════════════════════════════════════════
-function showSection(name) {
-  ['home','quiz','stats','leaderboard','admin'].forEach(s => {
-    const el = document.getElementById('sec-'+s);
-    if (el) el.style.display = s === name ? 'block' : 'none';
-  });
-
-  // Update nav active state
-  ['home','quiz','stats','leaderboard','admin'].forEach(s => {
-    const navEl = document.getElementById('nav-'+s);
-    if (navEl) navEl.classList.toggle('active', s === name);
-  });
-
-  if (name === 'leaderboard') loadLeaderboard();
-  if (name === 'stats') { renderRadarChart(); updatePersonalStats(); updateWeakPoints(); }
-}
-
-function openModal(id) {
-  document.getElementById(id).classList.add('active');
-}
-function closeModal(id) {
-  document.getElementById(id).classList.remove('active');
-}
-
-function openSubjectsModal() {
-  openModal('modal-subjects');
-}
-
-function toggleMobileMenu() {
-  const m = document.getElementById('mobile-menu');
-  m.style.display = m.style.display === 'none' || !m.style.display ? 'flex' : 'none';
-}
-
-// Close modals on backdrop click
-document.querySelectorAll('.modal-backdrop').forEach(el => {
-  el.addEventListener('click', e => {
-    if (e.target === el) closeModal(el.id);
-  });
-});
-
-// ── Toast ────────────────────────────────────────────────────────────────
-let toastTimer;
-function showToast(key, type = 'info') {
-  const el  = document.getElementById('toast');
-  const msg = I18N[appState.lang][key] || key;
-  el.textContent = msg;
-  el.className   = `show ${type}`;
-  clearTimeout(toastTimer);
-  toastTimer = setTimeout(() => el.className = '', 3000);
-}
-
-// ── Auth area render ─────────────────────────────────────────────────────
-function updateAuthArea() {
-  const el = document.getElementById('auth-area');
-  if (appState.user) {
-    const name = appState.profile?.display_name || appState.user.email.split('@')[0];
-    el.innerHTML = `
-      <div class="flex items-center gap-2">
-        <div class="elo-badge">${appState.profile?.elo || 800} ELO</div>
-        <div class="streak-badge">🔥 ${appState.profile?.streak || 0}</div>
-        <button class="btn-ghost px-3 py-1 text-sm" onclick="handleLogout()">
-          <i class="fas fa-sign-out-alt"></i>
-        </button>
-      </div>`;
-  } else {
-    el.innerHTML = `<button class="btn-gold px-4 py-2 text-sm" onclick="openModal('modal-auth')" data-i18n="auth_login">Войти</button>`;
-  }
-}
-
-function updateStatsBadges() {
-  const elo    = appState.profile?.elo    || '—';
-  const streak = appState.profile?.streak || '—';
-  document.getElementById('stat-elo').textContent    = elo;
-  document.getElementById('stat-streak').textContent = streak;
-  updateAuthArea();
-}
-
-function updateSessionStats() {
-  const { correct, wrong } = appState.session;
-  const total = correct + wrong;
-  document.getElementById('sess-correct').textContent = correct;
-  document.getElementById('sess-wrong').textContent   = wrong;
-  document.getElementById('sess-pct').textContent     = total > 0
-    ? Math.round((correct/total)*100) + '%' : '—';
-}
-
-function updatePersonalStats() {
-  const el = document.getElementById('personal-stats-content');
-  if (!appState.user || !appState.profile) {
-    el.innerHTML = `<p class="text-sm" style="color:var(--muted)">${t('login_for_stats')}</p>`;
-    return;
-  }
-  const p = appState.profile;
-  el.innerHTML = `
-    <div class="space-y-3">
-      <div class="flex justify-between text-sm">
-        <span style="color:var(--muted)">ELO</span>
-        <span class="font-bold text-gold-grad">${p.elo || 800}</span>
-      </div>
-      <div class="flex justify-between text-sm">
-        <span style="color:var(--muted)">🔥 ${t('stat_streak')}</span>
-        <span class="font-bold" style="color:#FB923C">${p.streak || 0}</span>
-      </div>
-      <div class="flex justify-between text-sm">
-        <span style="color:var(--muted)">Email</span>
-        <span class="font-bold text-xs">${appState.user.email}</span>
-      </div>
-    </div>`;
-}
-
-function updateWeakPoints() {
-  const el = document.getElementById('weak-points-list');
-  const lang = appState.lang;
-  const weak = Object.entries(appState.skills).filter(([,v]) => v < 60);
-  if (weak.length === 0) {
-    el.innerHTML = `<span class="text-sm" style="color:var(--success)">✅ ${lang==='ru'?'Нет слабых мест!':'Әлсіз жерлер жоқ!'}</span>`;
-    return;
-  }
-  el.innerHTML = weak.map(([k]) => {
-    const s = SUBJECTS[k];
-    return `<span class="px-3 py-1 rounded-full text-xs font-semibold"
-      style="background:rgba(239,68,68,.12);border:1px solid rgba(239,68,68,.25);color:#FCA5A5">
-      ${s ? s[lang]||s.ru : k} — ${appState.skills[k]}
-    </span>`;
-  }).join('');
-}
-
-// ── Subject grids render ─────────────────────────────────────────────────
-function renderSubjectGrids() {
-  const lang = appState.lang;
-  const subjectList = Object.entries(SUBJECTS);
-
-  // Home grid
-  const homeGrid = document.getElementById('subject-grid');
-  if (homeGrid) {
-    homeGrid.innerHTML = subjectList.map(([key, s]) => `
-      <div class="subj-card" onclick="startQuiz('${key}')">
-        <i class="${s.icon} text-xl mb-2" style="color:${s.color}"></i>
-        <div class="text-xs font-semibold">${s[lang] || s.ru}</div>
-      </div>`).join('');
-  }
-
-  // Modal grid
-  const modalGrid = document.getElementById('modal-subject-grid');
-  if (modalGrid) {
-    modalGrid.innerHTML = subjectList.map(([key, s]) => `
-      <div class="subj-card" onclick="startQuiz('${key}')">
-        <i class="${s.icon} text-lg mb-1" style="color:${s.color}"></i>
-        <div class="text-xs font-semibold mt-1">${s[lang] || s.ru}</div>
-      </div>`).join('');
-  }
-
-  document.getElementById('stat-subjects').textContent = subjectList.length;
-}
-
-// ═══════════════════════════════════════════════════════════════════════════
-// 15. I18N ENGINE
-// ═══════════════════════════════════════════════════════════════════════════
-function t(key) {
-  return (I18N[appState.lang] || I18N.ru)[key] || key;
 }
 
 function updateI18N() {
   const lang = appState.lang;
-  document.documentElement.lang = lang;
-
-  // data-i18n elements
-  document.querySelectorAll('[data-i18n]').forEach(el => {
-    const key = el.getAttribute('data-i18n');
-    if (I18N[lang][key]) el.textContent = I18N[lang][key];
-  });
-
-  // Placeholder elements (inputs with data-ph-ru / data-ph-kk)
-  document.querySelectorAll('[data-ph-ru]').forEach(el => {
-    el.placeholder = el.getAttribute(`data-ph-${lang}`) || el.placeholder;
-  });
-
-  // Lang toggle button
+  document.querySelectorAll('[data-i18n]').forEach(el => el.textContent = I18N[lang][el.getAttribute('data-i18n')]);
   document.getElementById('lang-toggle').textContent = lang === 'ru' ? 'KK' : 'RU';
-
-  // Re-render dynamic parts
-  renderSubjectGrids();
-  if (appState.radarChart) renderRadarChart();
 }
 
 function toggleLang() {
   appState.lang = appState.lang === 'ru' ? 'kk' : 'ru';
-  updateI18N();
-  updateStatsBadges();
-  updateWeakPoints();
+  localStorage.setItem('lang', appState.lang);
+  updateI18N(); renderSubjectGrids();
+}
 
-  // If quiz is active, re-render current question
-  const quizVisible = document.getElementById('sec-quiz').style.display !== 'none';
-  if (quizVisible && appState.session.questions.length > 0) {
-    renderQuestion();
+function renderSubjectGrids() {
+  const lang = appState.lang;
+  const html = Object.entries(SUBJECTS).map(([k, s]) => `<div class="subj-card" onclick="startQuiz('${k}')"><i class="${s.icon} text-xl mb-2" style="color:${s.color}"></i><div class="text-xs font-bold">${s[lang]}</div></div>`).join('');
+  document.getElementById('subject-grid').innerHTML = html;
+  document.getElementById('modal-subject-grid').innerHTML = html;
+}
+
+function updateAuthArea() {
+  const el = document.getElementById('auth-area');
+  if (appState.user) {
+    el.innerHTML = `<div class="flex items-center gap-2"><div class="elo-badge">${appState.profile.elo}</div><button class="btn-ghost p-2" onclick="supabase.auth.signOut(); location.reload();"><i class="fas fa-sign-out-alt"></i></button></div>`;
+  } else {
+    el.innerHTML = `<button class="btn-gold py-1 px-4 text-xs" onclick="openModal('modal-auth')">${I18N[appState.lang].login_text}</button>`;
   }
 }
 
-// ═══════════════════════════════════════════════════════════════════════════
-// 16. UTILITIES
-// ═══════════════════════════════════════════════════════════════════════════
-function shuffle(arr) {
-  const a = [...arr];
-  for (let i = a.length - 1; i > 0; i--) {
-    const j = Math.floor(Math.random() * (i+1));
-    [a[i], a[j]] = [a[j], a[i]];
-  }
-  return a;
+function updateAdminVisibility() {
+  const show = appState.user && ADMIN_EMAILS.includes(appState.user.email);
+  document.getElementById('nav-admin').style.display = show ? 'block' : 'none';
 }
 
-// ═══════════════════════════════════════════════════════════════════════════
-// BOOT
-// ═══════════════════════════════════════════════════════════════════════════
-window.addEventListener('DOMContentLoaded', init);
+function updatePersonalStats() {
+  document.getElementById('personal-stats-content').innerHTML = `<div class="flex justify-between"><span>ELO:</span><span class="text-gold font-bold">${appState.profile.elo}</span></div>`;
+}
+
+window.showSection = showSection; window.startQuiz = startQuiz; window.nextQuestion = nextQuestion;
+window.toggleLang = toggleLang; window.openModal = (id) => document.getElementById(id).classList.add('active');
+window.closeModal = (id) => document.getElementById(id).classList.remove('active');
+window.openSubjectsModal = () => window.openModal('modal-subjects');
+window.handleLogin = handleLogin; window.handleRegister = handleRegister;
+
+init();
 </script>
 </body>
 </html>
