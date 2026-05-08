@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Altyn Logic — ENT Preparation Platform V9.0</title>
+  <title>Altyn Logic — ENT Preparation Platform V9.1</title>
 
   <script src="https://cdn.tailwindcss.com"></script>
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
@@ -256,7 +256,7 @@
 
 <script>
 // ============================================================================
-// АРХИТЕКТУРА ALTYN LOGIC V9.0 (Modular Pattern)
+// АРХИТЕКТУРА ALTYN LOGIC V9.1 (Асинхронная стабильность)
 // ============================================================================
 
 const CONFIG = {
@@ -266,7 +266,6 @@ const CONFIG = {
   QUIZ_LENGTH: 10
 };
 
-// --- СЛОВАРЬ (I18N) ---
 const I18N = {
   ru: {
     nav_home: 'Главная', nav_quiz: 'Тест', nav_stats: 'Аналитика', nav_lb: 'Рейтинг', nav_admin: 'Admin',
@@ -291,9 +290,8 @@ const SUBJECTS = {
   kazakh: { icon: 'fas fa-language', color: '#EC4899', ru: 'Казахский язык', kk: 'Қазақ тілі' }
 };
 
-// --- ГЛОБАЛЬНОЕ СОСТОЯНИЕ (Store) ---
 const Store = {
-  lang: localStorage.getItem('lang') || 'ru',
+  lang: ['ru', 'kk'].includes(localStorage.getItem('lang')) ? localStorage.getItem('lang') : 'ru',
   user: null,
   profile: { elo: 800, streak: 0 },
   questions: [],
@@ -309,14 +307,13 @@ const Store = {
 
 let supabase = null;
 
-// --- DB SERVICE (База данных) ---
 const DBService = {
   async init() {
     try {
       if (window.supabase) {
         supabase = window.supabase.createClient(CONFIG.SUPABASE_URL, CONFIG.SUPABASE_KEY);
       }
-    } catch(e) { console.error("Supabase init failed", e); }
+    } catch(e) { console.error("Supabase error", e); }
     await this.loadQuestions();
   },
 
@@ -342,29 +339,9 @@ const DBService = {
     if (supabase && Store.user) {
       await supabase.from('profiles').upsert({ id: Store.user.id, email: Store.user.email, elo: Store.profile.elo, skills: Store.skills });
     }
-  },
-
-  async addQuestion() {
-    const id = document.getElementById('adm-id').value;
-    const subj = document.getElementById('adm-subject').value;
-    const text_ru = document.getElementById('adm-text-ru').value;
-    const text_kk = document.getElementById('adm-text-kk').value;
-    const opts_ru = document.getElementById('adm-opts-ru').value.split('|');
-    const opts_kk = document.getElementById('adm-opts-kk').value.split('|');
-    const correct = parseInt(document.getElementById('adm-correct').value);
-    const lh_ru = document.getElementById('adm-lh-ru').value;
-
-    if(!id || !text_ru) return UIManager.toast("Заполните ID и текст!", "error");
-
-    const payload = { id, subject: subj, text_ru, text_kk, options_ru: opts_ru, options_kk: opts_kk, correct, lifehack_ru: lh_ru, lifehack_kk: lh_ru };
-    const { error } = await supabase.from('questions').upsert(payload);
-    
-    if(error) UIManager.toast(error.message, "error");
-    else { UIManager.toast("Успешно добавлено!", "success"); this.loadQuestions(); }
   }
 };
 
-// --- AUTH MANAGER (Авторизация) ---
 const AuthManager = {
   init() {
     if(!supabase) return;
@@ -406,21 +383,18 @@ const AuthManager = {
   },
 
   logout() {
-    supabase.auth.signOut();
+    if(supabase) supabase.auth.signOut();
     location.reload();
   }
 };
 
-// --- QUIZ ENGINE (Движок тестов) ---
 const QuizEngine = {
   start(subj) {
     UIManager.closeModal('modal-subjects');
     let pool = subj === 'all' ? Store.questions : Store.questions.filter(q => q.subject === subj);
     if(pool.length === 0) return UIManager.toast("Нет вопросов в этой категории", "error");
     
-    // Перемешиваем и берем 10 вопросов
     pool = pool.sort(() => 0.5 - Math.random()).slice(0, CONFIG.QUIZ_LENGTH);
-    
     Store.session = { questions: pool, index: 0, correct: 0, wrongQuestions: [], subject: subj, answered: false };
     UIManager.showSection('quiz');
     this.render();
@@ -499,10 +473,8 @@ const QuizEngine = {
   }
 };
 
-// --- UI MANAGER (Управление интерфейсом) ---
 const UIManager = {
   toastTimer: null,
-  
   toast(msg, type="info") {
     const el = document.getElementById('toast');
     el.textContent = msg;
@@ -614,12 +586,7 @@ const UIManager = {
       },
       options: {
         scales: {
-          r: {
-            min: 0, max: 100,
-            ticks: { display: false },
-            grid: { color: 'rgba(255,255,255,0.1)' },
-            pointLabels: { color: '#E8ECFA', font: { size: 12 } }
-          }
+          r: { min: 0, max: 100, ticks: { display: false }, grid: { color: 'rgba(255,255,255,0.1)' }, pointLabels: { color: '#E8ECFA', font: { size: 12 } } }
         },
         plugins: { legend: { display: false } }
       }
@@ -627,13 +594,23 @@ const UIManager = {
   }
 };
 
-// ЗАПУСК ПРИЛОЖЕНИЯ
-document.addEventListener('DOMContentLoaded', async () => {
-  await DBService.init();
-  AuthManager.init();
-  UIManager.updateI18N();
-  UIManager.updateAuthArea();
-  UIManager.showSection('home');
+// БЕЗОПАСНЫЙ ЗАПУСК ПРИЛОЖЕНИЯ
+document.addEventListener('DOMContentLoaded', () => {
+  // 1. Моментальная отрисовка UI (кнопки появятся мгновенно!)
+  try {
+    UIManager.updateI18N();
+    UIManager.updateAuthArea();
+    UIManager.showSection('home');
+  } catch(e) { console.error("UI Render error:", e); }
+
+  // 2. Фоновая загрузка БД (Не блокирует сайт, даже если интернет завис)
+  DBService.init().then(() => {
+    AuthManager.init();
+    UIManager.updateAuthArea(); // обновит кнопку входа на профиль, если юзер уже был залогинен
+  }).catch(e => {
+    console.error("Supabase connect error:", e);
+    UIManager.toast("Работаем в автономном режиме", "info");
+  });
 });
 </script>
 </body>
